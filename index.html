@@ -759,11 +759,11 @@
                 };
                 if (fWeek.value === 'exception') {
                     const dateISO = fDate.value;
-                    data.exceptions[dateISO] || = {};
-                    data.exceptions[dateISO][dKey] || = [];
+                    data.exceptions[dateISO] || {};
+                    data.exceptions[dateISO][dKey] || [];
                     data.exceptions[dateISO][dKey][idx] = obj;
                 } else {
-                    data.template[fWeek.value][dKey] || = [];
+                    data.template[fWeek.value][dKey] || [];
                     data.template[fWeek.value][dKey][idx] = obj;
                 }
             }
@@ -801,7 +801,7 @@
                 document.querySelectorAll('#timesBody input[type="time"]').forEach(inp => {
                     const i = Number(inp.dataset.i);
                     const k = inp.dataset.k;
-                    data.times[i] || = {
+                    data.times[i] || {
                         start: '',
                         end: ''
                     };

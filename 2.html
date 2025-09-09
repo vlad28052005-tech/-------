@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Розклад (двотижневий) — 4 курс, група В</title>
+  <meta name="theme-color" content="#0ea5e9" />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #0e1726;
+      --text: #e5eefb;
+      --muted: #a9b8d5;
+      --accent: #0ea5e9;
+      --card: #0f172a;
+      --border: #1f2a44;
+      --lec: #3b82f6;
+      --prac: #facc15;
+      --textpair: #94a3b8;
+    }
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text: #0b1220;
+      --muted: #54627a;
+      --card: #ffffff;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, Inter, sans-serif;
+    }
+    .wrap { max-width: 1150px; margin: 0 auto; padding: 12px }
+    .topbar {
+      display: flex; gap: 8px; align-items: center; justify-content: space-between;
+      position: sticky; top: 0;
+      background: linear-gradient(to bottom, var(--bg) 85%, transparent);
+      padding: 8px 0; z-index: 10;
+    }
+    .brand { font-weight: 800; letter-spacing: .5px }
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent), #22d3ee);
+      color: #fff; border-color: transparent;
+    }
+    .grid { display: grid; gap: 10px }
+    .cards { grid-template-columns: repeat(5, 1fr) }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex; flex-direction: column;
+    }
+    .card .head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .day { font-weight: 700 }
+    .now { outline: 3px solid rgba(14, 165, 233, .3) }
+    .pair {
+      border-radius: 10px; padding: 8px; margin: 6px 0;
+      display: flex; flex-direction: column;
+      border: 1px solid var(--border);
+    }
+    .pair .meta { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+    .lec { background: var(--lec); color: #fff; padding: 2px 6px; border-radius: 6px; font-size: 12px; }
+    .prac { background: var(--prac); color: #000; padding: 2px 6px; border-radius: 6px; font-size: 12px; }
+    .textpair { color: var(--textpair); font-style: italic; }
+    .muted { opacity: .8; font-size: 13px; }
+    h4 { margin: 2px 0; font-size: 14px }
+    @media (max-width:1000px) { .cards { grid-template-columns: repeat(2, 1fr) } }
+    @media (max-width:680px) { .cards { grid-template-columns: repeat(1, 1fr) } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="brand">Розклад — 4 курс, група В</div>
+        <div class="muted">Двотижневий (верхній/нижній) • Офлайн PWA</div>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="toggleTheme">Тема</button>
+        <button class="btn" id="todayBtn">Сьогодні</button>
+        <div class="panel twoweek" style="display:flex;align-items:center;padding:6px 8px;border-radius:10px">
+          <strong id="weekLabel">Нижній</strong>
+          <button class="btn" id="prevWeek">◀</button>
+          <button class="btn" id="nextWeek">▶</button>
+        </div>
+        <button class="btn primary" id="editToggle">Редагувати</button>
+      </div>
+    </div>
+    <div class="grid cards" id="weekGrid"></div>
+  </div>
+  <script>
+    const STORAGE_KEY = 'schedule.secure.v2';
+    const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+    const DAY_NAMES = {mon:'Пн', tue:'Вт', wed:'Ср', thu:'Чт', fri:'Пт'};
+    const TYPES = {lec:'Лекція', prac:'Практика', text:'Текст'};
+    const EDIT_PASS = "301014";
+    const defaultData = {
+      settings:{theme:'dark', baseTopWeekISO:'2025-09-01', perDay:6},
+      times:[
+        {start:'08:00', end:'09:20'}, {start:'09:30', end:'10:50'},
+        {start:'11:00', end:'12:20'}, {start:'12:40', end:'14:00'},
+        {start:'14:10', end:'15:30'}, {start:'15:40', end:'17:00'}
+      ],
+      template:{
+        top:{
+          mon:[null,{type:'lec',title:'Адміністративне судочинство',teacher:'Сушко О.О.',place:'Соборна, 48'},
+                    {type:'lec',title:'Господарське право',teacher:'Калаченкова К.О.',place:'304'},
+                    {type:'lec',title:'Криміналістика (загальна; тактика слідчих дій)',teacher:'Кавун С.М.',place:'313'}],
+          tue:[null,null,null,null,{type:'lec',title:'СОП — Лідерство та командоутворення (лекція)',teacher:'Середа Г.В.',place:'MS Teams'},
+                    {type:'prac',title:'СОП — Лідерство та командоутворення (практика)',teacher:'Середа Г.В.',place:'MS Teams'}],
+          wed:[null,{type:'text',title:'Дисципліна з переліку'}],
+          thu:[null,null,{type:'lec',title:'Корпоративне право',teacher:'Дорошенко Л.М.',place:'304'},
+                    {type:'lec',title:'Земельне право',teacher:'Бахур О.В.',place:'305'},
+                    {type:'lec',title:'Фінансове право',teacher:'Петренко Г.О.',place:'305'}],
+          fri:[null,{type:'prac',title:'Адміністративне судочинство (практика)',teacher:'Сушко О.О.',place:'Соборна, 48'},
+                    {type:'prac',title:'Корпоративне право (практика)',teacher:'Дорошенко Л.М.',place:'121'},
+                    {type:'prac',title:'Фінансове право (практика)',teacher:'Петренко Г.О.',place:'305'}]
+        },
+        bottom:{
+          mon:[null,{type:'lec',title:'Адміністративне судочинство',teacher:'Сушко О.О.',place:'Соборна, 48'},
+                    {type:'lec',title:'Господарське право',teacher:'Калаченкова К.О.',place:'304'}],
+          tue:[null,null,null,null,{type:'lec',title:'СОП — Лідерство та командоутворення (лекція)',teacher:'Середа Г.В.',place:'MS Teams'},
+                    {type:'prac',title:'СОП — Лідерство та командоутворення (практика)',teacher:'Середа Г.В.',place:'MS Teams'}],
+          wed:[null,{type:'text',title:'Дисципліна з переліку'}],
+          thu:[null,null,{type:'lec',title:'Корпоративне право',teacher:'Дорошенко Л.М.',place:'304'},
+                    {type:'lec',title:'Земельне право',teacher:'Бахур О.В.',place:'305'},
+                    {type:'lec',title:'Фінансове право',teacher:'Петренко Г.О.',place:'305'}],
+          fri:[null,{type:'prac',title:'Адміністративне судочинство (практика)',teacher:'Сушко О.О.',place:'Соборна, 48'},
+                    {type:'prac',title:'Корпоративне право (практика)',teacher:'Дорошенко Л.М.',place:'121'},
+                    {type:'prac',title:'Фінансове право (практика)',teacher:'Петренко Г.О.',place:'305'}]
+        }
+      },
+      exceptions:{},
+      history:[]
+    };
+    function load(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):structuredClone(defaultData);}catch(e){return structuredClone(defaultData);}}
+    function save(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
+    let data=load();
+    function applyTheme(){document.body.setAttribute('data-theme',data.settings.theme==='light'?'light':'dark');}
+    applyTheme();
+    document.getElementById('toggleTheme').onclick=()=>{data.settings.theme=data.settings.theme==='light'?'dark':'light';save(data);applyTheme();};
+    function mondayOf(date){const d=new Date(date);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);d.setHours(0,0,0,0);return d;}
+    function iso(d){return d.toISOString().slice(0,10);}
+    function isTopWeek(date){const base=mondayOf(new Date(data.settings.baseTopWeekISO));const cur=mondayOf(new Date(date));const diffWeeks=Math.round((cur-base)/(7*24*3600*1000));return diffWeeks%2===0;}
+    let currentMonday=mondayOf(new Date());const grid=document.getElementById('weekGrid');
+    function formatDateShort(d){return d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});}
+    function getPairsForDay(dayKey,date){const week=isTopWeek(date)?'top':'bottom';const tmpl=(data.template&&data.template[week]&&data.template[week][dayKey])?data.template[week][dayKey]:[];const exc=data.exceptions[iso(date)];if(exc&&exc[dayKey]){const arr=tmpl.slice();exc[dayKey].forEach((p,idx)=>{if(p!==undefined)arr[idx]=p;});return arr;}return tmpl;}
+    function render(){grid.innerHTML='';const top=isTopWeek(currentMonday);document.getElementById('weekLabel').textContent=top?'Верхній':'Нижній';for(let i=0;i<DAYS.length;i++){const dKey=DAYS[i];const card=document.createElement('div');card.className='card';const dayDate=new Date(currentMonday.getTime()+i*86400000);const today=new Date();if(iso(dayDate)===iso(today))card.classList.add('now');const head=document.createElement('div');head.className='head';head.innerHTML=`<div class="day">${DAY_NAMES[dKey]}</div><div class="muted">${formatDateShort(dayDate)}</div>`;card.appendChild(head);const pairs=getPairsForDay(dKey,dayDate);let hasPairs=false;for(let j=0;j<data.settings.perDay;j++){const p=pairs[j];if(p){hasPairs=true;const time=data.times[j]||{start:'',end:''};const box=document.createElement('div');box.className='pair';let chip='';if(p.type==='lec')chip='<span class="lec">Лекція</span>';if(p.type==='prac')chip='<span class="prac">Практика</span>';box.innerHTML=`<div class="meta"><div>${time.start}–${time.end}</div>${chip}</div><h4>${p.title||''}</h4><div class="muted">${p.teacher||''}${p.place?' • '+p.place:''}</div>`;card.appendChild(box);} }if(!hasPairs){card.innerHTML+=`<div class="muted">Сьогодні вільний день 🎉</div>`;}grid.appendChild(card);}}
+    document.getElementById('prevWeek').onclick=()=>{currentMonday.setDate(currentMonday.getDate()-7);render();};document.getElementById('nextWeek').onclick=()=>{currentMonday.setDate(currentMonday.getDate()+7);render();};document.getElementById('todayBtn').onclick=()=>{currentMonday=mondayOf(new Date());render();};
+    let editMode=false;const editBtn=document.getElementById('editToggle');editBtn.onclick=()=>{if(!editMode){const pass=prompt("Введи пароль для редагування");if(pass!==EDIT_PASS){alert("Невірний пароль!");return;}}editMode=!editMode;alert(editMode?"Режим редагування увімкнено":"Редагування вимкнено");};
+    render();
+  </script>
+</body>
+</html>

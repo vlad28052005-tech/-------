@@ -13,12 +13,8 @@
             --text: #e5eefb;
             --muted: #a9b8d5;
             --accent: #0ea5e9;
-            --ok: #22c55e;
-            --warn: #f59e0b;
-            --err: #ef4444;
             --card: #0f172a;
             --border: #1f2a44;
-            --shadow: 0 10px 30px rgba(2, 8, 23, .35);
             --lec: #3b82f6;
             --prac: #facc15;
             --textpair: #94a3b8;
@@ -31,7 +27,6 @@
             --muted: #54627a;
             --card: #ffffff;
             --border: #e2e8f0;
-            --shadow: 0 8px 24px rgba(2, 8, 23, .08);
         }
         
         * {
@@ -47,7 +42,7 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font: 15px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif
+            font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, Inter, sans-serif;
         }
         
         .wrap {
@@ -65,7 +60,7 @@
             top: 0;
             background: linear-gradient(to bottom, var(--bg) 85%, transparent);
             padding: 8px 0;
-            z-index: 10
+            z-index: 10;
         }
         
         .brand {
@@ -80,13 +75,13 @@
             padding: 7px 12px;
             border-radius: 12px;
             cursor: pointer;
-            margin-left: 6px
+            margin-left: 6px;
         }
         
         .btn.primary {
             background: linear-gradient(135deg, var(--accent), #22d3ee);
             color: #fff;
-            border-color: transparent
+            border-color: transparent;
         }
         
         .grid {
@@ -95,25 +90,23 @@
         }
         
         .cards {
-            grid-template-columns: repeat(7, 1fr)
+            grid-template-columns: repeat(5, 1fr)
         }
         
         .card {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            box-shadow: var(--shadow);
             padding: 10px;
-            min-height: 200px;
             display: flex;
-            flex-direction: column
+            flex-direction: column;
         }
         
         .card .head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px
+            margin-bottom: 8px;
         }
         
         .day {
@@ -121,7 +114,7 @@
         }
         
         .now {
-            outline: 3px solid rgba(14, 165, 233, .12)
+            outline: 3px solid rgba(14, 165, 233, .3)
         }
         
         .pair {
@@ -129,105 +122,49 @@
             padding: 8px;
             margin: 6px 0;
             display: flex;
-            flex-direction: column
+            flex-direction: column;
+            border: 1px solid var(--border);
         }
         
         .pair .meta {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: space-between
-        }
-        
-        .chip {
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 999px
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 13px;
         }
         
         .lec {
             background: var(--lec);
-            color: #fff
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 12px;
         }
         
         .prac {
             background: var(--prac);
-            color: #000
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 12px;
         }
         
         .textpair {
             color: var(--textpair);
-            font-style: italic
-        }
-        
-        h4 {
-            margin: 4px 0;
-            font-size: 14px
+            font-style: italic;
         }
         
         .muted {
             opacity: .8;
-            font-size: 13px
+            font-size: 13px;
         }
         
-        .toolbar {
-            display: flex;
-            gap: 8px;
-            align-items: center
+        h4 {
+            margin: 2px 0;
+            font-size: 14px
         }
         
-        .panel {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px
-        }
-        
-        dialog {
-            border: none;
-            background: transparent
-        }
-        
-        dialog>.dialog {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            min-width: 320px;
-            max-width: 720px;
-            padding: 0
-        }
-        
-        .dialog .header {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between
-        }
-        
-        .dialog .body {
-            padding: 12px
-        }
-        
-        .dialog .row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin: 8px 0
-        }
-        
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            color: var(--text)
-        }
-        
-        @media (max-width:1100px) {
+        @media (max-width:1000px) {
             .cards {
                 grid-template-columns: repeat(2, 1fr)
             }
@@ -236,9 +173,6 @@
         @media (max-width:680px) {
             .cards {
                 grid-template-columns: repeat(1, 1fr)
-            }
-            .card {
-                min-height: unset
             }
         }
     </style>
@@ -262,742 +196,313 @@
                 <button class="btn primary" id="editToggle">Редагувати</button>
             </div>
         </div>
-
-        <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <div class="panel" style="display:flex;gap:8px;align-items:center">
-                <div class="chip lec">Лекція</div>
-                <div class="chip prac">Практика / Лабораторна</div>
-                <div class="muted">Клік по парі — редагувати. Alt+клік (або довге натискання) — виняток на дату.</div>
-            </div>
-        </div>
-
         <div class="grid cards" id="weekGrid"></div>
-
-        <div class="editbar hidden" id="editBar" style="position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none">
-            <div class="panel" style="pointer-events:auto;display:flex;gap:8px;align-items:center">
-                <button class="btn primary" id="addPair">Додати пару</button>
-                <button class="btn" id="editTimes">Часи пар</button>
-                <button class="btn" id="settingsBtn">Налаштування</button>
-                <button class="btn" id="clearExceptions">Очистити винятки</button>
-            </div>
-        </div>
-
-        <dialog id="pairDlg">
-            <form method="dialog" class="dialog">
-                <div class="header"><strong id="dlgTitle">Пара</strong><button class="btn" value="close">✕</button></div>
-                <div class="body">
-                    <div class="row"><label style="min-width:120px">День</label><select id="fDay"></select></div>
-                    <div class="row"><label style="min-width:120px">Тиждень</label><select id="fWeek"><option value="top">Верхній</option><option value="bottom">Нижній</option><option value="exception">Виняток (дата)</option></select></div>
-                    <div class="row" id="rowDate" style="display:none"><label style="min-width:120px">Дата</label><input type="date" id="fDate"></div>
-                    <div class="row"><label style="min-width:120px">№ пари</label><select id="fIndex"></select></div>
-                    <div class="row"><label style="min-width:120px">Тип</label><select id="fType"><option value="lec">Лекція</option><option value="prac">Практика/Лаба</option><option value="text">Текст (без типу)</option></select></div>
-                    <div class="row"><label style="min-width:120px">Назва</label><input id="fTitle" placeholder="Назва дисципліни" /></div>
-                    <div class="row"><label style="min-width:120px">Викладач</label><input id="fTeacher" placeholder="ПІБ" /></div>
-                    <div class="row"><label style="min-width:120px">Аудиторія / Платформа</label><input id="fPlace" placeholder="ауд. / MS Teams" /></div>
-                    <div class="row"><label style="min-width:120px">Час (авто)</label>
-                        <div class="muted">Час береться з налаштувань для обраного № пари</div>
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;padding:10px;border-top:1px solid var(--border)">
-                    <button class="btn" id="fDelete" type="button">Видалити</button>
-                    <button class="btn" value="cancel">Скасувати</button>
-                    <button class="btn primary" id="fSave" type="submit">Зберегти</button>
-                </div>
-            </form>
-        </dialog>
-
-        <dialog id="timesDlg">
-            <form method="dialog" class="dialog">
-                <div class="header"><strong>Часи пар</strong><button class="btn" value="close">✕</button></div>
-                <div class="body" id="timesBody"></div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;padding:10px;border-top:1px solid var(--border)">
-                    <button class="btn" value="cancel">Скасувати</button>
-                    <button class="btn primary" id="timesSave" type="submit">Зберегти</button>
-                </div>
-            </form>
-        </dialog>
-
-        <dialog id="settingsDlg">
-            <form method="dialog" class="dialog">
-                <div class="header"><strong>Налаштування</strong><button class="btn" value="close">✕</button></div>
-                <div class="body">
-                    <div class="row"><label style="min-width:160px">Базова дата «Верхній тиждень»</label><input type="date" id="sBaseDate"></div>
-                    <div class="row"><label style="min-width:160px">Пари на день</label><select id="sPerDay"><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option></select></div>
-                    <div class="row"><label style="min-width:160px">Кінець дня (нагадати про завтра)</label><input type="time" id="sDayEnd" value="19:00"></div>
-                    <div class="row"><label style="min-width:160px">Нагадування перед парою (хв)</label><input type="number" id="sBefore" min="0" step="5" value="10"></div>
-                    <div class="muted">Збереження: LocalStorage. Синхронізація з Google Drive/сервером може бути додана пізніше.</div>
-                </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;padding:10px;border-top:1px solid var(--border)">
-                    <button class="btn" value="cancel">Скасувати</button>
-                    <button class="btn primary" id="settingsSave" type="submit">Зберегти</button>
-                </div>
-            </form>
-        </dialog>
-
-        <script>
-            // ========== КОНФІГУРАЦІЯ ==========
-            const STORAGE_KEY = 'schedule.twoweek.v2';
-            const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-            const DAY_NAMES = {
-                mon: 'Пн',
-                tue: 'Вт',
-                wed: 'Ср',
-                thu: 'Чт',
-                fri: 'Пт',
-                sat: 'Сб',
-                sun: 'Нд'
-            };
-            const TYPES = {
-                lec: 'Лекція',
-                prac: 'Практика/Лабораторна',
-                text: 'Текст'
-            };
-
-            // Базові налаштування (редагуються в діалозі)
-            const defaultData = {
-                settings: {
-                    theme: 'dark',
-                    baseTopWeekISO: '2025-09-01',
-                    perDay: 6,
-                    dayEnd: '19:00',
-                    remindBeforeMin: 10
+    </div>
+    <script>
+        const STORAGE_KEY = 'schedule.secure.v2';
+        const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+        const DAY_NAMES = {
+            mon: 'Пн',
+            tue: 'Вт',
+            wed: 'Ср',
+            thu: 'Чт',
+            fri: 'Пт'
+        };
+        const TYPES = {
+            lec: 'Лекція',
+            prac: 'Практика',
+            text: 'Текст'
+        };
+        const EDIT_PASS = "301014";
+        const defaultData = {
+            settings: {
+                theme: 'dark',
+                baseTopWeekISO: '2025-09-01',
+                perDay: 6
+            },
+            times: [{
+                start: '08:00',
+                end: '09:20'
+            }, {
+                start: '09:30',
+                end: '10:50'
+            }, {
+                start: '11:00',
+                end: '12:20'
+            }, {
+                start: '12:40',
+                end: '14:00'
+            }, {
+                start: '14:10',
+                end: '15:30'
+            }, {
+                start: '15:40',
+                end: '17:00'
+            }],
+            template: {
+                top: {
+                    mon: [null, {
+                        type: 'lec',
+                        title: 'Адміністративне судочинство',
+                        teacher: 'Сушко О.О.',
+                        place: 'Соборна, 48'
+                    }, {
+                        type: 'lec',
+                        title: 'Господарське право',
+                        teacher: 'Калаченкова К.О.',
+                        place: '304'
+                    }, {
+                        type: 'lec',
+                        title: 'Криміналістика (загальна; тактика слідчих дій)',
+                        teacher: 'Кавун С.М.',
+                        place: '313'
+                    }],
+                    tue: [null, null, null, null, {
+                        type: 'lec',
+                        title: 'СОП — Лідерство та командоутворення (лекція)',
+                        teacher: 'Середа Г.В.',
+                        place: 'MS Teams'
+                    }, {
+                        type: 'prac',
+                        title: 'СОП — Лідерство та командоутворення (практика)',
+                        teacher: 'Середа Г.В.',
+                        place: 'MS Teams'
+                    }],
+                    wed: [null, {
+                        type: 'text',
+                        title: 'Дисципліна з переліку'
+                    }],
+                    thu: [null, null, {
+                        type: 'lec',
+                        title: 'Корпоративне право',
+                        teacher: 'Дорошенко Л.М.',
+                        place: '304'
+                    }, {
+                        type: 'lec',
+                        title: 'Земельне право',
+                        teacher: 'Бахур О.В.',
+                        place: '305'
+                    }, {
+                        type: 'lec',
+                        title: 'Фінансове право',
+                        teacher: 'Петренко Г.О.',
+                        place: '305'
+                    }],
+                    fri: [null, {
+                        type: 'prac',
+                        title: 'Адміністративне судочинство (практика)',
+                        teacher: 'Сушко О.О.',
+                        place: 'Соборна, 48'
+                    }, {
+                        type: 'prac',
+                        title: 'Корпоративне право (практика)',
+                        teacher: 'Дорошенко Л.М.',
+                        place: '121'
+                    }, {
+                        type: 'prac',
+                        title: 'Фінансове право (практика)',
+                        teacher: 'Петренко Г.О.',
+                        place: '305'
+                    }]
                 },
-                times: [{
-                    start: '08:00',
-                    end: '09:20'
-                }, {
-                    start: '09:30',
-                    end: '10:50'
-                }, {
-                    start: '11:00',
-                    end: '12:20'
-                }, {
-                    start: '12:40',
-                    end: '14:00'
-                }, {
-                    start: '14:10',
-                    end: '15:30'
-                }, {
-                    start: '15:40',
-                    end: '17:00'
-                }, {
-                    start: '17:10',
-                    end: '18:30'
-                }, {
-                    start: '18:40',
-                    end: '20:00'
-                }],
-
-                // Шаблони: top / bottom
-                template: {
-                    // З файлу "4 курс група В.docx" -> заповнені пари для Пн, Чт, Пт; Вт — буде СОП; Ср — "Дисципліна з переліку"; Сб/Нд — пусто.
-                    top: {
-                        mon: [
-                            null, {
-                                type: 'lec',
-                                title: 'Адміністративне судочинство',
-                                teacher: 'Сушко О.О.',
-                                place: 'Суд, Соборна, 48'
-                            }, {
-                                type: 'lec',
-                                title: 'Господарське право',
-                                teacher: 'Калаченкова К.О.',
-                                place: '304'
-                            }, {
-                                type: 'lec',
-                                title: 'Криміналістика (загальна; тактика слідчих дій)',
-                                teacher: 'Кавун С.М.',
-                                place: '313'
-                            },
-                        ],
-                        tue: [null, null, null, null, {
-                            type: 'lec',
-                            title: 'СОП — Лідерство та командоутворення (лекція)',
-                            teacher: 'Середа Г.В.',
-                            place: 'MS Teams'
-                        }, {
-                            type: 'prac',
-                            title: 'СОП — Лідерство та командоутворення (практика)',
-                            teacher: 'Середа Г.В.',
-                            place: 'MS Teams'
-                        }],
-                        wed: [null, {
-                            type: 'text',
-                            title: 'Дисципліна з переліку'
-                        }],
-                        thu: [null, null, {
-                            type: 'lec',
-                            title: 'Корпоративне право',
-                            teacher: 'Дорошенко Л.М.',
-                            place: '304'
-                        }, {
-                            type: 'lec',
-                            title: 'Земельне право',
-                            teacher: 'Бахур О.В.',
-                            place: '305'
-                        }, {
-                            type: 'lec',
-                            title: 'Фінансове право',
-                            teacher: 'Петренко Г.О.',
-                            place: '305'
-                        }],
-                        fri: [null, {
-                            type: 'prac',
-                            title: 'Адміністративне судочинство (практика)',
-                            teacher: 'Сушко О.О.',
-                            place: 'Суд, Соборна, 48'
-                        }, {
-                            type: 'prac',
-                            title: 'Корпоративне право (практика)',
-                            teacher: 'Дорошенко Л.М.',
-                            place: '121'
-                        }, {
-                            type: 'prac',
-                            title: 'Фінансове право (практика)',
-                            teacher: 'Петренко Г.О.',
-                            place: '305'
-                        }],
-                        sat: [],
-                        sun: []
-                    },
-                    bottom: {
-                        mon: [
-                            null, {
-                                type: 'lec',
-                                title: 'Адміністративне судочинство',
-                                teacher: 'Сушко О.О.',
-                                place: 'Суд, Соборна, 48'
-                            }, {
-                                type: 'lec',
-                                title: 'Господарське право',
-                                teacher: 'Калаченкова К.О.',
-                                place: '304'
-                            },
-                            // НИЗЬКИЙ: прибираємо Криміналістику з понеділка (згідно домовленості)
-                        ],
-                        tue: [null, null, null, null, {
-                            type: 'lec',
-                            title: 'СОП — Лідерство та командоутворення (лекція)',
-                            teacher: 'Середа Г.В.',
-                            place: 'MS Teams'
-                        }, {
-                            type: 'prac',
-                            title: 'СОП — Лідерство та командоутворення (практика)',
-                            teacher: 'Середа Г.В.',
-                            place: 'MS Teams'
-                        }],
-                        wed: [null, {
-                            type: 'text',
-                            title: 'Дисципліна з переліку'
-                        }],
-                        thu: [null, null, {
-                            type: 'lec',
-                            title: 'Корпоративне право',
-                            teacher: 'Дорошенко Л.М.',
-                            place: '304'
-                        }, {
-                            type: 'lec',
-                            title: 'Земельне право',
-                            teacher: 'Бахур О.В.',
-                            place: '305'
-                        }, {
-                            type: 'lec',
-                            title: 'Фінансове право',
-                            teacher: 'Петренко Г.О.',
-                            place: '305'
-                        }],
-                        fri: [null, {
-                            type: 'prac',
-                            title: 'Адміністративне судочинство (практика)',
-                            teacher: 'Сушко О.О.',
-                            place: 'Суд, Соборна, 48'
-                        }, {
-                            type: 'prac',
-                            title: 'Корпоративне право (практика)',
-                            teacher: 'Дорошенко Л.М.',
-                            place: '121'
-                        }, {
-                            type: 'prac',
-                            title: 'Фінансове право (практика)',
-                            teacher: 'Петренко Г.О.',
-                            place: '305'
-                        }],
-                        sat: [],
-                        sun: []
-                    }
-                },
-                exceptions: {}
-            };
-
-            // Завантаження / збереження
-            function load() {
-                try {
-                    const s = localStorage.getItem(STORAGE_KEY);
-                    return s ? JSON.parse(s) : structuredClone(defaultData);
-                } catch (e) {
-                    return structuredClone(defaultData);
+                bottom: {
+                    mon: [null, {
+                        type: 'lec',
+                        title: 'Адміністративне судочинство',
+                        teacher: 'Сушко О.О.',
+                        place: 'Соборна, 48'
+                    }, {
+                        type: 'lec',
+                        title: 'Господарське право',
+                        teacher: 'Калаченкова К.О.',
+                        place: '304'
+                    }],
+                    tue: [null, null, null, null, {
+                        type: 'lec',
+                        title: 'СОП — Лідерство та командоутворення (лекція)',
+                        teacher: 'Середа Г.В.',
+                        place: 'MS Teams'
+                    }, {
+                        type: 'prac',
+                        title: 'СОП — Лідерство та командоутворення (практика)',
+                        teacher: 'Середа Г.В.',
+                        place: 'MS Teams'
+                    }],
+                    wed: [null, {
+                        type: 'text',
+                        title: 'Дисципліна з переліку'
+                    }],
+                    thu: [null, null, {
+                        type: 'lec',
+                        title: 'Корпоративне право',
+                        teacher: 'Дорошенко Л.М.',
+                        place: '304'
+                    }, {
+                        type: 'lec',
+                        title: 'Земельне право',
+                        teacher: 'Бахур О.В.',
+                        place: '305'
+                    }, {
+                        type: 'lec',
+                        title: 'Фінансове право',
+                        teacher: 'Петренко Г.О.',
+                        place: '305'
+                    }],
+                    fri: [null, {
+                        type: 'prac',
+                        title: 'Адміністративне судочинство (практика)',
+                        teacher: 'Сушко О.О.',
+                        place: 'Соборна, 48'
+                    }, {
+                        type: 'prac',
+                        title: 'Корпоративне право (практика)',
+                        teacher: 'Дорошенко Л.М.',
+                        place: '121'
+                    }, {
+                        type: 'prac',
+                        title: 'Фінансове право (практика)',
+                        teacher: 'Петренко Г.О.',
+                        place: '305'
+                    }]
                 }
-            }
+            },
+            exceptions: {},
+            history: []
+        };
 
-            function save(d) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        function load() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : structuredClone(defaultData);
+            } catch (e) {
+                return structuredClone(defaultData);
             }
+        }
 
-            let data = load();
+        function save(d) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        }
+        let data = load();
 
-            // Theme
-            function applyTheme() {
-                document.body.setAttribute('data-theme', data.settings.theme === 'light' ? 'light' : 'dark');
-            }
+        function applyTheme() {
+            document.body.setAttribute('data-theme', data.settings.theme === 'light' ? 'light' : 'dark');
+        }
+        applyTheme();
+        document.getElementById('toggleTheme').onclick = () => {
+            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
+            save(data);
             applyTheme();
-            document.getElementById('toggleTheme').onclick = () => {
-                data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
-                save(data);
-                applyTheme();
-            };
+        };
 
-            // Date helpers
-            function mondayOf(date) {
-                const d = new Date(date);
-                const day = (d.getDay() + 6) % 7;
-                d.setDate(d.getDate() - day);
-                d.setHours(0, 0, 0, 0);
-                return d
+        function mondayOf(date) {
+            const d = new Date(date);
+            const day = (d.getDay() + 6) % 7;
+            d.setDate(d.getDate() - day);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function iso(d) {
+            return d.toISOString().slice(0, 10);
+        }
+
+        function isTopWeek(date) {
+            const base = mondayOf(new Date(data.settings.baseTopWeekISO));
+            const cur = mondayOf(new Date(date));
+            const diffWeeks = Math.round((cur - base) / (7 * 24 * 3600 * 1000));
+            return diffWeeks % 2 === 0;
+        }
+        let currentMonday = mondayOf(new Date());
+        const grid = document.getElementById('weekGrid');
+
+        function formatDateShort(d) {
+            return d.toLocaleDateString('uk-UA', {
+                day: '2-digit',
+                month: '2-digit'
+            });
+        }
+
+        function getPairsForDay(dayKey, date) {
+            const week = isTopWeek(date) ? 'top' : 'bottom';
+            const tmpl = (data.template && data.template[week] && data.template[week][dayKey]) ? data.template[week][dayKey] : [];
+            const exc = data.exceptions[iso(date)];
+            if (exc && exc[dayKey]) {
+                const arr = tmpl.slice();
+                exc[dayKey].forEach((p, idx) => {
+                    if (p !== undefined) arr[idx] = p;
+                });
+                return arr;
             }
+            return tmpl;
+        }
 
-            function iso(d) {
-                return d.toISOString().slice(0, 10)
-            }
-
-            function isTopWeek(date) {
-                const base = mondayOf(new Date(data.settings.baseTopWeekISO));
-                const cur = mondayOf(new Date(date));
-                const diffWeeks = Math.round((cur - base) / (7 * 24 * 3600 * 1000));
-                return diffWeeks % 2 === 0
-            }
-
-            // Rendering
-            let currentMonday = mondayOf(new Date());
-            const grid = document.getElementById('weekGrid');
-
-            function formatDateShort(d) {
-                return d.toLocaleDateString('uk-UA', {
-                    day: '2-digit',
-                    month: '2-digit'
-                })
-            }
-
-            function getPairsForDay(dayKey, date) {
-                const week = isTopWeek(date) ? 'top' : 'bottom';
-                const tmpl = data.template[week][dayKey] || [];
-                const exc = data.exceptions[iso(date)];
-                if (exc && exc[dayKey]) {
-                    const arr = (tmpl.slice());
-                    exc[dayKey].forEach((p, idx) => {
-                        if (p !== undefined) arr[idx] = p;
-                    });
-                    return arr;
-                }
-                return tmpl
-            }
-
-            function escapeHtml(s) {
-                return s ? s.replace(/[&<>"']/g, m => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    '\'': '&#39;'
-                }[m])) : ''
-            }
-
-            function render() {
-                grid.innerHTML = '';
-                const top = isTopWeek(currentMonday);
-                document.getElementById('weekLabel').textContent = top ? 'Верхній' : 'Нижній';
-                for (let i = 0; i < DAYS.length; i++) {
-                    const dKey = DAYS[i];
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    const dayDate = new Date(currentMonday.getTime() + i * 86400000);
-                    const today = new Date();
-                    if (iso(dayDate) === iso(today)) card.classList.add('now');
-                    const head = document.createElement('div');
-                    head.className = 'head';
-                    head.innerHTML = `<div class="day">${DAY_NAMES[dKey]}</div><div class="muted">${formatDateShort(dayDate)}</div>`;
-                    card.appendChild(head);
-                    const pairs = getPairsForDay(dKey, dayDate);
-                    const perDay = data.settings.perDay;
-                    for (let j = 0; j < perDay; j++) {
-                        const p = pairs[j];
-                        const box = document.createElement('div');
-                        box.className = 'pair';
-                        box.dataset.day = dKey;
-                        box.dataset.index = j;
-                        box.onclick = (ev) => openPairDlg(dKey, j, ev);
+        function render() {
+            grid.innerHTML = '';
+            const top = isTopWeek(currentMonday);
+            document.getElementById('weekLabel').textContent = top ? 'Верхній' : 'Нижній';
+            for (let i = 0; i < DAYS.length; i++) {
+                const dKey = DAYS[i];
+                const card = document.createElement('div');
+                card.className = 'card';
+                const dayDate = new Date(currentMonday.getTime() + i * 86400000);
+                const today = new Date();
+                if (iso(dayDate) === iso(today)) card.classList.add('now');
+                const head = document.createElement('div');
+                head.className = 'head';
+                head.innerHTML = `<div class="day">${DAY_NAMES[dKey]}</div><div class="muted">${formatDateShort(dayDate)}</div>`;
+                card.appendChild(head);
+                const pairs = getPairsForDay(dKey, dayDate);
+                let hasPairs = false;
+                for (let j = 0; j < data.settings.perDay; j++) {
+                    const p = pairs[j];
+                    if (p) {
+                        hasPairs = true;
                         const time = data.times[j] || {
                             start: '',
                             end: ''
                         };
-                        if (p) {
-                            if (p.type === 'lec') {
-                                box.innerHTML = `<div class="meta"><div class="chip lec">${TYPES.lec}</div><div class="muted">${time.start}–${time.end}</div></div><h4>${escapeHtml(p.title)}</h4><div class="muted">${escapeHtml(p.teacher)} ${p.place?('• '+escapeHtml(p.place)) : ''}</div>`;
-                            } else if (p.type === 'prac') {
-                                box.innerHTML = `<div class="meta"><div class="chip prac">${TYPES.prac}</div><div class="muted">${time.start}–${time.end}</div></div><h4>${escapeHtml(p.title)}</h4><div class="muted">${escapeHtml(p.teacher)} ${p.place?('• '+escapeHtml(p.place)) : ''}</div>`;
-                            } else {
-                                box.innerHTML = `<div class="meta"><div class="muted">${time.start?time.start+'–'+time.end:''}</div></div><h4 class="textpair">${escapeHtml(p.title)}</h4>`;
-                            }
-                        } else {
-                            box.innerHTML = `<div class="meta"><div class="muted">${time.start?time.start+'–'+time.end:''}</div></div><h4 class="muted">— немає —</h4>`;
-                        }
+                        const box = document.createElement('div');
+                        box.className = 'pair';
+                        let chip = '';
+                        if (p.type === 'lec') chip = '<span class="lec">Лекція</span>';
+                        if (p.type === 'prac') chip = '<span class="prac">Практика</span>';
+                        box.innerHTML = `<div class="meta"><div>${time.start}–${time.end}</div>${chip}</div><h4>${p.title||''}</h4><div class="muted">${p.teacher||''}${p.place?' • '+p.place:''}</div>`;
                         card.appendChild(box);
                     }
-                    grid.appendChild(card);
                 }
-            }
-
-            // Navigation
-            document.getElementById('prevWeek').onclick = () => {
-                currentMonday.setDate(currentMonday.getDate() - 7);
-                render();
-            };
-            document.getElementById('nextWeek').onclick = () => {
-                currentMonday.setDate(currentMonday.getDate() + 7);
-                render();
-            };
-            document.getElementById('todayBtn').onclick = () => {
-                currentMonday = mondayOf(new Date());
-                render();
-            };
-
-            // Editing
-            let editMode = false;
-            const editBar = document.getElementById('editBar');
-            document.getElementById('editToggle').onclick = () => {
-                editMode = !editMode;
-                editBar.classList.toggle('hidden', !editMode);
-            };
-
-            // Pair dialog elements
-            const pairDlg = document.getElementById('pairDlg');
-            const fDay = document.getElementById('fDay');
-            const fWeek = document.getElementById('fWeek');
-            const fDate = document.getElementById('fDate');
-            const fIndex = document.getElementById('fIndex');
-            const fType = document.getElementById('fType');
-            const fTitle = document.getElementById('fTitle');
-            const fTeacher = document.getElementById('fTeacher');
-            const fPlace = document.getElementById('fPlace');
-            const fDelete = document.getElementById('fDelete');
-            DAYS.forEach(k => {
-                const o = document.createElement('option');
-                o.value = k;
-                o.textContent = DAY_NAMES[k];
-                fDay.appendChild(o);
-            });
-
-            function fillIndexOptions() {
-                fIndex.innerHTML = '';
-                for (let i = 0; i < data.settings.perDay; i++) {
-                    const o = document.createElement('option');
-                    o.value = i;
-                    o.textContent = String(i + 1);
-                    fIndex.appendChild(o);
+                if (!hasPairs) {
+                    card.innerHTML += `<div class="muted">Сьогодні вільний день 🎉</div>`;
                 }
+                grid.appendChild(card);
             }
-            fillIndexOptions();
-
-            function openPairDlg(dayKey, idx, ev) {
-                if (!editMode) return;
-                const date = new Date(currentMonday.getTime() + DAYS.indexOf(dayKey) * 86400000);
-                const isAlt = ev && (ev.altKey || ev.ctrlKey || ev.metaKey || (ev.pointerType === 'touch' && ev.type === 'contextmenu'));
-                fDay.value = dayKey;
-                fillIndexOptions();
-                fIndex.value = idx;
-                fWeek.value = isAlt ? 'exception' : (isTopWeek(date) ? 'top' : 'bottom');
-                document.getElementById('rowDate').style.display = fWeek.value === 'exception' ? 'flex' : 'none';
-                fDate.value = iso(date);
-                const p = (getPairsForDay(dayKey, date)[idx]) || {
-                    type: 'lec',
-                    title: '',
-                    teacher: '',
-                    place: ''
-                };
-                fType.value = p.type || 'lec';
-                fTitle.value = p.title || '';
-                fTeacher.value = p.teacher || '';
-                fPlace.value = p.place || '';
-                document.getElementById('dlgTitle').textContent = `Пара ${Number(idx)+1} • ${DAY_NAMES[dayKey]}`;
-                pairDlg.showModal();
-            }
-
-            // Save / delete
-            document.getElementById('fSave').addEventListener('click', (e) => {
-                e.preventDefault();
-                savePair();
-                pairDlg.close();
-                render();
-                scheduleNotifications();
-                save(data);
-            });
-            document.getElementById('fDelete').addEventListener('click', () => {
-                deletePair();
-                pairDlg.close();
-                render();
-                scheduleNotifications();
-                save(data);
-            });
-
-            function savePair() {
-                const dKey = fDay.value;
-                const idx = Number(fIndex.value);
-                const obj = {
-                    type: fType.value,
-                    title: fTitle.value.trim(),
-                    teacher: fTeacher.value.trim(),
-                    place: fPlace.value.trim()
-                };
-                if (fWeek.value === 'exception') {
-                    const dateISO = fDate.value;
-                    data.exceptions[dateISO] || {};
-                    data.exceptions[dateISO][dKey] || [];
-                    data.exceptions[dateISO][dKey][idx] = obj;
-                } else {
-                    data.template[fWeek.value][dKey] || [];
-                    data.template[fWeek.value][dKey][idx] = obj;
-                }
-            }
-
-            function deletePair() {
-                const dKey = fDay.value;
-                const idx = Number(fIndex.value);
-                if (fWeek.value === 'exception') {
-                    const dateISO = fDate.value;
-                    if (data.exceptions[dateISO] && data.exceptions[dateISO][dKey]) data.exceptions[dateISO][dKey][idx] = null;
-                } else {
-                    if (data.template[fWeek.value] && data.template[fWeek.value][dKey]) data.template[fWeek.value][dKey][idx] = null;
-                }
-            }
-
-            // Times dialog
-            const timesDlg = document.getElementById('timesDlg');
-            const timesBody = document.getElementById('timesBody');
-            document.getElementById('editTimes').onclick = () => {
-                timesBody.innerHTML = '';
-                for (let i = 0; i < data.settings.perDay; i++) {
-                    const t = data.times[i] || {
-                        start: '',
-                        end: ''
-                    };
-                    const row = document.createElement('div');
-                    row.className = 'row';
-                    row.innerHTML = `<label style="min-width:120px">Пара ${i+1}</label><div style="display:flex;gap:8px"><input type="time" value="${t.start}" data-i="${i}" data-k="start"><input type="time" value="${t.end}" data-i="${i}" data-k="end"></div>`;
-                    timesBody.appendChild(row);
-                }
-                timesDlg.showModal();
-            };
-            document.getElementById('timesSave').addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('#timesBody input[type="time"]').forEach(inp => {
-                    const i = Number(inp.dataset.i);
-                    const k = inp.dataset.k;
-                    data.times[i] || {
-                        start: '',
-                        end: ''
-                    };
-                    data.times[i][k] = inp.value;
-                });
-                save(data);
-                timesDlg.close();
-                render();
-                scheduleNotifications();
-            });
-
-            // Settings
-            const settingsDlg = document.getElementById('settingsDlg');
-            document.getElementById('settingsBtn').onclick = () => {
-                document.getElementById('sBaseDate').value = data.settings.baseTopWeekISO;
-                document.getElementById('sPerDay').value = String(data.settings.perDay);
-                document.getElementById('sDayEnd').value = data.settings.dayEnd;
-                document.getElementById('sBefore').value = String(data.settings.remindBeforeMin);
-                settingsDlg.showModal();
-            };
-            document.getElementById('settingsSave').addEventListener('click', (e) => {
-                e.preventDefault();
-                data.settings.baseTopWeekISO = document.getElementById('sBaseDate').value || data.settings.baseTopWeekISO;
-                data.settings.perDay = Number(document.getElementById('sPerDay').value);
-                data.settings.dayEnd = document.getElementById('sDayEnd').value;
-                data.settings.remindBeforeMin = Number(document.getElementById('sBefore').value);
-                fillIndexOptions();
-                save(data);
-                settingsDlg.close();
-                render();
-                scheduleNotifications();
-            });
-
-            document.getElementById('clearExceptions').onclick = () => {
-                if (confirm('Очистити всі винятки?')) {
-                    data.exceptions = {};
-                    save(data);
-                    render();
-                }
-            };
-
-            // Notifications (with sound)
-            function playBeep() {
-                try {
-                    const ctx = new(window.AudioContext || window.webkitAudioContext)();
-                    const o = ctx.createOscillator();
-                    const g = ctx.createGain();
-                    o.type = 'sine';
-                    o.frequency.setValueAtTime(1000, ctx.currentTime);
-                    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
-                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
-                    o.connect(g);
-                    g.connect(ctx.destination);
-                    o.start();
-                    o.stop(ctx.currentTime + 0.3);
-                    setTimeout(() => {
-                        try {
-                            ctx.close();
-                        } catch (e) {}
-                    }, 700);
-                } catch (e) {}
-            }
-            async function ensurePerm() {
-                if (!('Notification' in window)) return false;
-                if (Notification.permission === 'granted') return true;
-                if (Notification.permission !== 'denied') {
-                    const p = await Notification.requestPermission();
-                    return p === 'granted';
-                }
-                return false;
-            }
-
-            function notify(title, body) {
-                if (!('Notification' in window)) return;
-                if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
-                    navigator.serviceWorker.getRegistration().then(reg => {
-                        if (reg && reg.showNotification) reg.showNotification(title, {
-                            body,
-                            tag: 'sched',
-                            renotify: true
-                        });
-                        else new Notification(title, {
-                            body
-                        });
-                        playBeep();
-                    });
-                } else {
-                    new Notification(title, {
-                        body
-                    });
-                    playBeep();
-                }
-            }
-
-            let scheduledTimeouts = [];
-
-            function clearScheduled() {
-                scheduledTimeouts.forEach(id => clearTimeout(id));
-                scheduledTimeouts = [];
-            }
-
-            function scheduleNotifications() {
-                clearScheduled();
-                ensurePerm().then(ok => {
-                    if (!ok) return;
-                    const before = (data.settings.remindBeforeMin || 0) * 60000;
-                    const now = Date.now();
-                    const today = new Date();
-                    const perDay = data.settings.perDay;
-                    const todayKey = DAYS[(today.getDay() + 6) % 7];
-                    const pairs = getPairsForDay(todayKey, today);
-                    for (let i = 0; i < perDay; i++) {
-                        const p = pairs[i];
-                        if (!p) continue;
-                        const t = data.times[i];
-                        if (!t || !t.start) continue;
-                        const [h, m] = t.start.split(':').map(Number);
-                        const dt = new Date();
-                        dt.setHours(h);
-                        dt.setMinutes(m);
-                        dt.setSeconds(0);
-                        dt.setMilliseconds(0);
-                        const fire = dt.getTime() - before;
-                        const delay = fire - now;
-                        if (delay > 0 && delay < 24 * 3600 * 1000) {
-                            const id = setTimeout(() => notify('Нагадування: скоро пара', `${p.title} о ${t.start}`), delay);
-                            scheduledTimeouts.push(id);
-                        }
-                    }
-                    const [eh, em] = (data.settings.dayEnd || '19:00').split(':').map(Number);
-                    const ed = new Date();
-                    ed.setHours(eh);
-                    ed.setMinutes(em);
-                    ed.setSeconds(0);
-                    ed.setMilliseconds(0);
-                    const dDelay = ed.getTime() - now;
-                    if (dDelay > 0 && dDelay < 24 * 3600 * 1000) {
-                        const id = setTimeout(() => {
-                            const tomorrow = new Date(Date.now() + 86400000);
-                            const tkey = DAYS[(tomorrow.getDay() + 6) % 7];
-                            const arr = getPairsForDay(tkey, tomorrow).filter(Boolean);
-                            notify('Розклад на завтра', arr.length ? `Пар: ${arr.length}. Перевір розклад.` : 'Завтра пар нема');
-                        }, dDelay);
-                        scheduledTimeouts.push(id);
-                    }
-                });
-            }
-
-            // PWA: manifest + service worker
-            (function setupPWA() {
-                const manifest = {
-                    name: 'Розклад — 4 курс В',
-                    short_name: 'Розклад',
-                    start_url: '.',
-                    display: 'standalone',
-                    background_color: '#0b1220',
-                    theme_color: '#0ea5e9'
-                };
-                const blob = new Blob([JSON.stringify(manifest)], {
-                    type: 'application/json'
-                });
-                const link = document.createElement('link');
-                link.rel = 'manifest';
-                link.href = URL.createObjectURL(blob);
-                document.head.appendChild(link);
-                if ('serviceWorker' in navigator) {
-                    const swCode = `self.addEventListener('install',e=>{ e.waitUntil(caches.open('sched-v2').then(c=>c.addAll(['./'])).catch(()=>{})); self.skipWaiting(); }); self.addEventListener('activate',e=>self.clients.claim()); self.addEventListener('fetch',e=>{ e.respondWith(caches.match(e.request).then(r=> r || fetch(e.request).then(res=>{ try{ const copy=res.clone(); caches.open('sched-v2').then(c=>c.put(e.request, copy)); }catch(err){} return res; }).catch(()=>r))); });`;
-                    const swBlob = new Blob([swCode], {
-                        type: 'application/javascript'
-                    });
-                    const swUrl = URL.createObjectURL(swBlob);
-                    navigator.serviceWorker.register(swUrl).catch(() => {});
-                }
-            })();
-
-            function escapeHtml(s) {
-                return s ? s.replace(/[&<>"']/g, m => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    '\'': '&#39;'
-                }[m])) : '';
-            }
-
-            // Start
+        }
+        document.getElementById('prevWeek').onclick = () => {
+            currentMonday.setDate(currentMonday.getDate() - 7);
             render();
-            ensurePerm().then(scheduleNotifications);
-            window._sched = {
-                data,
-                save: () => save(data),
-                render,
-                scheduleNotifications
-            };
-        </script>
+        };
+        document.getElementById('nextWeek').onclick = () => {
+            currentMonday.setDate(currentMonday.getDate() + 7);
+            render();
+        };
+        document.getElementById('todayBtn').onclick = () => {
+            currentMonday = mondayOf(new Date());
+            render();
+        };
+        let editMode = false;
+        const editBtn = document.getElementById('editToggle');
+        editBtn.onclick = () => {
+            if (!editMode) {
+                const pass = prompt("Введи пароль для редагування");
+                if (pass !== EDIT_PASS) {
+                    alert("Невірний пароль!");
+                    return;
+                }
+            }
+            editMode = !editMode;
+            alert(editMode ? "Режим редагування увімкнено" : "Редагування вимкнено");
+        };
+        render();
+    </script>
 </body>
 
 </html>

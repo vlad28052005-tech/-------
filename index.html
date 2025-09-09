@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Розклад (двотижневий) — 4 курс, група В</title>
+    <title>Розклад — 4 курс, група В</title>
     <meta name="theme-color" content="#0ea5e9" />
     <style>
          :root {
@@ -22,10 +22,10 @@
         
         [data-theme="light"] {
             --bg: #f8fafc;
-            --panel: #fff;
+            --panel: #ffffff;
             --text: #0b1220;
             --muted: #54627a;
-            --card: #fff;
+            --card: #ffffff;
             --border: #e2e8f0;
         }
         
@@ -42,7 +42,7 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, Inter, sans-serif
+            font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, Inter, sans-serif
         }
         
         .wrap {
@@ -67,6 +67,12 @@
             font-weight: 800
         }
         
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+        
         .btn {
             border: 1px solid var(--border);
             background: var(--panel);
@@ -74,7 +80,12 @@
             padding: 7px 12px;
             border-radius: 12px;
             cursor: pointer;
-            margin-left: 6px
+            margin-left: 6px;
+            transition: transform .16s ease, box-shadow .16s ease
+        }
+        
+        .btn:active {
+            transform: translateY(1px)
         }
         
         .btn.primary {
@@ -83,9 +94,18 @@
             border-color: transparent
         }
         
+        .small-select {
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text)
+        }
+        
         .grid {
             display: grid;
-            gap: 10px
+            gap: 10px;
+            transition: transform .32s ease, opacity .3s ease
         }
         
         .cards {
@@ -99,11 +119,12 @@
             padding: 10px;
             display: flex;
             flex-direction: column;
-            min-height: 160px
+            min-height: 160px;
+            transition: transform .24s ease, box-shadow .24s ease
         }
         
         .card.now {
-            outline: 3px solid rgba(14, 165, 233, .4)
+            outline: 3px solid rgba(14, 165, 233, .45)
         }
         
         .card .head {
@@ -124,7 +145,8 @@
             display: flex;
             flex-direction: column;
             border: 1px solid rgba(255, 255, 255, 0.03);
-            background: transparent
+            background: transparent;
+            transition: opacity .18s ease, transform .16s ease
         }
         
         .pair .meta {
@@ -164,44 +186,87 @@
             margin: 2px 0;
             font-size: 14px
         }
+        /* states */
+        
+        .pair.past {
+            opacity: .45;
+            filter: grayscale(.2);
+            pointer-events: none
+        }
         
         .pair.current {
             box-shadow: 0 10px 30px rgba(59, 130, 246, .12);
-            border: 2px solid rgba(59, 130, 246, .9)
+            border: 2px solid rgba(59, 130, 246, .95)
         }
+        /* blue */
         
         .pair.next {
+            box-shadow: 0 10px 30px rgba(245, 158, 11, .12);
+            border: 2px solid rgba(245, 158, 11, .95);
+            position: relative
+        }
+        /* yellow */
+        
+        .pair.next .nextBadge {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text)
+        }
+        
+        .pair.upcoming {
             box-shadow: 0 10px 30px rgba(16, 163, 74, .08);
-            border: 2px solid rgba(16, 163, 74, .9)
+            border: 2px solid var(--green)
         }
-        
-        #widget {
-            position: fixed;
-            right: 14px;
-            bottom: 14px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(2, 8, 23, .35);
-            max-width: 320px
-        }
-        
-        #widget .title {
-            font-weight: 700
-        }
+        /* green */
         
         .hidden {
             display: none
+        }
+        /* week animation classes */
+        
+        .slide-left {
+            transform: translateX(-20px);
+            opacity: 0
+        }
+        
+        .slide-right {
+            transform: translateX(20px);
+            opacity: 0
+        }
+        
+        .pulse {
+            animation: pulseAnim .45s ease
+        }
+        
+        @keyframes pulseAnim {
+            0% {
+                transform: scale(1)
+            }
+            50% {
+                transform: scale(0.985)
+            }
+            100% {
+                transform: scale(1)
+            }
+        }
+        /* today-only mode */
+        
+        .today-only .cards {
+            grid-template-columns: 1fr !important
+        }
+        
+        .today-big .card {
+            min-height: 320px
         }
         
         @media (max-width:1000px) {
             .cards {
                 grid-template-columns: repeat(2, 1fr)
-            }
-            #widget {
-                right: 12px;
-                left: 12px
             }
         }
         
@@ -209,57 +274,45 @@
             .cards {
                 grid-template-columns: repeat(1, 1fr)
             }
-            #widget {
-                right: 8px;
-                left: 8px
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="wrap">
+    <div class="wrap" id="appWrap">
         <div class="topbar">
             <div>
                 <div class="brand">Розклад — 4 курс, група В</div>
                 <div class="muted">Двотижневий (верхній/нижній) • Пн–Пт</div>
             </div>
             <div class="toolbar" id="toolbar">
-                <button class="btn" id="toggleTheme">Тема</button>
-                <button class="btn" id="todayBtn">Сьогодні</button>
+                <button class="btn" id="toggleTheme" title="Перемкнути тему">Тема</button>
+                <button class="btn" id="todayBtn" title="Показати сьогодні">Сьогодні</button>
+                <button class="btn" id="todayOnlyBtn" title="Показати лише сьогодні (великий перегляд)">Великий день</button>
+
                 <div style="display:flex;align-items:center;padding:6px 8px;border-radius:10px;background:var(--panel);border:1px solid var(--border)">
                     <strong id="weekLabel">Нижній</strong>
                     <button class="btn" id="prevWeek">◀</button>
                     <button class="btn" id="nextWeek">▶</button>
                 </div>
+
+                <select id="remindSelect" class="small-select" title="Нагадувати за...">
+          <option value="0">Немає нагадувань</option>
+          <option value="10">За 10 хв</option>
+          <option value="30">За 30 хв</option>
+          <option value="60">За 1 год</option>
+        </select>
+
                 <button class="btn primary" id="editToggle">Редагувати</button>
             </div>
         </div>
 
-        <div id="info" style="margin:12px 0"></div>
+        <div id="info" style="margin:10px 0"></div>
         <div class="grid cards" id="weekGrid"></div>
     </div>
 
-    <div id="widget" class="hidden" role="status" aria-live="polite">
-        <div class="title" id="widgetTitle">Наступна пара</div>
-        <div id="widgetBody" class="muted" style="margin-top:8px">Завантаження…</div>
-        <div style="margin-top:8px"><button class="btn" id="btnNotifTest">Тест сповіщення</button></div>
-    </div>
-
     <script>
-        /* ========== Конфігурація ========== */
-        const STORAGE_KEY = 'schedule.app.v4';
-        const EDIT_PASS = '301014';
-        const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
-        const DAY_NAMES = {
-            mon: 'Пн',
-            tue: 'Вт',
-            wed: 'Ср',
-            thu: 'Чт',
-            fri: 'Пт'
-        };
-
-        /* ========== Дані (шаблон) ========== */
+        // --- Дані за замовчуванням ---
         const defaultData = {
             settings: {
                 theme: 'dark',
@@ -380,6 +433,7 @@
                         type: 'text',
                         title: 'Дисципліна з переліку'
                     }],
+                    // змінено: нижній тиждень четвер — земельне право (практика) замість фінансового права
                     thu: [null, null, {
                         type: 'lec',
                         title: 'Корпоративне право',
@@ -391,9 +445,9 @@
                         teacher: 'Бахур О.В.',
                         place: '305'
                     }, {
-                        type: 'lec',
-                        title: 'Фінансове право',
-                        teacher: 'Петренко Г.О.',
+                        type: 'prac',
+                        title: 'Земельне право (практика)',
+                        teacher: 'Бахур О.В.',
                         place: '305'
                     }],
                     fri: [null, {
@@ -414,10 +468,21 @@
                     }]
                 }
             },
-            exceptions: {} // зміни для конкретних дат зберігаємо тут
+            exceptions: {}
         };
 
-        /* ========== Збереження / Завантаження ========== */
+        // --- Utils ---
+        const STORAGE_KEY = 'schedule.twoweek.v6';
+        const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+        const DAY_NAMES = {
+            mon: 'Пн',
+            tue: 'Вт',
+            wed: 'Ср',
+            thu: 'Чт',
+            fri: 'Пт'
+        };
+        const EDIT_PASS = '301014';
+
         function load() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -428,25 +493,15 @@
         }
 
         function save() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {}
         }
 
-        let data = load();
-
-        /* ========== Theme ========== */
         function applyTheme() {
             document.body.setAttribute('data-theme', data.settings.theme === 'light' ? 'light' : '');
         }
-        applyTheme();
 
-        document.getElementById('toggleTheme').addEventListener('click', () => {
-            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
-            save();
-            applyTheme();
-            render(); // ensure UI updates colors
-        });
-
-        /* ========== Date helpers ========== */
         function mondayOf(date) {
             const d = new Date(date);
             const day = (d.getDay() + 6) % 7;
@@ -466,11 +521,20 @@
             return diffWeeks % 2 === 0;
         }
 
-        /* ========== Current view state ========== */
-        let currentMonday = mondayOf(new Date());
-        const grid = document.getElementById('weekGrid');
+        // monday shift: pairs index >=1 use times[index+1]
+        function getDisplayTimeFor(dayKey, pairIndex) {
+            if (dayKey === 'mon' && pairIndex >= 1) {
+                return data.times[pairIndex + 1] || {
+                    start: '',
+                    end: ''
+                };
+            }
+            return data.times[pairIndex] || {
+                start: '',
+                end: ''
+            };
+        }
 
-        /* ========== Utility: get pairs (merge exceptions) ========== */
         function getPairsForDay(dayKey, date) {
             const week = isTopWeek(date) ? 'top' : 'bottom';
             const tmpl = (data.template && data.template[week] && data.template[week][dayKey]) ? data.template[week][dayKey].slice() : [];
@@ -483,25 +547,22 @@
             return tmpl;
         }
 
-        /* ========== Time mapping: Monday shift = times index +1 for j>=1 ========== */
-        function getDisplayTimeFor(dayKey, pairIndex) {
-            // For Monday, pair 2 -> times[2+?]. The user asked that 2->3, 3->4, etc.
-            // We'll map: if dayKey==='mon' and pairIndex >=1 then time = data.times[pairIndex+1]
-            if (dayKey === 'mon' && pairIndex >= 1) {
-                const t = data.times[pairIndex + 1];
-                return t ? t : {
-                    start: '',
-                    end: ''
-                };
-            }
-            const t = data.times[pairIndex];
-            return t ? t : {
-                start: '',
-                end: ''
-            };
+        // DOM refs
+        const grid = document.getElementById('weekGrid');
+        let data = load();
+        let currentMonday = mondayOf(new Date());
+        let scheduledTimeouts = [];
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/[&<>"]/g, m => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;'
+            }[m]));
         }
 
-        /* ========== Render week grid ========== */
         function formatShort(d) {
             return d.toLocaleDateString('uk-UA', {
                 day: '2-digit',
@@ -509,22 +570,30 @@
             });
         }
 
+        function clearScheduled() {
+            scheduledTimeouts.forEach(id => clearTimeout(id));
+            scheduledTimeouts = [];
+        }
+
         function render() {
+            // set remind select
+            const sel = document.getElementById('remindSelect');
+            if (sel) sel.value = String(data.settings.remindBeforeMin || 0);
+
             grid.innerHTML = '';
             const top = isTopWeek(currentMonday);
             document.getElementById('weekLabel').textContent = top ? 'Верхній' : 'Нижній';
+
             const today = new Date();
-            const todayIso = iso(today);
-            // compute highlightDate: highlight today only if viewing current week, else no highlight
-            let highlightDate = null;
             const viewingCurrentWeek = (mondayOf(today).getTime() === currentMonday.getTime());
+
+            // highlight date only when viewing current week
+            let highlightDate = null;
             if (viewingCurrentWeek) {
-                // if today has pairs -> highlight today, else find next day with pairs within this week
                 const todayKey = DAYS[(today.getDay() + 6) % 7];
                 const todayPairs = getPairsForDay(todayKey, today).slice(0, data.settings.perDay).filter(Boolean);
-                if (todayPairs.length > 0) {
-                    highlightDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                } else {
+                if (todayPairs.length > 0) highlightDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                else {
                     for (let off = 1; off < 7; off++) {
                         const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off);
                         const key = DAYS[(d.getDay() + 6) % 7];
@@ -563,7 +632,7 @@
                     box.dataset.day = dKey;
                     box.dataset.index = j;
                     const typeHtml = p.type === 'lec' ? '<span class="lec">Лекція</span>' : (p.type === 'prac' ? '<span class="prac">Практика</span>' : '<span class="textpair">Інфо</span>');
-                    box.innerHTML = `<div class="meta"><div>${t.start || ''}–${t.end || ''}</div><div>${typeHtml}</div></div><h4>${escapeHtml(p.title || '')}</h4><div class="muted">${escapeHtml(p.teacher || '')}${p.place ? (' • '+escapeHtml(p.place)) : ''}</div>`;
+                    box.innerHTML = `<div class="meta"><div>${t.start||''}–${t.end||''}</div><div>${typeHtml}</div></div><h4>${escapeHtml(p.title||'')}</h4><div class="muted">${escapeHtml(p.teacher||'')}${p.place?(' • '+escapeHtml(p.place)):''}</div>`;
                     card.appendChild(box);
                 }
                 if (!hasPairs) {
@@ -575,44 +644,43 @@
                 grid.appendChild(card);
             }
 
-            // After render: highlight current/next only if viewing current week
+            // mark current/next/past only for current week
             if (viewingCurrentWeek) {
+                markPastPairs();
                 markCurrentAndNext();
-                populateWidget();
                 scheduleNotifications();
             } else {
-                // ensure no current/next classes
-                document.querySelectorAll('.pair').forEach(el => el.classList.remove('current', 'next'));
-                document.getElementById('widget').classList.add('hidden');
+                document.querySelectorAll('.pair').forEach(el => el.classList.remove('current', 'next', 'upcoming', 'past'));
+                clearScheduled();
             }
 
-            // ensure theme applied (fix for previous bug)
             applyTheme();
         }
 
-        /* ========== escape HTML ========== */
-        function escapeHtml(s) {
-            if (!s) return '';
-            return s.replace(/[&<>"']/g, m => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            }[m]));
+        function markPastPairs() {
+            const now = new Date();
+            document.querySelectorAll('.pair').forEach(el => {
+                el.classList.remove('past');
+                const dayKey = el.dataset.day;
+                const idx = Number(el.dataset.index);
+                const t = getDisplayTimeFor(dayKey, idx);
+                if (!t || !t.end) return;
+                const end = parseTimeToDate(t.end, now);
+                if (end && now > end) el.classList.add('past');
+            });
         }
 
-        /* ========== Current / Next marking ========== */
         function parseTimeToDate(timeStr, baseDate) {
-            const [h, m] = (timeStr || '').split(':').map(x => Number(x));
-            const d = new Date(baseDate);
+            if (!timeStr) return null;
+            const [h, m] = timeStr.split(':').map(x => Number(x));
             if (!Number.isFinite(h)) return null;
+            const d = new Date(baseDate);
             d.setHours(h, m || 0, 0, 0);
             return d;
         }
 
         function markCurrentAndNext() {
-            document.querySelectorAll('.pair').forEach(el => el.classList.remove('current', 'next'));
+            document.querySelectorAll('.pair').forEach(el => el.classList.remove('current', 'next', 'upcoming'));
             const now = new Date();
             const todayKey = DAYS[(now.getDay() + 6) % 7];
             const perDay = data.settings.perDay;
@@ -623,16 +691,31 @@
                 if (!t || !t.start || !t.end) continue;
                 const st = parseTimeToDate(t.start, now);
                 const en = parseTimeToDate(t.end, now);
-                if (st && en && now >= st && now <= en) {
-                    const el = document.querySelector(`.pair[data-day='${todayKey}'][data-index='${j}']`);
-                    if (el) {
-                        el.classList.add('current');
-                        return;
+                const el = document.querySelector(`.pair[data-day='${todayKey}'][data-index='${j}']`);
+                if (el && st && en && now >= st && now <= en) {
+                    el.classList.add('current');
+                    el.classList.remove('past');
+                    // also mark next (yellow) if exists
+                    for (let k = j + 1; k < perDay; k++) {
+                        const t2 = getDisplayTimeFor(todayKey, k);
+                        if (!t2 || !t2.start) continue;
+                        const el2 = document.querySelector(`.pair[data-day='${todayKey}'][data-index='${k}']`);
+                        if (el2) {
+                            el2.classList.add('next'); // add badge
+                            if (!el2.querySelector('.nextBadge')) {
+                                const b = document.createElement('div');
+                                b.className = 'nextBadge';
+                                b.textContent = 'Наступна';
+                                el2.appendChild(b);
+                            }
+                            return;
+                        }
                     }
+                    return;
                 }
             }
 
-            // if no current, find next TODAY (green)
+            // if no current — find nearest future today and mark green (upcoming)
             for (let j = 0; j < perDay; j++) {
                 const t = getDisplayTimeFor(todayKey, j);
                 if (!t || !t.start) continue;
@@ -640,88 +723,24 @@
                 if (st && st > now) {
                     const el = document.querySelector(`.pair[data-day='${todayKey}'][data-index='${j}']`);
                     if (el) {
-                        el.classList.add('next');
+                        el.classList.add('upcoming');
+                        el.classList.remove('past');
                         return;
                     }
                 }
             }
-            // if nothing, do not mark anything (per user's requirement)
+            // nothing today — don't mark anything
         }
 
-        /* ========== Widget populate logic ========== */
-        let tomorrowTimeoutId = null;
-
-        function scheduleShowTomorrowFirst() {
-            if (tomorrowTimeoutId) clearTimeout(tomorrowTimeoutId);
-            const now = new Date();
-            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-            tomorrow.setHours(data.settings.showTomorrowFromHour, 0, 0, 0, 0);
-            let delay = tomorrow.getTime() - now.getTime();
-            if (delay < 0) delay += 24 * 3600 * 1000;
-            tomorrowTimeoutId = setTimeout(() => {
-                populateWidget();
-            }, delay + 500);
-        }
-
-        function populateWidget() {
-            const widget = document.getElementById('widget');
-            const title = document.getElementById('widgetTitle');
-            const body = document.getElementById('widgetBody');
-            const now = new Date();
-            const perDay = data.settings.perDay;
-
-            // current
-            for (let j = 0; j < perDay; j++) {
-                const t = getDisplayTimeFor(DAYS[(now.getDay() + 6) % 7], j);
-                if (!t || !t.start || !t.end) continue;
-                const st = parseTimeToDate(t.start, now);
-                const en = parseTimeToDate(t.end, now);
-                if (st && en && now >= st && now <= en) {
-                    const pairs = getPairsForDay(DAYS[(now.getDay() + 6) % 7], now);
-                    const p = pairs[j];
-                    if (p) {
-                        widget.classList.remove('hidden');
-                        title.textContent = 'Поточна пара';
-                        body.innerHTML = `<div style="font-weight:700">${escapeHtml(p.title)}</div><div class="muted">${escapeHtml(p.teacher||'')} • ${escapeHtml(p.place||'')}</div><div style="margin-top:6px">${t.start}–${t.end}</div>`;
-                        return;
-                    }
-                }
-            }
-
-            // next today
-            for (let j = 0; j < perDay; j++) {
-                const t = getDisplayTimeFor(DAYS[(now.getDay() + 6) % 7], j);
-                if (!t || !t.start) continue;
-                const st = parseTimeToDate(t.start, now);
-                if (st && st > now) {
-                    const pairs = getPairsForDay(DAYS[(now.getDay() + 6) % 7], now);
-                    const p = pairs[j];
-                    if (p) {
-                        widget.classList.remove('hidden');
-                        title.textContent = 'Наступна пара (сьогодні)';
-                        body.innerHTML = `<div style="font-weight:700">${escapeHtml(p.title)}</div><div class="muted">${escapeHtml(p.teacher||'')} • ${escapeHtml(p.place||'')}</div><div style="margin-top:6px">${t.start}–${t.end}</div>`;
-                        return;
-                    }
-                }
-            }
-
-            // no next today: hide widget and schedule tomorrow's first at configured hour
-            widget.classList.add('hidden');
-            scheduleShowTomorrowFirst();
-        }
-
-        /* ========== Notifications scheduling ========== */
-        let scheduledTimeouts = [];
-
-        function clearScheduled() {
-            scheduledTimeouts.forEach(id => clearTimeout(id));
-            scheduledTimeouts = [];
+        // Notifications (no sound)
+        function clearAllScheduled() {
+            clearScheduled();
         }
 
         function scheduleNotifications() {
             clearScheduled();
+            if (!('Notification' in window)) return;
             if (Notification.permission !== 'granted') return;
-            const now = Date.now();
             const today = new Date();
             const perDay = data.settings.perDay;
             for (let j = 0; j < perDay; j++) {
@@ -729,14 +748,13 @@
                 if (!t || !t.start) continue;
                 const startDate = parseTimeToDate(t.start, today);
                 if (!startDate) continue;
-                const notifyAt = startDate.getTime() - (data.settings.remindBeforeMin || 10) * 60000;
+                const notifyAt = startDate.getTime() - (data.settings.remindBeforeMin || 0) * 60000;
                 const pairs = getPairsForDay(DAYS[(today.getDay() + 6) % 7], today);
                 const p = pairs[j];
                 if (!p) continue;
                 const delay = notifyAt - Date.now();
                 if (delay > 0 && delay < 24 * 3600 * 1000) {
                     const id = setTimeout(() => {
-                        // try via service worker if registered
                         if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                             navigator.serviceWorker.controller.postMessage({
                                 type: 'SHOW_NOTIFICATION',
@@ -756,12 +774,10 @@
             }
         }
 
-        /* ========== Test notification (button in widget and edit mode) ========== */
         async function testNotification() {
-            if (!('Notification' in window)) return alert('Браузер не підтримує Notification API');
+            if (!('Notification' in window)) return alert('Цей браузер не підтримує Notification API');
             const p = await Notification.requestPermission();
             if (p !== 'granted') return alert('Дозвіл на сповіщення не надано');
-            // send message to service worker if present
             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({
                     type: 'SHOW_NOTIFICATION',
@@ -779,18 +795,58 @@
             }
         }
 
-        /* ========== Service worker registration (best-effort) ========== */
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+        // --- PWA & Service Worker (register from blob) ---
+        function setupManifest() {
+            try {
+                const manifest = {
+                    name: 'Розклад — 4 курс В',
+                    short_name: 'Розклад',
+                    start_url: '.',
+                    display: 'standalone',
+                    background_color: '#0b1220',
+                    theme_color: '#0ea5e9',
+                    icons: []
+                };
+                const blob = new Blob([JSON.stringify(manifest)], {
+                    type: 'application/json'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = url;
+                document.head.appendChild(link);
+            } catch (e) {}
         }
 
-        /* ========== Week navigation handlers ========== */
+        function registerSW() {
+            if (!('serviceWorker' in navigator)) return;
+            const swCode = `self.addEventListener('install', e=>{ self.skipWaiting(); }); self.addEventListener('activate', e=>{ self.clients.claim(); }); self.addEventListener('message', e=>{ try{ const d=e.data||{}; if(d && d.type==='SHOW_NOTIFICATION'){ self.registration.showNotification(d.title||'Повідомлення',{body:d.body||'', tag:'sched', renotify:true}); } }catch(err){} }); self.addEventListener('notificationclick', e=>{ e.notification.close(); e.waitUntil(self.clients.matchAll({type:'window'}).then(c=>{ if(c.length) return c[0].focus(); return self.clients.openWindow('/'); })); });`;
+            try {
+                const blob = new Blob([swCode], {
+                    type: 'application/javascript'
+                });
+                const url = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(url).catch(() => {});
+            } catch (e) {}
+        }
+
+        // UI bindings
+        document.getElementById('toggleTheme').addEventListener('click', () => {
+            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
+            save();
+            applyTheme();
+            render();
+        });
         document.getElementById('prevWeek').addEventListener('click', () => {
             currentMonday.setDate(currentMonday.getDate() - 7);
+            document.querySelector('.grid').classList.add('slide-right');
+            setTimeout(() => document.querySelector('.grid').classList.remove('slide-right'), 320);
             render();
         });
         document.getElementById('nextWeek').addEventListener('click', () => {
             currentMonday.setDate(currentMonday.getDate() + 7);
+            document.querySelector('.grid').classList.add('slide-left');
+            setTimeout(() => document.querySelector('.grid').classList.remove('slide-left'), 320);
             render();
         });
         document.getElementById('todayBtn').addEventListener('click', () => {
@@ -798,13 +854,36 @@
             render();
         });
 
-        /* ========== Edit mode UI ========== */
+        let todayOnly = false;
+        document.getElementById('todayOnlyBtn').addEventListener('click', () => {
+            todayOnly = !todayOnly;
+            const wrap = document.getElementById('appWrap');
+            if (todayOnly) {
+                wrap.classList.add('today-only');
+                wrap.classList.add('today-big');
+                document.getElementById('todayOnlyBtn').classList.add('pulse');
+            } else {
+                wrap.classList.remove('today-only');
+                wrap.classList.remove('today-big');
+                document.getElementById('todayOnlyBtn').classList.remove('pulse');
+            }
+            setTimeout(() => document.getElementById('todayOnlyBtn').classList.remove('pulse'), 600);
+            render();
+        });
+
+        document.getElementById('remindSelect').addEventListener('change', e => {
+            data.settings.remindBeforeMin = Number(e.target.value);
+            save();
+            clearScheduled();
+            scheduleNotifications();
+        });
+
+        // edit mode
         let editMode = false;
-        const editToggle = document.getElementById('editToggle');
-        editToggle.addEventListener('click', () => {
+        document.getElementById('editToggle').addEventListener('click', () => {
             if (!editMode) {
-                const pass = prompt('Введи пароль для редагування');
-                if (pass !== EDIT_PASS) {
+                const p = prompt('Введи пароль для редагування');
+                if (p !== EDIT_PASS) {
                     alert('Невірний пароль');
                     return;
                 }
@@ -813,33 +892,30 @@
                 alert('Редагування увімкнено');
             } else {
                 editMode = false;
-                render(); // re-render to remove edit buttons
+                const tb = document.getElementById('toolbarTestBtn');
+                if (tb) tb.remove();
+                render();
                 alert('Редагування вимкнено');
             }
         });
 
         function enableEditUI() {
-            // add test notification button visible in widget and topbar
-            document.getElementById('widget').classList.remove('hidden');
-            document.getElementById('btnNotifTest').addEventListener('click', testNotification);
-            // Also add a quick test button to toolbar if not present
+            // add quick test notification button to toolbar
             if (!document.getElementById('toolbarTestBtn')) {
                 const tb = document.getElementById('toolbar');
                 const b = document.createElement('button');
                 b.id = 'toolbarTestBtn';
                 b.className = 'btn';
-                b.textContent = 'Тест пуш';
+                b.textContent = '🔔 Перевірити сповіщення';
                 b.style.marginLeft = '8px';
                 b.addEventListener('click', testNotification);
                 tb.appendChild(b);
             }
-
-            // add edit/delete/add buttons next to pairs
+            // add per-pair edit controls
             document.querySelectorAll('.card').forEach((card, dayIdx) => {
                 const dayKey = DAYS[dayIdx];
                 const pairs = card.querySelectorAll('.pair');
                 pairs.forEach((pEl, idx) => {
-                    // avoid duplicate buttons
                     if (pEl.querySelector('.editBtns')) return;
                     const cont = document.createElement('div');
                     cont.className = 'editBtns';
@@ -865,8 +941,7 @@
                     const meta = pEl.querySelector('.meta');
                     if (meta) meta.appendChild(cont);
                 });
-                // add add buttons for empty slots
-                const existingCount = pairs.length;
+                const existingCount = card.querySelectorAll('.pair').length;
                 for (let i = existingCount; i < data.settings.perDay; i++) {
                     const addBox = document.createElement('div');
                     addBox.className = 'pair';
@@ -884,7 +959,6 @@
             });
         }
 
-        /* ========== Edit helpers (store in exceptions by date) ========== */
         function openEditPrompt(dayKey, idx) {
             const date = new Date(currentMonday.getTime() + DAYS.indexOf(dayKey) * 86400000);
             const pairs = getPairsForDay(dayKey, date);
@@ -942,26 +1016,29 @@
             render();
         }
 
-        /* ========== Periodic update ========== */
+        // periodic update
         setInterval(() => {
             const viewCurrent = (mondayOf(new Date()).getTime() === currentMonday.getTime());
             if (viewCurrent) {
+                markPastPairs();
                 markCurrentAndNext();
-                populateWidget();
                 scheduleNotifications();
             }
         }, 30 * 1000);
 
-        /* ========== Initial render ========== */
+        // init
+        applyTheme();
+        setupManifest();
+        registerSW();
         render();
 
-        /* ========== Test notification binding on widget button ========== */
-        document.getElementById('btnNotifTest').addEventListener('click', testNotification);
-
-        /* ========== Service worker registration ========== */
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered')).catch(() => {});
-        }
+        // expose for debugging
+        window._sched = {
+            data,
+            save,
+            render,
+            testNotification
+        };
     </script>
 </body>
 

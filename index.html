@@ -444,7 +444,7 @@
                 const dKey = DAYS[i];
                 const card = document.createElement('div');
                 card.className = 'card';
-                const dayDate = new Date(currentMonday.getTime() + i * 86400000);
+                const dayDate = new Date(currentMonday.getTime() + (i + 1) * 86400000);
                 const today = new Date();
                 if (iso(dayDate) === iso(today)) card.classList.add('now');
                 const head = document.createElement('div');

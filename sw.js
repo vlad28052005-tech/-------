@@ -1,13 +1,10 @@
-// very small offline SW - caches root and index for simple offline usage
-self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open('sched-v1').then(cache => cache.addAll(['./', './index.html', './manifest.json', './icon.png']).catch(() => {}))
-    );
+self.addEventListener('install', function(e) {
+    e.waitUntil(caches.open('rozklad-v1').then(function(cache) {
+        return cache.addAll(['./', '/index.html', '/manifest.json', '/icon.png']).catch(() => {});
+    }));
     self.skipWaiting();
 });
-self.addEventListener('activate', event => { event.waitUntil(self.clients.claim()); });
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request).then(resp => resp || fetch(event.request).catch(() => resp))
-    );
+self.addEventListener('activate', function(e) { e.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', function(e) {
+    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => r)));
 });

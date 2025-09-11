@@ -610,7 +610,7 @@
         document.body.setAttribute('data-theme', data.settings.theme === 'light' ? 'light' : 'dark');
         render();
 
-        /* register service worker quietly (if present) */
+        /* register service worker quietly (if presentF) */
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(() => { /* ignore */ });
         }

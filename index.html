@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Розклад — 4 курс, група В</title>
     <meta name="theme-color" content="#0ea5e9" />
-    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png" />
     <style>
          :root {
             --bg: #0b1220;
@@ -19,7 +19,7 @@
             --lec: #3b82f6;
             --prac: #facc15;
             --green: #16a34a;
-            --anim-duration: 350ms;
+            --anim-ms: 360ms;
         }
         
         [data-theme="light"] {
@@ -42,7 +42,8 @@
             background: var(--bg);
             color: var(--text);
             font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, Inter, sans-serif;
-            transition: background .25s, color .25s
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .wrap {
@@ -50,7 +51,7 @@
             margin: 0 auto;
             padding: 12px
         }
-        /* topbar */
+        /* Topbar */
         
         .topbar {
             display: flex;
@@ -73,6 +74,7 @@
             color: var(--muted);
             font-size: 13px
         }
+        /* controls */
         
         .controls {
             display: flex;
@@ -91,12 +93,12 @@
             padding: 8px 12px;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform .12s ease, box-shadow .18s ease, background .18s
+            transition: transform .14s ease, box-shadow .18s ease, background .18s ease;
         }
         
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(2, 8, 23, .25)
+            box-shadow: 0 10px 30px rgba(2, 8, 23, .25)
         }
         
         .btn:active {
@@ -108,7 +110,7 @@
             color: #fff;
             border-color: transparent
         }
-        /* grid wrapper used for slide animations */
+        /* grid wrapper for slide animations */
         
         .grid-wrap {
             overflow: hidden
@@ -117,7 +119,7 @@
         .grid {
             display: grid;
             gap: 12px;
-            transition: transform var(--anim-duration) ease, opacity var(--anim-duration) ease
+            transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease
         }
         
         .cards {
@@ -144,11 +146,19 @@
             display: flex;
             flex-direction: column;
             min-height: 120px;
-            box-shadow: 0 6px 20px rgba(2, 8, 23, .15);
-            transition: transform .18s, box-shadow .18s
+            opacity: 0;
+            transform: translateY(8px);
+            animation: cardIn .42s forwards;
         }
         
-        .card .head {
+        @keyframes cardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .head {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -202,29 +212,48 @@
             font-style: italic
         }
         
-        .muted {
-            color: var(--muted)
-        }
-        
         .past {
             opacity: .55
         }
-        /* highlights */
+        /* highlights & pulsing on change */
         
         .card.now {
-            outline: 3px solid rgba(14, 165, 233, .9);
-            outline-offset: 4px
+            outline: 3px solid rgba(14, 165, 233, .95);
+            outline-offset: 3px;
+            animation: pulseCard 2s infinite;
+        }
+        
+        @keyframes pulseCard {
+            0%,
+            100% {
+                outline-color: rgba(14, 165, 233, .7)
+            }
+            50% {
+                outline-color: rgba(14, 165, 233, 1)
+            }
         }
         
         .pair.current {
             border: 2px solid rgba(59, 130, 246, .95);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, .06)
+            box-shadow: 0 10px 30px rgba(59, 130, 246, .06);
+            animation: pulseBlue 2.2s infinite;
+        }
+        
+        @keyframes pulseBlue {
+            0%,
+            100% {
+                box-shadow: 0 6px 18px rgba(59, 130, 246, .36)
+            }
+            50% {
+                box-shadow: 0 14px 36px rgba(59, 130, 246, .65)
+            }
         }
         
         .pair.next {
             border: 2px solid rgba(245, 158, 11, .95);
             box-shadow: 0 10px 30px rgba(245, 158, 11, .06);
-            position: relative
+            animation: pulseYellow 2.2s infinite;
+            position: relative;
         }
         
         .pair.next .badge {
@@ -234,48 +263,84 @@
             padding: 3px 6px;
             border-radius: 8px;
             font-size: 12px;
-            background: rgba(255, 255, 255, .04);
+            background: rgba(255, 255, 255, .03);
             color: var(--text)
+        }
+        
+        @keyframes pulseYellow {
+            0%,
+            100% {
+                box-shadow: 0 6px 18px rgba(245, 158, 11, .36)
+            }
+            50% {
+                box-shadow: 0 14px 36px rgba(245, 158, 11, .65)
+            }
         }
         
         .pair.upcoming {
             border: 2px solid var(--green);
-            box-shadow: 0 10px 30px rgba(16, 163, 74, .05)
+            animation: pulseGreen 2.2s infinite;
         }
-        /* disabled look for hiding if needed in future */
+        
+        @keyframes pulseGreen {
+            0%,
+            100% {
+                box-shadow: 0 6px 18px rgba(16, 163, 74, .36)
+            }
+            50% {
+                box-shadow: 0 14px 36px rgba(16, 163, 74, .65)
+            }
+        }
+        /* small util */
         
         .hidden {
             display: none
         }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0
+        }
     </style>
 </head>
 
-<body>
+<body data-theme="dark">
     <div class="wrap">
         <div class="topbar" role="banner">
             <div>
                 <div class="brand">Розклад — 4 курс, група В</div>
-                <div class="muted">Двотижневий (Пн–Пт)</div>
+                <div class="muted">Двотижневий • Пн–Пт</div>
             </div>
+
             <div style="display:flex;gap:10px;align-items:center">
                 <button id="toggleTheme" class="btn" title="Тема">Тема</button>
-                <button id="todayBtn" class="btn" title="Показати сьогодні">Сьогодні</button>
-                <div class="controls" role="navigation" aria-label="Тиждень навігація">
+                <button id="todayBtn" class="btn" title="Сьогодні">Сьогодні</button>
+
+                <div class="controls" role="navigation" aria-label="Тиждень">
                     <button id="prevWeek" class="btn" aria-label="Попередній тиждень">◀</button>
-                    <div style="min-width:90px;text-align:center"><strong id="weekLabel">Нижній</strong></div>
+                    <div style="min-width:110px;text-align:center"><strong id="weekLabel">Нижній</strong>
+                        <div id="weekRange" class="muted" style="font-size:12px"></div>
+                    </div>
                     <button id="nextWeek" class="btn" aria-label="Наступний тиждень">▶</button>
                 </div>
             </div>
         </div>
 
-        <!-- wrapper for slide animation -->
         <div class="grid-wrap" style="margin-top:12px">
             <div id="weekGrid" class="grid cards" aria-live="polite"></div>
         </div>
     </div>
 
     <script>
-        /* ---------- DATA (unchanged schedule content) ---------- */
+        /* ========= DATA ========== */
+        /* DAYS */
         const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
         const DAY_NAMES = {
             mon: 'Пн',
@@ -285,175 +350,205 @@
             fri: 'Пт'
         };
 
-        const data = {
+        /* default schedule data (complete) */
+        const defaultData = {
             settings: {
                 theme: 'dark',
-                baseTopWeekISO: '2025-09-01',
-                perDay: 6
+                baseTopWeekISO: '2025-09-01'
             },
+            // times array (base times). We will apply monday shift on display.
             times: [{
-                start: '08:00',
-                end: '09:20'
-            }, {
-                start: '09:30',
-                end: '10:50'
-            }, {
-                start: '11:00',
-                end: '12:20'
-            }, {
-                start: '12:40',
-                end: '14:00'
-            }, {
-                start: '14:10',
-                end: '15:30'
-            }, {
-                start: '15:40',
-                end: '17:00'
-            }, {
-                start: '17:10',
-                end: '18:30'
-            }],
+                    start: '08:00',
+                    end: '09:20'
+                }, // index 0 -> 1st if used
+                {
+                    start: '09:30',
+                    end: '10:50'
+                }, // index 1 -> 2nd
+                {
+                    start: '11:00',
+                    end: '12:20'
+                }, // 3
+                {
+                    start: '12:40',
+                    end: '14:00'
+                }, // 4
+                {
+                    start: '14:10',
+                    end: '15:30'
+                }, // 5
+                {
+                    start: '15:40',
+                    end: '17:00'
+                }, // 6
+                {
+                    start: '17:10',
+                    end: '18:30'
+                } // 7 (reserve)
+            ],
             template: {
                 top: {
-                    mon: [null, {
-                        type: 'lec',
-                        title: 'Адміністративне судочинство',
-                        teacher: 'Сушко О.О.',
-                        place: 'Соборна, 48'
-                    }, {
-                        type: 'lec',
-                        title: 'Господарське право',
-                        teacher: 'Калаченкова К.О.',
-                        place: '304'
-                    }, {
-                        type: 'lec',
-                        title: 'Криміналістика',
-                        teacher: 'Кавун С.М.',
-                        place: '313'
-                    }],
-                    tue: [null, null, null, null, {
-                        type: 'lec',
-                        title: 'СОП — Лідерство та командоутворення',
-                        teacher: 'Середа Г.В.',
-                        place: 'MS Teams'
-                    }, {
-                        type: 'prac',
-                        title: 'СОП — Лідерство та командоутворення',
-                        teacher: 'Середа Г.В.',
-                        place: 'MS Teams'
-                    }],
-                    wed: [null, {
-                        type: 'text',
-                        title: 'Дисципліна з переліку'
-                    }],
-                    // Thursday/top: 4,5,6 lectures per request
-                    thu: [null, null, null, {
-                        type: 'lec',
-                        title: 'Корпоративне право',
-                        teacher: 'Дорошенко Л.М.',
-                        place: '304'
-                    }, {
-                        type: 'lec',
-                        title: 'Земельне право',
-                        teacher: 'Бахур О.В.',
-                        place: '305'
-                    }, {
-                        type: 'lec',
-                        title: 'Фінансове право',
-                        teacher: 'Петренко Г.О.',
-                        place: '305'
-                    }],
-                    // Friday/top practices per request
-                    fri: [null, {
-                        type: 'prac',
-                        title: 'Адміністративне судочинство',
-                        teacher: 'Сушко О.О.',
-                        place: 'Соборна, 48'
-                    }, {
-                        type: 'prac',
-                        title: 'Корпоративне право',
-                        teacher: 'Дорошенко Л.М.',
-                        place: '121'
-                    }, {
-                        type: 'prac',
-                        title: 'Фінансове право',
-                        teacher: 'Петренко Г.О.',
-                        place: '305'
-                    }, {
-                        type: 'prac',
-                        title: 'Криміналістика',
-                        teacher: 'Кавун С.М.',
-                        place: '313'
-                    }]
+                    mon: [
+                        null, {
+                            type: 'lec',
+                            title: 'Адміністративне судочинство',
+                            teacher: 'Сушко О.О.',
+                            place: 'Соборна, 48'
+                        }, {
+                            type: 'lec',
+                            title: 'Господарське право',
+                            teacher: 'Калаченкова К.О.',
+                            place: '304'
+                        }, {
+                            type: 'lec',
+                            title: 'Криміналістика',
+                            teacher: 'Кавун С.М.',
+                            place: '313'
+                        }
+                    ],
+                    tue: [
+                        null, null, null, null, {
+                            type: 'lec',
+                            title: 'СОП — Лідерство та командоутворення',
+                            teacher: 'Середа Г.В.',
+                            place: 'MS Teams'
+                        }, {
+                            type: 'prac',
+                            title: 'СОП — Лідерство та командоутворення',
+                            teacher: 'Середа Г.В.',
+                            place: 'MS Teams'
+                        }
+                    ],
+                    wed: [
+                        null, {
+                            type: 'text',
+                            title: 'Дисципліна з переліку'
+                        }
+                    ],
+                    thu: [
+                        null, null, null, {
+                            type: 'lec',
+                            title: 'Корпоративне право',
+                            teacher: 'Дорошенко Л.М.',
+                            place: '304'
+                        }, // 4
+                        {
+                            type: 'lec',
+                            title: 'Земельне право',
+                            teacher: 'Бахур О.В.',
+                            place: '305'
+                        }, // 5
+                        {
+                            type: 'lec',
+                            title: 'Фінансове право',
+                            teacher: 'Петренко Г.О.',
+                            place: '305'
+                        } // 6
+                    ],
+                    fri: [
+                        null, {
+                            type: 'prac',
+                            title: 'Адміністративне судочинство',
+                            teacher: 'Сушко О.О.',
+                            place: 'Соборна, 48'
+                        }, //2
+                        {
+                            type: 'prac',
+                            title: 'Корпоративне право',
+                            teacher: 'Дорошенко Л.М.',
+                            place: '121'
+                        }, //3
+                        {
+                            type: 'prac',
+                            title: 'Фінансове право',
+                            teacher: 'Петренко Г.О.',
+                            place: '305'
+                        }, //4
+                        {
+                            type: 'prac',
+                            title: 'Криміналістика',
+                            teacher: 'Кавун С.М.',
+                            place: '313'
+                        } //5
+                    ]
                 },
                 bottom: {
-                    mon: [null, {
-                        type: 'lec',
-                        title: 'Адміністративне судочинство',
-                        teacher: 'Сушко О.О.',
-                        place: 'Соборна, 48'
-                    }, {
-                        type: 'lec',
-                        title: 'Господарське право',
-                        teacher: 'Калаченкова К.О.',
-                        place: '304'
-                    }],
-                    tue: [null, null, null, null, {
-                        type: 'lec',
-                        title: 'СОП — Лідерство та командоутворення',
-                        teacher: 'Середа Г.В.',
-                        place: 'MS Teams'
-                    }, {
-                        type: 'prac',
-                        title: 'СОП — Лідерство та командоутворення',
-                        teacher: 'Середа Г.В.',
-                        place: 'MS Teams'
-                    }],
-                    wed: [null, {
-                        type: 'text',
-                        title: 'Дисципліна з переліку'
-                    }],
-                    thu: [null, null, null, {
-                        type: 'lec',
-                        title: 'Корпоративне право',
-                        teacher: 'Дорошенко Л.М.',
-                        place: '304'
-                    }, {
-                        type: 'lec',
-                        title: 'Земельне право',
-                        teacher: 'Бахур О.В.',
-                        place: '305'
-                    }, {
-                        type: 'prac',
-                        title: 'Земельне право',
-                        teacher: 'Бахур О.В.',
-                        place: '307'
-                    }],
-                    fri: [null, {
-                        type: 'prac',
-                        title: 'Адміністративне судочинство',
-                        teacher: 'Сушко О.О.',
-                        place: 'Соборна, 48'
-                    }, {
-                        type: 'prac',
-                        title: 'Корпоративне право',
-                        teacher: 'Дорошенко Л.М.',
-                        place: '121'
-                    }, {
-                        type: 'prac',
-                        title: 'Господарське право',
-                        teacher: 'Калаченкова К.О.',
-                        place: '121'
-                    }]
+                    mon: [
+                        null, {
+                            type: 'lec',
+                            title: 'Адміністративне судочинство',
+                            teacher: 'Сушко О.О.',
+                            place: 'Соборна, 48'
+                        }, {
+                            type: 'lec',
+                            title: 'Господарське право',
+                            teacher: 'Калаченкова К.О.',
+                            place: '304'
+                        }
+                    ],
+                    tue: [
+                        null, null, null, null, {
+                            type: 'lec',
+                            title: 'СОП — Лідерство та командоутворення',
+                            teacher: 'Середа Г.В.',
+                            place: 'MS Teams'
+                        }, {
+                            type: 'prac',
+                            title: 'СОП — Лідерство та командоутворення',
+                            teacher: 'Середа Г.В.',
+                            place: 'MS Teams'
+                        }
+                    ],
+                    wed: [
+                        null, {
+                            type: 'text',
+                            title: 'Дисципліна з переліку'
+                        }
+                    ],
+                    thu: [
+                        null, null, null, {
+                            type: 'lec',
+                            title: 'Корпоративне право',
+                            teacher: 'Дорошенко Л.М.',
+                            place: '304'
+                        }, {
+                            type: 'lec',
+                            title: 'Земельне право',
+                            teacher: 'Бахур О.В.',
+                            place: '305'
+                        }, {
+                            type: 'prac',
+                            title: 'Земельне право',
+                            teacher: 'Бахур О.В.',
+                            place: '307'
+                        } // practice slot
+                    ],
+                    fri: [
+                        null, {
+                            type: 'prac',
+                            title: 'Адміністративне судочинство',
+                            teacher: 'Сушко О.О.',
+                            place: 'Соборна, 48'
+                        }, {
+                            type: 'prac',
+                            title: 'Корпоративне право',
+                            teacher: 'Дорошенко Л.М.',
+                            place: '121'
+                        }, {
+                            type: 'prac',
+                            title: 'Господарське право',
+                            teacher: 'Калаченкова К.О.',
+                            place: '121'
+                        }
+                    ]
                 }
-            },
-            exceptions: {} // kept for future
+            }
         };
 
-        /* ---------- helpers (local date-safe) ---------- */
+        /* ========= HELPERS ========== */
         function mondayOf(date) {
             const d = new Date(date);
-            const day = (d.getDay() + 6) % 7; // Mon->0
+            const day = (d.getDay() + 6) % 7; // Monday as 0
             d.setDate(d.getDate() - day);
             d.setHours(0, 0, 0, 0);
             return d;
@@ -463,35 +558,43 @@
             return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
         }
 
-        function parseTimeToDate(timeStr, baseDate) {
-            if (!timeStr) return null;
-            const [hh, mm] = timeStr.split(':').map(Number);
-            if (!Number.isFinite(hh)) return null;
+        function parseHMToDate(hm, baseDate) {
+            if (!hm) return null;
+            const parts = hm.split(':').map(x => Number(x));
+            if (!Number.isFinite(parts[0])) return null;
             const d = new Date(baseDate);
-            d.setHours(hh, mm || 0, 0, 0);
+            d.setHours(parts[0], parts[1] || 0, 0, 0);
             return d;
         }
 
         function isTopWeek(date) {
-            const base = mondayOf(new Date(data.settings.baseTopWeekISO));
+            const base = mondayOf(new Date(defaultData.settings.baseTopWeekISO || '2025-09-01'));
             const cur = mondayOf(date);
             const diffWeeks = Math.round((cur - base) / (7 * 24 * 3600 * 1000));
             return diffWeeks % 2 === 0;
         }
 
-        /* ---------- time shift for Monday: items index>=1 use next slot ---------- */
+        /* monday shift: for monday, indices >=1 use times[idx+1] */
         function getTimeFor(dayKey, pairIndex) {
             let idx = pairIndex;
             if (dayKey === 'mon' && pairIndex >= 1) idx = pairIndex + 1;
-            return data.times[idx] || {
+            return defaultData.times[idx] || {
                 start: '',
                 end: ''
             };
         }
 
-        /* ---------- render (keeps layout intact) ---------- */
+        /* pairs template getter */
+        function getPairsForDay(dayKey, date) {
+            const week = isTopWeek(date) ? 'top' : 'bottom';
+            const tpl = defaultData.template[week] && defaultData.template[week][dayKey] ? defaultData.template[week][dayKey] : [];
+            return tpl.slice(); // clone
+        }
+
+        /* ========= RENDER & LOGIC ========= */
         const grid = document.getElementById('weekGrid');
         let currentMonday = mondayOf(new Date());
+        let nextUpdateTimer = null;
 
         function formatDateShort(d) {
             return d.toLocaleDateString('uk-UA', {
@@ -500,14 +603,17 @@
             });
         }
 
-        function getPairsForDay(dayKey, date) {
-            const w = isTopWeek(date) ? 'top' : 'bottom';
-            return (data.template[w] && data.template[w][dayKey]) ? data.template[w][dayKey] : [];
+        function updateWeekRangeLabel() {
+            const start = new Date(currentMonday);
+            const end = new Date(currentMonday.getTime() + 4 * 86400000);
+            const rangeEl = document.getElementById('weekRange');
+            rangeEl.textContent = `${start.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'})} — ${end.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'})}`;
         }
 
-        /* render content only (no animation control) */
-        function renderContent() {
+        function render(withStagger = true) {
+            // clear existing
             grid.innerHTML = '';
+            updateWeekRangeLabel();
             const top = isTopWeek(currentMonday);
             document.getElementById('weekLabel').textContent = top ? 'Верхній' : 'Нижній';
 
@@ -520,21 +626,19 @@
                 const dayDate = new Date(currentMonday.getTime() + i * 86400000);
                 const card = document.createElement('div');
                 card.className = 'card';
-                if (viewingCurrentWeek && sameDay(dayDate, today)) card.classList.add('now');
-
+                if (withStagger) card.style.animationDelay = `${i*0.07}s`;
                 // header
                 const head = document.createElement('div');
                 head.className = 'head';
                 head.innerHTML = `<div><div class="day">${DAY_NAMES[dayKey]}</div><div class="dateSmall">${formatDateShort(dayDate)}</div></div>`;
                 card.appendChild(head);
 
-                const pairs = getPairsForDay(dayKey, dayDate);
-                const visible = pairs.map((p, idx) => ({
+                // collect pairs (only non-null)
+                const pairs = getPairsForDay(dayKey, dayDate).map((p, idx) => ({
                     p,
                     idx
                 })).filter(x => x.p);
-
-                if (visible.length === 0) {
+                if (pairs.length === 0) {
                     const empty = document.createElement('div');
                     empty.className = 'muted';
                     empty.textContent = 'Вільний день 🎉';
@@ -543,31 +647,31 @@
                     continue;
                 }
 
-                // compute current/next/upcoming only for today when viewing current week
+                // compute current/next/upcoming only when viewing current week & same day
                 let currentIdx = -1,
                     nextIdx = -1;
                 if (viewingCurrentWeek && sameDay(dayDate, today)) {
                     // find current
-                    for (const v of visible) {
+                    for (const v of pairs) {
                         const t = getTimeFor(dayKey, v.idx);
-                        const st = parseTimeToDate(t.start, today);
-                        const en = parseTimeToDate(t.end, today);
+                        const st = parseHMToDate(t.start, now);
+                        const en = parseHMToDate(t.end, now);
                         if (st && en && now >= st && now <= en) {
                             currentIdx = v.idx;
                             break;
                         }
                     }
                     if (currentIdx !== -1) {
-                        for (const v of visible) {
+                        for (const v of pairs) {
                             if (v.idx > currentIdx) {
                                 nextIdx = v.idx;
                                 break;
                             }
                         }
                     } else {
-                        for (const v of visible) {
+                        for (const v of pairs) {
                             const t = getTimeFor(dayKey, v.idx);
-                            const st = parseTimeToDate(t.start, today);
+                            const st = parseHMToDate(t.start, now);
                             if (st && st > now) {
                                 nextIdx = v.idx;
                                 break;
@@ -577,27 +681,24 @@
                 }
 
                 // render pairs
-                for (const v of visible) {
+                for (const v of pairs) {
                     const p = v.p;
                     const idx = v.idx;
                     const t = getTimeFor(dayKey, idx);
                     const box = document.createElement('div');
                     box.className = 'pair';
+                    // attach data
                     box.dataset.day = dayKey;
-                    box.dataset.index = idx;
+                    box.dataset.index = String(idx);
 
-                    // highlight states
+                    // states (only for today)
                     if (viewingCurrentWeek && sameDay(dayDate, today)) {
-                        const st = t.start ? parseTimeToDate(t.start, today) : null;
-                        const en = t.end ? parseTimeToDate(t.end, today) : null;
+                        const st = parseHMToDate(t.start, now);
+                        const en = parseHMToDate(t.end, now);
                         if (en && now > en) box.classList.add('past');
                         if (idx === currentIdx) box.classList.add('current');
-                        if (idx === nextIdx && currentIdx !== -1) {
-                            box.classList.add('next');
-                        }
-                        if (idx === nextIdx && currentIdx === -1) {
-                            box.classList.add('upcoming');
-                        }
+                        if (idx === nextIdx && currentIdx !== -1) box.classList.add('next');
+                        if (idx === nextIdx && currentIdx === -1) box.classList.add('upcoming');
                     }
 
                     const chip = p.type === 'lec' ? `<span class="chip lec">Лекція</span>` :
@@ -605,7 +706,7 @@
                         `<span class="chip textpair">Інфо</span>`;
 
                     box.innerHTML = `<div class="meta"><div>${t.start||''}–${t.end||''}</div>${chip}</div>
-                       <h4>${escapeHtml(p.title||'')}</h4>
+                       <h4>${escapeHtml(p.title)}</h4>
                        <div class="muted">${escapeHtml(p.teacher||'')}${p.place?(' • '+escapeHtml(p.place)) : ''}</div>`;
 
                     if (box.classList.contains('next')) {
@@ -614,14 +715,32 @@
                         badge.textContent = 'Наступна';
                         box.appendChild(badge);
                     }
+
                     card.appendChild(box);
                 }
 
+                // apply .now to card for today (for outline/pulse)
+                if (viewingCurrentWeek && sameDay(dayDate, today)) card.classList.add('now');
+
                 grid.appendChild(card);
             }
+
+            // autoscroll to today's card if viewing current week
+            if (viewingCurrentWeek) {
+                setTimeout(() => {
+                    const todayCard = Array.from(document.querySelectorAll('.card')).find(c => c.classList.contains('now'));
+                    if (todayCard) todayCard.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 120);
+            }
+
+            // schedule next precise update
+            scheduleNextPreciseUpdate();
         }
 
-        /* escape html */
+        /* escape HTML */
         function escapeHtml(s) {
             if (!s) return '';
             return String(s).replace(/[&<>"']/g, m => ({
@@ -633,32 +752,81 @@
             }[m]));
         }
 
-        /* ---------- animation-aware navigation ---------- */
-        const ANIM_MS = 350; // should match CSS var
-        let animating = false;
-
-        function animateWeekChange(direction /* -1 prev, 1 next */ , skipAnimation = false) {
-            if (animating) return;
-            const g = grid;
-            if (skipAnimation) {
-                currentMonday.setDate(currentMonday.getDate() + direction * 7);
-                renderAfterChange();
+        /* ========== Precise scheduling of next change ==========
+           Find the next interesting timestamp (start or end of any pair today),
+           or midnight start of next day if none -> setTimeout to that exact time.
+        */
+        function scheduleNextPreciseUpdate() {
+            if (nextUpdateTimer) {
+                clearTimeout(nextUpdateTimer);
+                nextUpdateTimer = null;
+            }
+            const now = new Date();
+            const todayKey = DAYS[(now.getDay() + 6) % 7]; // map Sun..Sat => Mon..Sun shift
+            // if today not in our DAYS (i.e., weekend), schedule to next Monday 00:01
+            if (!todayKey) {
+                const nextDay = new Date(now);
+                nextDay.setDate(now.getDate() + 1);
+                nextDay.setHours(0, 1, 0, 0);
+                nextUpdateTimer = setTimeout(() => render(false), nextDay.getTime() - now.getTime());
                 return;
             }
+
+            // collect candidate times (start & end of pairs today)
+            const candidates = [];
+            const pairs = getPairsForDay(todayKey, now);
+            pairs.forEach((p, idx) => {
+                if (!p) return;
+                const t = getTimeFor(todayKey, idx);
+                if (t.start) {
+                    const st = parseHMToDate(t.start, now);
+                    if (st && st.getTime() > now.getTime()) candidates.push(st);
+                }
+                if (t.end) {
+                    const en = parseHMToDate(t.end, now);
+                    if (en && en.getTime() > now.getTime()) candidates.push(en);
+                }
+            });
+
+            // also consider next day's 00:00+1min if no other candidate
+            if (candidates.length === 0) {
+                const nextDay = new Date(now);
+                nextDay.setDate(now.getDate() + 1);
+                nextDay.setHours(0, 1, 0, 0);
+                candidates.push(nextDay);
+            }
+
+            // pick earliest candidate
+            candidates.sort((a, b) => a.getTime() - b.getTime());
+            const next = candidates[0];
+            if (!next) return;
+            const delay = Math.max(200, next.getTime() - now.getTime()); // at least tiny delay
+            nextUpdateTimer = setTimeout(() => {
+                // when time comes -> re-render which will update highlights, then schedule again
+                render(false);
+            }, delay);
+        }
+
+        /* ========= Navigation & swipe + animations ========= */
+        const ANIM_MS = 360;
+        let animating = false;
+
+        function changeWeekAnimated(direction) { // direction: -1 prev, +1 next
+            if (animating) return;
             animating = true;
+            const g = grid;
             // animate out
             g.style.transition = `transform ${ANIM_MS}ms ease, opacity ${ANIM_MS}ms ease`;
-            g.style.transform = `translateX(${direction>0?'-30px':'30px'})`;
+            g.style.transform = `translateX(${direction>0 ? '-30px' : '30px'})`;
             g.style.opacity = '0';
-            // after out -> change week, set initial incoming position and animate in
             setTimeout(() => {
                 currentMonday.setDate(currentMonday.getDate() + direction * 7);
-                // render new content immediately but placed offset
-                renderAfterChange();
+                // re-render content (no stagger needed -> keep true for nice effect)
+                render(true);
+                // reset transform to incoming
                 g.style.transition = 'none';
-                g.style.transform = `translateX(${direction>0?'30px':'-30px'})`;
+                g.style.transform = `translateX(${direction>0 ? '30px' : '-30px'})`;
                 g.style.opacity = '0';
-                // force frame then animate to zero
                 requestAnimationFrame(() => {
                     g.style.transition = `transform ${ANIM_MS}ms ease, opacity ${ANIM_MS}ms ease`;
                     g.style.transform = 'translateX(0)';
@@ -670,47 +838,24 @@
             }, ANIM_MS + 10);
         }
 
-        function renderAfterChange() {
-            // clear inline transitions to avoid conflicts
-            grid.style.transition = 'none';
-            grid.style.transform = 'translateX(0)';
-            grid.style.opacity = '1';
-            renderContent();
-            // autoscroll to today if showing current week
-            const today = new Date();
-            const viewingCurrentWeek = mondayOf(today).getTime() === currentMonday.getTime();
-            if (viewingCurrentWeek) {
-                const card = Array.from(document.querySelectorAll('.card')).find(c => {
-                    const dateSmall = c.querySelector('.dateSmall');
-                    if (!dateSmall) return false;
-                    return true;
-                });
-                // find .card.now
-                const todayCard = document.querySelector('.card.now');
-                if (todayCard) {
-                    setTimeout(() => todayCard.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    }), 120);
-                }
-            }
-        }
-
-        /* ---------- navigation handlers ---------- */
-        document.getElementById('prevWeek').addEventListener('click', () => animateWeekChange(-1));
-        document.getElementById('nextWeek').addEventListener('click', () => animateWeekChange(1));
+        /* buttons */
+        document.getElementById('prevWeek').addEventListener('click', () => changeWeekAnimated(-1));
+        document.getElementById('nextWeek').addEventListener('click', () => changeWeekAnimated(1));
         document.getElementById('todayBtn').addEventListener('click', () => {
             currentMonday = mondayOf(new Date());
-            renderAfterChange();
+            render(true);
         });
 
-        /* theme toggle */
+        /* theme */
         document.getElementById('toggleTheme').addEventListener('click', () => {
-            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', data.settings.theme === 'light' ? 'light' : 'dark');
+            const cur = document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            const next = cur === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', next);
+            // keep in data.settings (not persisted here) if needed later
+            defaultData.settings.theme = next;
         });
 
-        /* ---------- swipe detection (left/right) ---------- */
+        /* swipe for mobile */
         let touchStartX = 0,
             touchStartY = 0;
         document.addEventListener('touchstart', e => {
@@ -725,19 +870,19 @@
             if (!e.changedTouches || !e.changedTouches[0]) return;
             const dx = e.changedTouches[0].screenX - touchStartX;
             const dy = e.changedTouches[0].screenY - touchStartY;
-            if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return; // small or vertical
-            if (dx > 0) animateWeekChange(-1);
-            else animateWeekChange(1);
+            if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+            if (dx > 0) changeWeekAnimated(-1);
+            else changeWeekAnimated(1);
         }, {
             passive: true
         });
 
-        /* ---------- initial render ---------- */
-        renderAfterChange();
+        /* initial render */
+        render(true);
 
-        /* attempt register service worker without breaking if absent */
+        /* Register service worker quietly (if you add sw.js later) */
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => { /* ignore */ });
+            navigator.serviceWorker.register('./sw.js').catch(() => { /* ignore errors */ });
         }
     </script>
 </body>

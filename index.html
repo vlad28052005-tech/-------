@@ -33,7 +33,7 @@
         }
         
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
         
         html,
@@ -46,13 +46,11 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        /* Зробив трохи більший wrapper щоб 5 колонок вміщались стабільніше на різних ПК */
         
         .wrap {
-            max-width: 1400px;
-            /* було 1250px — підняв для надійного розміщення 5 колонок */
+            max-width: 1250px;
             margin: 0 auto;
-            padding: 12px;
+            padding: 12px
         }
         /* Topbar */
         
@@ -66,16 +64,16 @@
             top: 0;
             background: linear-gradient(to bottom, var(--bg) 95%, transparent);
             padding: 10px 0;
-            z-index: 40;
+            z-index: 40
         }
         
         .brand {
-            font-weight: 800;
+            font-weight: 800
         }
         
         .muted {
             color: var(--muted);
-            font-size: 13px;
+            font-size: 13px
         }
         /* controls */
         
@@ -86,7 +84,7 @@
             background: var(--panel);
             padding: 6px;
             border-radius: 10px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border)
         }
         
         .btn {
@@ -101,36 +99,35 @@
         
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(2, 8, 23, .25);
+            box-shadow: 0 10px 30px rgba(2, 8, 23, .25)
         }
         
         .btn:active {
-            transform: translateY(-1px) scale(.99);
+            transform: translateY(-1px) scale(.99)
         }
         
         .btn.primary {
             background: linear-gradient(135deg, var(--accent), #22d3ee);
             color: #fff;
-            border-color: transparent;
+            border-color: transparent
         }
         /* grid wrapper for slide animations */
         
         .grid-wrap {
-            overflow: hidden;
+            overflow: hidden
         }
         
         .grid {
             display: grid;
             gap: 14px;
-            /* зроблено більш гнучко: мінімальна ширина клітинки менша — дозволяє вмістити 5 колонок навіть якщо трохи бракує місця */
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease
         }
-        /* 🔹 Завжди 5 колонок на ПК — тепер використовуємо minmax(0,1fr) щоб точно не було переносу */
+        /* 🔹 Завжди 5 колонок на ПК */
         
         @media (min-width: 1100px) {
             .grid {
-                grid-template-columns: repeat(5, minmax(0, 1fr));
+                grid-template-columns: repeat(5, 1fr);
             }
         }
         
@@ -170,16 +167,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 8px
         }
         
         .day {
-            font-weight: 700;
+            font-weight: 700
         }
         
         .dateSmall {
             font-size: 13px;
-            color: var(--muted);
+            color: var(--muted)
         }
         
         .pair {
@@ -188,7 +185,7 @@
             margin: 6px 0;
             border: 1px solid rgba(255, 255, 255, .03);
             background: transparent;
-            transition: transform .12s, border .18s, box-shadow .18s, opacity .12s;
+            transition: transform .12s, border .18s, box-shadow .18s, opacity .12s
         }
         
         .pair .meta {
@@ -196,40 +193,38 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
-            font-size: 13px;
+            font-size: 13px
         }
         
         .chip {
             font-size: 12px;
             padding: 3px 8px;
-            border-radius: 999px;
+            border-radius: 999px
         }
         
         .lec {
             background: var(--lec);
-            color: #fff;
+            color: #fff
         }
         
         .prac {
             background: var(--prac);
-            color: #000;
+            color: #000
         }
         
         .textpair {
             color: var(--muted);
-            font-style: italic;
+            font-style: italic
         }
-        /* ========== ПОТОЧНИЙ ДЕНЬ - ТОНША ОБВОДКА ========== */
-        /* робимо обводку тоншою і ближчою до карти */
+        /* highlights */
         
         .card.now {
-            outline: 2px solid rgba(14, 165, 233, .95);
-            /* ТОВЩИНА 2px (було 4px) */
-            outline-offset: 2px;
-            /* зменшив offset (було 6px) */
+            position: relative;
+            border: 3px solid rgba(14, 165, 233, .9);
+            /* внутрішня обводка */
+            box-shadow: 0 0 12px rgba(14, 165, 233, .6);
+            /* світіння */
             border-radius: 12px;
-            /* невелика тінь для читаємості, але обводка тепер щільніша */
-            box-shadow: 0 6px 20px rgba(14, 165, 233, .06);
         }
         
         .pair.current {
@@ -251,7 +246,7 @@
             border-radius: 8px;
             font-size: 12px;
             background: rgba(255, 255, 255, .03);
-            color: var(--text);
+            color: var(--text)
         }
         
         .pair.upcoming {
@@ -287,7 +282,6 @@
         </div>
     </div>
 
-    <!--  основний JS (не чіпав) -->
     <script src="script.js"></script>
 </body>
 

@@ -1,1 +1,294 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Розклад — 4 курс, група В</title><meta name="theme-color" content="#0ea5e9"/><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.png"><style>:root{--bg:#0b1220;--panel:#0e1726;--text:#e5eefb;--muted:#a9b8d5;--accent:#0ea5e9;--card:#0f172a;--border:#1f2a44;--lec:#3b82f6;--prac:#facc15;--green:#16a34a;--anim-ms:360ms}[data-theme="light"]{--bg:#f8fafc;--panel:#fff;--text:#0b1220;--muted:#54627a;--card:#fff;--border:#e2e8f0}*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, Inter, sans-serif} .wrap{max-width:1150px;margin:0 auto;padding:12px}.topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;position:sticky;top:0;background:linear-gradient(to bottom,var(--bg) 95%,transparent);padding:10px 0;z-index:40}.brand{font-weight:800}.muted{color:var(--muted);font-size:13px}.controls{display:flex;gap:8px;align-items:center;background:var(--panel);padding:6px;border-radius:10px;border:1px solid var(--border)}.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;transition:transform .14s,box-shadow .18s}.btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(2,8,23,.25)}.grid-wrap{overflow:visible}.grid{display:grid;gap:12px;transition:transform var(--anim-ms) ease,opacity var(--anim-ms) ease}.cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;min-height:120px;animation:cardIn .42s forwards;outline-offset:6px}@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.day{font-weight:700}.dateSmall{font-size:13px;color:var(--muted)}.pair{border-radius:10px;padding:8px;margin:6px 0;border:1px solid rgba(255,255,255,.05);transition:transform .12s,border .18s,box-shadow .18s;background:transparent}.pair .meta{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}.chip{font-size:12px;padding:3px 8px;border-radius:999px}.lec{background:var(--lec);color:#fff}.prac{background:var(--prac);color:#000}.textpair{color:var(--muted);font-style:italic}.card.now{outline:3px solid rgba(14,165,233,.95)}.pair.current{border:2px solid rgba(59,130,246,.95);box-shadow:0 10px 30px rgba(59,130,246,.12)}.pair.next{border:2px solid rgba(245,158,11,.95);box-shadow:0 10px 30px rgba(245,158,11,.12)}.pair.upcoming{border:2px solid var(--green);box-shadow:0 10px 30px rgba(16,163,74,.08)}.muted{color:var(--muted)}@media(max-width:680px){.cards{grid-template-columns:1fr}.wrap{padding:10px}}</style></head><body data-theme="dark"><div class="wrap"><div class="topbar"><div><div class="brand">Розклад — 4 курс, група В</div><div class="muted">Двотижневий • Пн–Пт</div></div><div style="display:flex;gap:10px;align-items:center"><button id="toggleTheme" class="btn">Тема</button><button id="todayBtn" class="btn">Сьогодні</button><div class="controls" role="navigation" aria-label="Тиждень"><button id="prevWeek" class="btn">◀</button><div style="min-width:120px;text-align:center"><strong id="weekLabel">Нижній</strong><div id="weekRange" class="muted" style="font-size:12px"></div></div><button id="nextWeek" class="btn">▶</button></div></div></div><div class="grid-wrap" style="margin-top:12px"><div id="weekGrid" class="grid cards" aria-live="polite"></div></div></div><script src="script.js"></script></body></html>
+<!doctype html>
+<html lang="uk">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Розклад — 4 курс, група В</title>
+    <meta name="theme-color" content="#0ea5e9" />
+    <link rel="apple-touch-icon" href="icon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <style>
+         :root {
+            --bg: #0b1220;
+            --panel: #0e1726;
+            --text: #e5eefb;
+            --muted: #a9b8d5;
+            --accent: #0ea5e9;
+            --card: #0f172a;
+            --border: #1f2a44;
+            --lec: #3b82f6;
+            --prac: #facc15;
+            --green: #16a34a;
+            --anim-ms: 360ms;
+        }
+        
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --panel: #fff;
+            --text: #0b1220;
+            --muted: #54627a;
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Зробив трохи більший wrapper щоб 5 колонок вміщались стабільніше на різних ПК */
+        
+        .wrap {
+            max-width: 1400px;
+            /* було 1250px — підняв для надійного розміщення 5 колонок */
+            margin: 0 auto;
+            padding: 12px;
+        }
+        /* Topbar */
+        
+        .topbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg) 95%, transparent);
+            padding: 10px 0;
+            z-index: 40;
+        }
+        
+        .brand {
+            font-weight: 800;
+        }
+        
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        /* controls */
+        
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: var(--panel);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .btn {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform .14s ease, box-shadow .18s ease, background .18s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(2, 8, 23, .25);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(.99);
+        }
+        
+        .btn.primary {
+            background: linear-gradient(135deg, var(--accent), #22d3ee);
+            color: #fff;
+            border-color: transparent;
+        }
+        /* grid wrapper for slide animations */
+        
+        .grid-wrap {
+            overflow: hidden;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 14px;
+            /* зроблено більш гнучко: мінімальна ширина клітинки менша — дозволяє вмістити 5 колонок навіть якщо трохи бракує місця */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
+        }
+        /* 🔹 Завжди 5 колонок на ПК — тепер використовуємо minmax(0,1fr) щоб точно не було переносу */
+        
+        @media (min-width: 1100px) {
+            .grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+        }
+        
+        @media (max-width: 1099px) and (min-width: 681px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 680px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 120px;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: cardIn .42s forwards;
+        }
+        
+        @keyframes cardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .day {
+            font-weight: 700;
+        }
+        
+        .dateSmall {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .pair {
+            border-radius: 10px;
+            padding: 8px;
+            margin: 6px 0;
+            border: 1px solid rgba(255, 255, 255, .03);
+            background: transparent;
+            transition: transform .12s, border .18s, box-shadow .18s, opacity .12s;
+        }
+        
+        .pair .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .chip {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+        
+        .lec {
+            background: var(--lec);
+            color: #fff;
+        }
+        
+        .prac {
+            background: var(--prac);
+            color: #000;
+        }
+        
+        .textpair {
+            color: var(--muted);
+            font-style: italic;
+        }
+        /* ========== ПОТОЧНИЙ ДЕНЬ - ТОНША ОБВОДКА ========== */
+        /* робимо обводку тоншою і ближчою до карти */
+        
+        .card.now {
+            outline: 2px solid rgba(14, 165, 233, .95);
+            /* ТОВЩИНА 2px (було 4px) */
+            outline-offset: 2px;
+            /* зменшив offset (було 6px) */
+            border-radius: 12px;
+            /* невелика тінь для читаємості, але обводка тепер щільніша */
+            box-shadow: 0 6px 20px rgba(14, 165, 233, .06);
+        }
+        
+        .pair.current {
+            border: 2px solid rgba(59, 130, 246, .95);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, .06);
+        }
+        
+        .pair.next {
+            border: 2px solid rgba(245, 158, 11, .95);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, .06);
+            position: relative;
+        }
+        
+        .pair.next .badge {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, .03);
+            color: var(--text);
+        }
+        
+        .pair.upcoming {
+            border: 2px solid var(--green);
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+    <div class="wrap">
+        <div class="topbar" role="banner">
+            <div>
+                <div class="brand">Розклад — 4 курс, група В</div>
+                <div class="muted">Двотижневий • Пн–Пт</div>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center">
+                <button id="toggleTheme" class="btn" title="Тема">Тема</button>
+                <button id="todayBtn" class="btn" title="Сьогодні">Сьогодні</button>
+
+                <div class="controls" role="navigation" aria-label="Тиждень">
+                    <button id="prevWeek" class="btn" aria-label="Попередній тиждень">◀</button>
+                    <div style="min-width:110px;text-align:center"><strong id="weekLabel">Нижній</strong>
+                        <div id="weekRange" class="muted" style="font-size:12px"></div>
+                    </div>
+                    <button id="nextWeek" class="btn" aria-label="Наступний тиждень">▶</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-wrap" style="margin-top:12px">
+            <div id="weekGrid" class="grid cards" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <!-- Твій основний JS (не чіпав) -->
+    <script src="script.js"></script>
+</body>
+
+</html>

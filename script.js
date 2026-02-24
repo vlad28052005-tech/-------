@@ -179,10 +179,10 @@ function render(withStagger = true) {
             let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
             chip += chipTimerHtml;
 
-            // 📍 Формуємо клікабельну адресу для Waze/Maps
+            // Звичайний текст аудиторії, але зберігаємо його клікабельність
             let placeHtml = '';
             if (p.place) {
-                placeHtml = `<br><span class="place-link" data-place="${p.place}">📍 ${p.place}</span>`;
+                placeHtml = ` • <span class="place-link" data-place="${p.place}">${p.place}</span>`;
             }
 
             box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;

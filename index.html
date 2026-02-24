@@ -130,9 +130,7 @@
         .grid {
             display: grid;
             gap: 16px;
-            /* Автоматично підбирає кількість колонок залежно від ширини екрана */
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            /* ЦЕЙ ПАРАМЕТР НЕ ДАЄ ДНЯМ РОЗТЯГУВАТИСЯ ПІД ВИСОТУ ВІВТОРКА: */
             align-items: start;
             transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
         }
@@ -227,6 +225,26 @@
         
         [data-theme="dark"] .prac {
             color: var(--prac);
+        }
+        /* Стилі для живого таймера */
+        
+        .timer-chip {
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+            }
         }
         /* Підсвітка поточного/наступного заняття */
         

@@ -1,8 +1,6 @@
 // Конфігурація розкладу та даних
 const defaultData = {
-    settings: {
-        baseTopWeekISO: '2026-02-16'
-    },
+    settings: { baseTopWeekISO: '2026-02-16' },
     times: [
         { start: '08:00', end: '09:20' }, // I
         { start: '09:30', end: '10:50' }, // II
@@ -58,7 +56,6 @@ const defaultData = {
     }
 };
 
-// Відновлення збереженої теми
 const savedTheme = localStorage.getItem('schedule_theme') || 'dark';
 document.body.setAttribute('data-theme', savedTheme);
 
@@ -86,13 +83,10 @@ function parseHMToDate(hm, baseDate) {
 function isTopWeek(date) {
     const base = mondayOf(new Date(defaultData.settings.baseTopWeekISO || '2026-02-16'));
     const cur = mondayOf(date);
-    const diffWeeks = Math.round((cur - base) / (7 * 24 * 3600 * 1000));
-    return diffWeeks % 2 === 0;
+    return Math.round((cur - base) / (7 * 24 * 3600 * 1000)) % 2 === 0;
 }
 
-function getTimeFor(dayKey, pairIndex) {
-    return defaultData.times[pairIndex] || { start: '', end: '' };
-}
+function getTimeFor(dayKey, pairIndex) { return defaultData.times[pairIndex] || { start: '', end: '' }; }
 
 function getPairsForDay(dayKey, date) {
     const week = isTopWeek(date) ? 'top' : 'bottom';
@@ -102,6 +96,7 @@ function getPairsForDay(dayKey, date) {
 const grid = document.getElementById('weekGrid');
 let currentMonday = mondayOf(new Date());
 let nextUpdateTimer = null;
+let countdownInterval = null; // Змінна для живого таймера
 
 function formatDateShort(d) { return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }); }
 
@@ -118,19 +113,14 @@ function render(withStagger = true) {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const viewingCurrentWeek = mondayOf(today).getTime() === currentMonday.getTime();
-
     let cardsRendered = 0;
 
     for (let i = 0; i < DAYS.length; i++) {
         const dKey = DAYS[i];
         const dayDate = new Date(currentMonday.getTime() + i * 86400000);
-
         const pairs = getPairsForDay(dKey, dayDate).map((p, idx) => ({ p, idx })).filter(x => x.p);
 
-        // ГОЛОВНА ЗМІНА: Якщо пар немає, ми просто пропускаємо цей день і не малюємо картку
-        if (pairs.length === 0) {
-            continue;
-        }
+        if (pairs.length === 0) continue;
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -173,16 +163,24 @@ function render(withStagger = true) {
             box.dataset.day = dKey;
             box.dataset.index = idx;
 
+            let chipTimerHtml = ''; // Для живого таймера
+
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 const en = parseHMToDate(t.end, now);
                 if (en && now > en) box.classList.add('past');
-                if (idx === currentIdx) box.classList.add('current');
+                if (idx === currentIdx) {
+                    box.classList.add('current');
+                    // Додаємо бейдж таймера
+                    chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
+                }
                 if (idx === nextIdx && currentIdx !== -1) box.classList.add('next');
                 if (idx === nextIdx && currentIdx === -1) box.classList.add('upcoming');
             }
 
-            const chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
-            box.innerHTML = `<div class="meta"><div>${t.start||''} – ${t.end||''}</div>${chip}</div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${p.place?(' • '+p.place):''}</div>`;
+            let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
+            chip += chipTimerHtml; // Додаємо таймер до інших бейджів, якщо він є
+
+            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${p.place?(' • '+p.place):''}</div>`;
 
             if (box.classList.contains('next')) {
                 const badge = document.createElement('div');
@@ -203,7 +201,36 @@ function render(withStagger = true) {
             if (todayCard) todayCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 120);
     }
+
+    startLiveTimer(); // Запускаємо оновлення таймера щосекунди
     scheduleNextPreciseUpdate();
+}
+
+// Функція для оновлення таймера
+function startLiveTimer() {
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    countdownInterval = setInterval(() => {
+        const timerEl = document.getElementById('liveTimer');
+        if (!timerEl) return;
+
+        const endStr = timerEl.getAttribute('data-end');
+        if (!endStr) return;
+
+        const now = new Date();
+        const end = parseHMToDate(endStr, now);
+
+        if (end) {
+            const diffMs = end - now;
+            if (diffMs > 0) {
+                const mins = Math.floor(diffMs / 60000);
+                timerEl.textContent = `⏳ ${mins} хв до кінця`;
+            } else {
+                timerEl.textContent = `⏳ Закінчилась`;
+                render(false); // Перемальовуємо розклад, бо пара закінчилась
+            }
+        }
+    }, 1000); // Оновлюємо кожну секунду (щоб хвилина перемикалась рівно вчасно)
 }
 
 let animating = false;
@@ -231,10 +258,8 @@ function changeWeekAnimated(direction) {
 
 document.getElementById('prevWeek').addEventListener('click', () => changeWeekAnimated(-1));
 document.getElementById('nextWeek').addEventListener('click', () => changeWeekAnimated(1));
-document.getElementById('todayBtn').addEventListener('click', () => {
-    currentMonday = mondayOf(new Date());
-    render();
-});
+document.getElementById('todayBtn').addEventListener('click', () => { currentMonday = mondayOf(new Date());
+    render(); });
 document.getElementById('toggleTheme').addEventListener('click', () => {
     const cur = document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
     const next = cur === 'light' ? 'dark' : 'light';
@@ -244,12 +269,8 @@ document.getElementById('toggleTheme').addEventListener('click', () => {
 
 let startX = 0,
     startY = 0;
-document.addEventListener('touchstart', e => {
-    if (e.changedTouches) {
-        startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY;
-    }
-}, { passive: true });
+document.addEventListener('touchstart', e => { if (e.changedTouches) { startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY; } }, { passive: true });
 document.addEventListener('touchend', e => {
     if (!e.changedTouches) return;
     const dx = e.changedTouches[0].screenX - startX;
@@ -260,10 +281,8 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 function scheduleNextPreciseUpdate() {
-    if (nextUpdateTimer) {
-        clearTimeout(nextUpdateTimer);
-        nextUpdateTimer = null;
-    }
+    if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
+        nextUpdateTimer = null; }
     const now = new Date();
     const todayKey = DAYS[(now.getDay() + 6) % 7];
     if (!todayKey) {
@@ -278,14 +297,8 @@ function scheduleNextPreciseUpdate() {
     pairs.forEach((p, idx) => {
         if (!p) return;
         const t = getTimeFor(todayKey, idx);
-        if (t.start) {
-            const st = parseHMToDate(t.start, now);
-            if (st && st.getTime() > now.getTime()) candidates.push(st);
-        }
-        if (t.end) {
-            const en = parseHMToDate(t.end, now);
-            if (en && en.getTime() > now.getTime()) candidates.push(en);
-        }
+        if (t.start) { const st = parseHMToDate(t.start, now); if (st && st.getTime() > now.getTime()) candidates.push(st); }
+        if (t.end) { const en = parseHMToDate(t.end, now); if (en && en.getTime() > now.getTime()) candidates.push(en); }
     });
     if (candidates.length === 0) {
         const nd = new Date(now);
@@ -302,6 +315,4 @@ function scheduleNextPreciseUpdate() {
 
 render(true);
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }

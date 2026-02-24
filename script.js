@@ -256,12 +256,17 @@ function changeWeekAnimated(direction) {
 
 document.getElementById('prevWeek').addEventListener('click', () => changeWeekAnimated(-1));
 document.getElementById('nextWeek').addEventListener('click', () => changeWeekAnimated(1));
-document.getElementById('todayBtn').addEventListener('click', () => { currentMonday = mondayOf(new Date());
-    render(); });
+document.getElementById('todayBtn').addEventListener('click', () => {
+    currentMonday = mondayOf(new Date());
+    render();
+});
 document.getElementById('toggleTheme').addEventListener('click', () => {
-    // Якщо увімкнена пасхалка, скидаємо її на дефолтну темну тему
     const cur = document.body.getAttribute('data-theme');
-    const next = (cur === 'light' || cur === 'slytherin') ? 'dark' : 'light';
+    let next;
+    // Цикл перемикання: light -> dark -> oled -> light
+    if (cur === 'light') next = 'dark';
+    else if (cur === 'dark') next = 'oled';
+    else next = 'light';
 
     document.body.setAttribute('data-theme', next);
     localStorage.setItem('schedule_theme', next);
@@ -274,8 +279,12 @@ document.getElementById('toggleTheme').addEventListener('click', () => {
 
 let startX = 0,
     startY = 0;
-document.addEventListener('touchstart', e => { if (e.changedTouches) { startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY; } }, { passive: true });
+document.addEventListener('touchstart', e => {
+    if (e.changedTouches) {
+        startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
+    }
+}, { passive: true });
 document.addEventListener('touchend', e => {
     if (!e.changedTouches) return;
     const dx = e.changedTouches[0].screenX - startX;
@@ -286,8 +295,10 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 function scheduleNextPreciseUpdate() {
-    if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
-        nextUpdateTimer = null; }
+    if (nextUpdateTimer) {
+        clearTimeout(nextUpdateTimer);
+        nextUpdateTimer = null;
+    }
     const now = new Date();
     const todayKey = DAYS[(now.getDay() + 6) % 7];
     if (!todayKey) {

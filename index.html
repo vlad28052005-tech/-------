@@ -5,33 +5,48 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Розклад — 4 курс, група В</title>
-    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="manifest" href="manifest.json" />
     <style>
          :root {
-            --bg: #0b1220;
-            --panel: #0e1726;
-            --text: #e5eefb;
-            --muted: #a9b8d5;
+            /* Стандартна темна тема (м'яка) */
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
             --accent: #0ea5e9;
-            --card: #0f172a;
-            --border: #1f2a44;
+            --card: #1e293b;
+            --border: #334155;
             --lec: #3b82f6;
             --prac: #facc15;
-            --green: #16a34a;
+            --green: #10b981;
             --anim-ms: 360ms;
+            --glass-bg: rgba(15, 23, 42, 0.75);
         }
         
         [data-theme="light"] {
             --bg: #f8fafc;
-            --panel: #fff;
-            --text: #0b1220;
-            --muted: #54627a;
+            --panel: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
             --card: #ffffff;
             --border: #e2e8f0;
+            --glass-bg: rgba(248, 250, 252, 0.8);
+        }
+        /* 🖤 Справжня OLED-тема для ідеального чорного */
+        
+        [data-theme="oled"] {
+            --bg: #000000;
+            --panel: #0a0a0a;
+            --text: #ffffff;
+            --muted: #737373;
+            --card: #0a0a0a;
+            --border: #262626;
+            --accent: #38bdf8;
+            --glass-bg: rgba(0, 0, 0, 0.8);
         }
         /* 🪄 Секретна тема Слизерину */
         
@@ -46,11 +61,7 @@
             --prac: #a3b8b0;
             --accent: #2ea064;
             --green: #10b981;
-        }
-        
-        [data-theme="slytherin"] .timer-chip {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: rgba(16, 185, 129, 0.3);
+            --glass-bg: rgba(10, 20, 16, 0.8);
         }
         
         * {
@@ -73,6 +84,7 @@
             margin: 0 auto;
             padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
+        /* 💎 Преміальний Glassmorphism для верхньої панелі */
         
         .topbar {
             display: flex;
@@ -82,33 +94,28 @@
             flex-wrap: wrap;
             position: sticky;
             top: 0;
-            background: var(--bg);
-            padding: max(12px, env(safe-area-inset-top, 12px)) 0 12px 0;
+            background: var(--glass-bg);
+            padding: max(16px, env(safe-area-inset-top, 16px)) 12px 16px 12px;
+            margin: -12px -12px 20px -12px;
             z-index: 40;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             transition: background 0.4s ease, border-color 0.4s ease;
         }
         
-        @supports (backdrop-filter: blur(12px)) {
-            .topbar {
-                background: rgba(var(--bg), 0.85);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-            }
-        }
-        /* Робимо заголовок клікабельним для пасхалки */
-        
         .brand {
             font-weight: 800;
-            font-size: 16px;
+            font-size: 17px;
             cursor: pointer;
             user-select: none;
+            letter-spacing: -0.3px;
         }
         
         .muted {
             color: var(--muted);
             font-size: 13px;
+            font-weight: 500;
         }
         
         .controls {
@@ -117,56 +124,63 @@
             align-items: center;
             background: var(--panel);
             padding: 4px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
         
         .btn {
             border: 1px solid var(--border);
             background: var(--panel);
             color: var(--text);
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
-            transition: transform .14s ease, box-shadow .18s ease;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .btn:active {
-            transform: translateY(1px) scale(.98);
+            transform: scale(0.95);
+            opacity: 0.8;
         }
         
         @media (hover: hover) {
             .btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+                background: var(--border);
             }
         }
         
         .grid-wrap {
             overflow: hidden;
+            padding-bottom: 20px;
         }
         
         .grid {
             display: grid;
-            gap: 16px;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             align-items: start;
             transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
         }
+        /* 🃏 Картки з м'якими тінями */
         
         .card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
             opacity: 0;
-            transform: translateY(8px);
-            animation: cardIn .4s forwards;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, .04);
-            transition: background 0.4s ease, border-color 0.4s ease;
+            transform: translateY(12px);
+            animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
         }
         
         @keyframes cardIn {
@@ -181,28 +195,29 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 16px;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
             border-bottom: 1px solid var(--border);
         }
         
         .day {
             font-weight: 800;
-            font-size: 17px;
+            font-size: 18px;
+            letter-spacing: -0.5px;
         }
         
         .dateSmall {
-            font-size: 13px;
+            font-size: 13.5px;
             color: var(--muted);
-            font-weight: 500;
+            font-weight: 600;
         }
         
         .pair {
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 14px;
+            padding: 14px;
             margin: 0 0 12px 0;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            transition: transform .12s, border .18s, background 0.4s ease;
+            background: var(--bg);
+            border: 1px solid transparent;
+            transition: transform .2s ease, border .2s ease, background 0.4s ease;
         }
         
         .pair:last-child {
@@ -210,9 +225,11 @@
         }
         
         .pair h4 {
-            margin: 8px 0;
-            font-size: 14.5px;
-            line-height: 1.35;
+            margin: 10px 0;
+            font-size: 15px;
+            line-height: 1.4;
+            font-weight: 700;
+            letter-spacing: -0.2px;
         }
         
         .pair .meta {
@@ -220,17 +237,17 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 600;
         }
         
         .chip {
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 4px 8px;
-            border-radius: 6px;
+            letter-spacing: 0.6px;
+            padding: 4px 10px;
+            border-radius: 8px;
         }
         
         .lec {
@@ -243,7 +260,8 @@
             color: #d97706;
         }
         
-        [data-theme="dark"] .prac {
+        [data-theme="dark"] .prac,
+        [data-theme="oled"] .prac {
             color: var(--prac);
         }
         
@@ -268,6 +286,7 @@
         
         .card.now {
             border: 2px solid var(--accent);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
         }
         
         .pair.current {
@@ -282,7 +301,7 @@
         .pair.upcoming {
             border: 2px solid var(--green);
         }
-        /* 🔗 Стилі для модального вікна QR-коду */
+        /* Модальне вікно QR */
         
         .modal-overlay {
             position: fixed;
@@ -290,9 +309,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -308,46 +327,52 @@
         
         .modal-content {
             background: var(--panel);
-            padding: 24px;
-            border-radius: 24px;
+            padding: 28px;
+            border-radius: 28px;
             text-align: center;
             border: 1px solid var(--border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            max-width: 320px;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+            max-width: 340px;
             width: 90%;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
+            transform: scale(0.95) translateY(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .modal-overlay.active .modal-content {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
         }
         
         .modal-content img {
             width: 100%;
-            border-radius: 12px;
-            margin: 16px 0;
+            border-radius: 16px;
+            margin: 20px 0;
             background: white;
-            padding: 12px;
+            padding: 16px;
         }
         
         .close-btn {
             background: var(--bg);
             color: var(--text);
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
             border: 1px solid var(--border);
             cursor: pointer;
             width: 100%;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        
+        .close-btn:active {
+            background: var(--border);
         }
         
         @media (max-width: 680px) {
             .topbar {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 12px;
+                gap: 14px;
+                padding: 16px;
             }
             .topbar>div:first-child {
                 text-align: center;
@@ -364,7 +389,7 @@
             .btn {
                 flex: 1;
                 text-align: center;
-                padding: 10px;
+                padding: 12px;
             }
             #toggleTheme {
                 flex: 0.2;
@@ -385,14 +410,14 @@
             </div>
 
             <div style="display:flex;gap:8px;align-items:center">
-                <button id="toggleTheme" class="btn" title="Тема">🌓</button>
+                <button id="toggleTheme" class="btn" title="Змінити тему">🌓</button>
                 <button id="qrBtn" class="btn" title="Поділитися QR-кодом">🔗 QR</button>
                 <button id="todayBtn" class="btn" title="Сьогодні">Сьогодні</button>
 
                 <div class="controls" role="navigation" aria-label="Тиждень">
                     <button id="prevWeek" class="btn" aria-label="Попередній тиждень">◀</button>
                     <div style="min-width:110px;text-align:center"><strong id="weekLabel">Нижній</strong>
-                        <div id="weekRange" class="muted" style="font-size:12px; margin-top:2px;"></div>
+                        <div id="weekRange" class="muted" style="font-size:12.5px; margin-top:3px;"></div>
                     </div>
                     <button id="nextWeek" class="btn" aria-label="Наступний тиждень">▶</button>
                 </div>
@@ -406,8 +431,8 @@
 
     <div class="modal-overlay" id="qrModal">
         <div class="modal-content">
-            <h3 style="margin:0 0 8px 0;">Поділитися розкладом</h3>
-            <div class="muted">Нехай відсканують цей код</div>
+            <h3 style="margin:0 0 8px 0; font-size: 20px; font-weight: 800;">Розклад пар</h3>
+            <div class="muted">Наведіть камеру на цей код</div>
             <img id="qrImage" src="" alt="QR Code">
             <button class="close-btn" id="closeQr">Закрити</button>
         </div>

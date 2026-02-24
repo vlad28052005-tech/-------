@@ -48,20 +48,51 @@
             --accent: #38bdf8;
             --glass-bg: rgba(0, 0, 0, 0.8);
         }
-        /* 🪄 Секретна тема Слизерину */
+        /* 🪄 Секретна тема Слизерину (Оновлена, преміальна) */
         
         [data-theme="slytherin"] {
-            --bg: #0a1410;
-            --panel: #0f1f17;
-            --text: #c0d8ce;
-            --muted: #648a75;
-            --card: #0d1a13;
-            --border: #183324;
+            --bg: #060a08;
+            /* Глибокий чорно-зелений фон (як підземелля) */
+            --panel: #0d1611;
+            /* Картки трохи світліші, щоб виділялися */
+            --text: #e2e8e5;
+            /* Чистий срібний текст для ідеального контрасту */
+            --muted: #7a8f85;
+            /* Приглушений сріблястий для дрібного шрифту */
+            --card: #0d1611;
+            --border: #16291f;
+            /* Темно-смарагдова тонка обводка карток */
+            --accent: #10b981;
+            /* Яскравий благородний смарагд для підсвітки */
             --lec: #10b981;
-            --prac: #a3b8b0;
-            --accent: #2ea064;
-            --green: #10b981;
-            --glass-bg: rgba(10, 20, 16, 0.8);
+            /* Смарагдові бейджі лекцій */
+            --prac: #cbd5e1;
+            /* Срібні бейджі практик */
+            --green: #059669;
+            --glass-bg: rgba(6, 10, 8, 0.85);
+            /* Затемнене матове скло для панелі */
+        }
+        /* Кастомна підсвітка Слизерину для активних пар */
+        
+        [data-theme="slytherin"] .card.now {
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        [data-theme="slytherin"] .pair.current {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.08);
+        }
+        
+        [data-theme="slytherin"] .timer-chip {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        [data-theme="slytherin"] .prac {
+            background: rgba(203, 213, 225, 0.1);
+            color: var(--prac);
         }
         
         * {

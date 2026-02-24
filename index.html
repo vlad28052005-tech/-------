@@ -33,6 +33,25 @@
             --card: #ffffff;
             --border: #e2e8f0;
         }
+        /* 🪄 Секретна тема Слизерину */
+        
+        [data-theme="slytherin"] {
+            --bg: #0a1410;
+            --panel: #0f1f17;
+            --text: #c0d8ce;
+            --muted: #648a75;
+            --card: #0d1a13;
+            --border: #183324;
+            --lec: #10b981;
+            --prac: #a3b8b0;
+            --accent: #2ea064;
+            --green: #10b981;
+        }
+        
+        [data-theme="slytherin"] .timer-chip {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
         
         * {
             box-sizing: border-box;
@@ -46,15 +65,14 @@
             color: var(--text);
             font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
             -webkit-font-smoothing: antialiased;
+            transition: background 0.4s ease, color 0.4s ease;
         }
         
         .wrap {
             max-width: 1250px;
             margin: 0 auto;
-            /* Враховуємо системні відступи смартфонів (чубчик та нижню смужку) */
             padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
-        /* Topbar */
         
         .topbar {
             display: flex;
@@ -69,6 +87,7 @@
             z-index: 40;
             border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
+            transition: background 0.4s ease, border-color 0.4s ease;
         }
         
         @supports (backdrop-filter: blur(12px)) {
@@ -78,17 +97,19 @@
                 -webkit-backdrop-filter: blur(12px);
             }
         }
+        /* Робимо заголовок клікабельним для пасхалки */
         
         .brand {
             font-weight: 800;
             font-size: 16px;
+            cursor: pointer;
+            user-select: none;
         }
         
         .muted {
             color: var(--muted);
             font-size: 13px;
         }
-        /* controls */
         
         .controls {
             display: flex;
@@ -121,7 +142,6 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
             }
         }
-        /* Grid */
         
         .grid-wrap {
             overflow: hidden;
@@ -146,6 +166,7 @@
             transform: translateY(8px);
             animation: cardIn .4s forwards;
             box-shadow: 0 4px 20px rgba(0, 0, 0, .04);
+            transition: background 0.4s ease, border-color 0.4s ease;
         }
         
         @keyframes cardIn {
@@ -181,7 +202,7 @@
             margin: 0 0 12px 0;
             background: var(--panel);
             border: 1px solid var(--border);
-            transition: transform .12s, border .18s;
+            transition: transform .12s, border .18s, background 0.4s ease;
         }
         
         .pair:last-child {
@@ -202,7 +223,6 @@
             font-size: 13px;
             font-weight: 600;
         }
-        /* Оновлені, м'якші бейджі */
         
         .chip {
             font-size: 11px;
@@ -226,7 +246,6 @@
         [data-theme="dark"] .prac {
             color: var(--prac);
         }
-        /* Стилі для живого таймера */
         
         .timer-chip {
             background: rgba(14, 165, 233, 0.15);
@@ -246,7 +265,6 @@
                 opacity: 1;
             }
         }
-        /* Підсвітка поточного/наступного заняття */
         
         .card.now {
             border: 2px solid var(--accent);
@@ -264,9 +282,68 @@
         .pair.upcoming {
             border: 2px solid var(--green);
         }
-        /* Оптимізація для вертикальних екранів */
+        /* 🔗 Стилі для модального вікна QR-коду */
         
-        @media (max-width: 580px) {
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: var(--panel);
+            padding: 24px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            max-width: 320px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-content img {
+            width: 100%;
+            border-radius: 12px;
+            margin: 16px 0;
+            background: white;
+            padding: 12px;
+        }
+        
+        .close-btn {
+            background: var(--bg);
+            color: var(--text);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        @media (max-width: 680px) {
             .topbar {
                 flex-direction: column;
                 align-items: stretch;
@@ -277,10 +354,12 @@
             }
             .topbar>div:last-child {
                 justify-content: space-between;
+                flex-wrap: wrap;
             }
             .controls {
                 flex: 1;
                 justify-content: space-between;
+                min-width: 100%;
             }
             .btn {
                 flex: 1;
@@ -288,7 +367,10 @@
                 padding: 10px;
             }
             #toggleTheme {
-                flex: 0.3;
+                flex: 0.2;
+            }
+            #qrBtn {
+                flex: 0.2;
             }
         }
     </style>
@@ -298,12 +380,13 @@
     <div class="wrap">
         <div class="topbar" role="banner">
             <div>
-                <div class="brand">Розклад — 4 курс, група В</div>
+                <div class="brand" id="secretTitle" title="Спробуй тапнути 5 разів...">Розклад — 4 курс, група В</div>
                 <div class="muted">Юридичний факультет</div>
             </div>
 
-            <div style="display:flex;gap:10px;align-items:center">
+            <div style="display:flex;gap:8px;align-items:center">
                 <button id="toggleTheme" class="btn" title="Тема">🌓</button>
+                <button id="qrBtn" class="btn" title="Поділитися QR-кодом">🔗 QR</button>
                 <button id="todayBtn" class="btn" title="Сьогодні">Сьогодні</button>
 
                 <div class="controls" role="navigation" aria-label="Тиждень">
@@ -318,6 +401,15 @@
 
         <div class="grid-wrap">
             <div id="weekGrid" class="grid cards" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="qrModal">
+        <div class="modal-content">
+            <h3 style="margin:0 0 8px 0;">Поділитися розкладом</h3>
+            <div class="muted">Нехай відсканують цей код</div>
+            <img id="qrImage" src="" alt="QR Code">
+            <button class="close-btn" id="closeQr">Закрити</button>
         </div>
     </div>
 

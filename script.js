@@ -2,13 +2,13 @@
 const defaultData = {
     settings: { baseTopWeekISO: '2026-02-16' },
     times: [
-        { start: '08:00', end: '09:20' }, // I
-        { start: '09:30', end: '10:50' }, // II
-        { start: '11:00', end: '12:20' }, // III
-        { start: '12:40', end: '14:00' }, // IV
-        { start: '14:10', end: '15:30' }, // V
-        { start: '15:40', end: '17:00' }, // VI
-        { start: '17:10', end: '18:30' } // VII
+        { start: '08:00', end: '09:20' },
+        { start: '09:30', end: '10:50' },
+        { start: '11:00', end: '12:20' },
+        { start: '12:40', end: '14:00' },
+        { start: '14:10', end: '15:30' },
+        { start: '15:40', end: '17:00' },
+        { start: '17:10', end: '18:30' }
     ],
     template: {
         top: {
@@ -96,7 +96,7 @@ function getPairsForDay(dayKey, date) {
 const grid = document.getElementById('weekGrid');
 let currentMonday = mondayOf(new Date());
 let nextUpdateTimer = null;
-let countdownInterval = null; // Змінна для живого таймера
+let countdownInterval = null;
 
 function formatDateShort(d) { return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }); }
 
@@ -163,14 +163,13 @@ function render(withStagger = true) {
             box.dataset.day = dKey;
             box.dataset.index = idx;
 
-            let chipTimerHtml = ''; // Для живого таймера
+            let chipTimerHtml = '';
 
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 const en = parseHMToDate(t.end, now);
                 if (en && now > en) box.classList.add('past');
                 if (idx === currentIdx) {
                     box.classList.add('current');
-                    // Додаємо бейдж таймера
                     chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
                 }
                 if (idx === nextIdx && currentIdx !== -1) box.classList.add('next');
@@ -178,7 +177,7 @@ function render(withStagger = true) {
             }
 
             let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
-            chip += chipTimerHtml; // Додаємо таймер до інших бейджів, якщо він є
+            chip += chipTimerHtml;
 
             box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${p.place?(' • '+p.place):''}</div>`;
 
@@ -202,11 +201,10 @@ function render(withStagger = true) {
         }, 120);
     }
 
-    startLiveTimer(); // Запускаємо оновлення таймера щосекунди
+    startLiveTimer();
     scheduleNextPreciseUpdate();
 }
 
-// Функція для оновлення таймера
 function startLiveTimer() {
     if (countdownInterval) clearInterval(countdownInterval);
 
@@ -227,10 +225,10 @@ function startLiveTimer() {
                 timerEl.textContent = `⏳ ${mins} хв до кінця`;
             } else {
                 timerEl.textContent = `⏳ Закінчилась`;
-                render(false); // Перемальовуємо розклад, бо пара закінчилась
+                render(false);
             }
         }
-    }, 1000); // Оновлюємо кожну секунду (щоб хвилина перемикалась рівно вчасно)
+    }, 1000);
 }
 
 let animating = false;
@@ -258,25 +256,26 @@ function changeWeekAnimated(direction) {
 
 document.getElementById('prevWeek').addEventListener('click', () => changeWeekAnimated(-1));
 document.getElementById('nextWeek').addEventListener('click', () => changeWeekAnimated(1));
-document.getElementById('todayBtn').addEventListener('click', () => {
-    currentMonday = mondayOf(new Date());
-    render();
-});
+document.getElementById('todayBtn').addEventListener('click', () => { currentMonday = mondayOf(new Date());
+    render(); });
 document.getElementById('toggleTheme').addEventListener('click', () => {
-    const cur = document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    const next = cur === 'light' ? 'dark' : 'light';
+    // Якщо увімкнена пасхалка, скидаємо її на дефолтну темну тему
+    const cur = document.body.getAttribute('data-theme');
+    const next = (cur === 'light' || cur === 'slytherin') ? 'dark' : 'light';
+
     document.body.setAttribute('data-theme', next);
     localStorage.setItem('schedule_theme', next);
+
+    // Повертаємо оригінальний заголовок, якщо ми вийшли зі Слизерину
+    if (cur === 'slytherin') {
+        document.getElementById('secretTitle').textContent = 'Розклад — 4 курс, група В';
+    }
 });
 
 let startX = 0,
     startY = 0;
-document.addEventListener('touchstart', e => {
-    if (e.changedTouches) {
-        startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY;
-    }
-}, { passive: true });
+document.addEventListener('touchstart', e => { if (e.changedTouches) { startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY; } }, { passive: true });
 document.addEventListener('touchend', e => {
     if (!e.changedTouches) return;
     const dx = e.changedTouches[0].screenX - startX;
@@ -287,10 +286,8 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 function scheduleNextPreciseUpdate() {
-    if (nextUpdateTimer) {
-        clearTimeout(nextUpdateTimer);
-        nextUpdateTimer = null;
-    }
+    if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
+        nextUpdateTimer = null; }
     const now = new Date();
     const todayKey = DAYS[(now.getDay() + 6) % 7];
     if (!todayKey) {
@@ -320,6 +317,56 @@ function scheduleNextPreciseUpdate() {
     const delay = Math.max(200, next.getTime() - now.getTime());
     nextUpdateTimer = setTimeout(() => render(false), delay);
 }
+
+// 🔗 Логіка QR-коду
+const qrBtn = document.getElementById('qrBtn');
+const qrModal = document.getElementById('qrModal');
+const closeQr = document.getElementById('closeQr');
+const qrImage = document.getElementById('qrImage');
+
+qrBtn.addEventListener('click', () => {
+    // Беремо поточне посилання без якорів, щоб QR код вів точно на сторінку
+    const currentUrl = window.location.href.split('#')[0].split('?')[0];
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentUrl)}`;
+    qrModal.style.display = 'flex';
+    setTimeout(() => qrModal.classList.add('active'), 10);
+});
+
+closeQr.addEventListener('click', () => {
+    qrModal.classList.remove('active');
+    setTimeout(() => qrModal.style.display = 'none', 300);
+});
+
+// 🪄 Пасхалка: 5 швидких кліків по заголовку
+const brandElement = document.getElementById('secretTitle');
+let clickCount = 0;
+let clickTimer = null;
+
+// Перевіряємо при завантаженні, чи була збережена тема Слизерину
+if (savedTheme === 'slytherin') {
+    brandElement.textContent = '🐍 Факультет Слизерин';
+}
+
+brandElement.addEventListener('click', () => {
+    clickCount++;
+    clearTimeout(clickTimer);
+
+    if (clickCount === 5) {
+        const currentTheme = document.body.getAttribute('data-theme');
+        if (currentTheme !== 'slytherin') {
+            document.body.setAttribute('data-theme', 'slytherin');
+            localStorage.setItem('schedule_theme', 'slytherin');
+            brandElement.textContent = '🐍 Факультет Слизерин';
+        } else {
+            document.body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('schedule_theme', 'dark');
+            brandElement.textContent = 'Розклад — 4 курс, група В';
+        }
+        clickCount = 0;
+    } else {
+        clickTimer = setTimeout(() => { clickCount = 0; }, 400); // Скидаємо лічильник, якщо клікаєш надто повільно
+    }
+});
 
 render(true);
 

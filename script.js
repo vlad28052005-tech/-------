@@ -179,7 +179,13 @@ function render(withStagger = true) {
             let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
             chip += chipTimerHtml;
 
-            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${p.place?(' • '+p.place):''}</div>`;
+            // 📍 Формуємо клікабельну адресу для Waze/Maps
+            let placeHtml = '';
+            if (p.place) {
+                placeHtml = `<br><span class="place-link" data-place="${p.place}">📍 ${p.place}</span>`;
+            }
+
+            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
             if (box.classList.contains('next')) {
                 const badge = document.createElement('div');
@@ -260,10 +266,11 @@ document.getElementById('todayBtn').addEventListener('click', () => {
     currentMonday = mondayOf(new Date());
     render();
 });
+
 document.getElementById('toggleTheme').addEventListener('click', () => {
     const cur = document.body.getAttribute('data-theme');
     let next;
-    // Цикл перемикання: light -> dark -> oled -> light
+    // Перемикання: light -> dark -> oled -> light
     if (cur === 'light') next = 'dark';
     else if (cur === 'dark') next = 'oled';
     else next = 'light';
@@ -271,7 +278,6 @@ document.getElementById('toggleTheme').addEventListener('click', () => {
     document.body.setAttribute('data-theme', next);
     localStorage.setItem('schedule_theme', next);
 
-    // Повертаємо оригінальний заголовок, якщо ми вийшли зі Слизерину
     if (cur === 'slytherin') {
         document.getElementById('secretTitle').textContent = 'Розклад — 4 курс, група В';
     }
@@ -336,7 +342,6 @@ const closeQr = document.getElementById('closeQr');
 const qrImage = document.getElementById('qrImage');
 
 qrBtn.addEventListener('click', () => {
-    // Беремо поточне посилання без якорів, щоб QR код вів точно на сторінку
     const currentUrl = window.location.href.split('#')[0].split('?')[0];
     qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentUrl)}`;
     qrModal.style.display = 'flex';
@@ -348,19 +353,16 @@ closeQr.addEventListener('click', () => {
     setTimeout(() => qrModal.style.display = 'none', 300);
 });
 
-// 🪄 Пасхалка: 5 швидких кліків по заголовку
+// 🪄 Пасхалка Слизерину
 const brandElement = document.getElementById('secretTitle');
 let clickCount = 0;
 let clickTimer = null;
 
-// Функція для встановлення заголовка з гербом
 function setSlytherinTitle() {
-    // Вказуємо шлях до вашої локальної картинки
     const crestUrl = './Slytherin.png';
     brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest">Факультет Слизерин`;
 }
 
-// Перевіряємо при завантаженні, чи була збережена тема Слизерину
 if (savedTheme === 'slytherin') {
     setSlytherinTitle();
 }
@@ -374,16 +376,57 @@ brandElement.addEventListener('click', () => {
         if (currentTheme !== 'slytherin') {
             document.body.setAttribute('data-theme', 'slytherin');
             localStorage.setItem('schedule_theme', 'slytherin');
-            setSlytherinTitle(); // Застосовуємо герб і текст
+            setSlytherinTitle();
         } else {
             document.body.setAttribute('data-theme', 'dark');
             localStorage.setItem('schedule_theme', 'dark');
-            brandElement.textContent = 'Розклад — 4 курс, група В'; // Повертаємо текст
+            brandElement.textContent = 'Розклад — 4 курс, група В';
         }
         clickCount = 0;
     } else {
-        clickTimer = setTimeout(() => { clickCount = 0; }, 400); // Скидаємо лічильник
+        clickTimer = setTimeout(() => { clickCount = 0; }, 400);
     }
+});
+
+// 🗺️ Логіка для Навігатора
+const mapsModal = document.getElementById('mapsModal');
+let currentDestination = '';
+
+document.addEventListener('click', (e) => {
+    const placeLink = e.target.closest('.place-link');
+    if (placeLink) {
+        let rawPlace = placeLink.getAttribute('data-place');
+
+        // Перетворюємо номер аудиторії на правильну адресу для GPS
+        if (rawPlace.includes('Грушевського, 2')) {
+            currentDestination = 'вулиця Грушевського, 2, Вінниця';
+        } else if (rawPlace.includes('Соборна, 48')) {
+            currentDestination = 'вулиця Соборна, 48, Вінниця';
+        } else {
+            currentDestination = rawPlace + ', Вінниця';
+        }
+
+        mapsModal.style.display = 'flex';
+        setTimeout(() => mapsModal.classList.add('active'), 10);
+    }
+});
+
+document.getElementById('closeMaps').addEventListener('click', () => {
+    mapsModal.classList.remove('active');
+    setTimeout(() => mapsModal.style.display = 'none', 300);
+});
+
+// Відкриття в додатках навігації
+document.getElementById('btnWaze').addEventListener('click', () => {
+    window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`;
+});
+
+document.getElementById('btnGoogleMaps').addEventListener('click', () => {
+    window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`;
+});
+
+document.getElementById('btnAppleMaps').addEventListener('click', () => {
+    window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`;
 });
 
 render(true);

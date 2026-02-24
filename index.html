@@ -12,7 +12,6 @@
     <link rel="manifest" href="manifest.json" />
     <style>
          :root {
-            /* Стандартна темна тема (м'яка) */
             --bg: #0f172a;
             --panel: #1e293b;
             --text: #f8fafc;
@@ -36,7 +35,7 @@
             --border: #e2e8f0;
             --glass-bg: rgba(248, 250, 252, 0.8);
         }
-        /* 🖤 Справжня OLED-тема для ідеального чорного */
+        /* 🖤 OLED-тема */
         
         [data-theme="oled"] {
             --bg: #000000;
@@ -48,31 +47,21 @@
             --accent: #38bdf8;
             --glass-bg: rgba(0, 0, 0, 0.8);
         }
-        /* 🪄 Секретна тема Слизерину (Оновлена, преміальна) */
+        /* 🪄 Тема Слизерину */
         
         [data-theme="slytherin"] {
             --bg: #060a08;
-            /* Глибокий чорно-зелений фон (як підземелля) */
             --panel: #0d1611;
-            /* Картки трохи світліші, щоб виділялися */
             --text: #e2e8e5;
-            /* Чистий срібний текст для ідеального контрасту */
             --muted: #7a8f85;
-            /* Приглушений сріблястий для дрібного шрифту */
             --card: #0d1611;
             --border: #16291f;
-            /* Темно-смарагдова тонка обводка карток */
             --accent: #10b981;
-            /* Яскравий благородний смарагд для підсвітки */
             --lec: #10b981;
-            /* Смарагдові бейджі лекцій */
             --prac: #cbd5e1;
-            /* Срібні бейджі практик */
             --green: #059669;
             --glass-bg: rgba(6, 10, 8, 0.85);
-            /* Затемнене матове скло для панелі */
         }
-        /* Кастомна підсвітка Слизерину для активних пар */
         
         [data-theme="slytherin"] .card.now {
             border-color: var(--accent);
@@ -115,7 +104,7 @@
             margin: 0 auto;
             padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
-        /* 💎 Преміальний Glassmorphism для верхньої панелі (Бронебійний фікс iOS) */
+        /* 💎 Glassmorphism (базовий для браузера) */
         
         .topbar {
             display: flex;
@@ -126,17 +115,20 @@
             position: sticky;
             top: 0;
             background: var(--glass-bg);
-            /* БРОНЕБІЙНИЙ ФІКС ДЛЯ iPHONE: */
-            /* 1. Надійний базовий відступ, який неможливо зламати */
-            padding: 60px 16px 16px 16px;
-            /* 2. Для найновіших iOS перераховуємо точно під розмір чолки */
-            padding-top: calc(env(safe-area-inset-top, 44px) + 12px);
+            padding: 16px;
             margin: -12px -12px 20px -12px;
             z-index: 40;
             border-bottom: 1px solid var(--border);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             transition: background 0.4s ease, border-color 0.4s ease;
+        }
+        /* 🔥 БРОНЕБІЙНИЙ ФІКС ДЛЯ iOS: Спрацює ТІЛЬКИ коли розклад відкритий як додаток на екрані! */
+        
+        @media all and (display-mode: standalone) {
+            .topbar {
+                padding-top: calc(env(safe-area-inset-top, 44px) + 16px) !important;
+            }
         }
         
         .brand {
@@ -152,7 +144,6 @@
             font-size: 13px;
             font-weight: 500;
         }
-        /* Стилі для зображення герба в пасхалці */
         
         .brand-crest {
             height: 28px;
@@ -207,7 +198,6 @@
             align-items: start;
             transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
         }
-        /* 🃏 Картки з м'якими тінями */
         
         .card {
             background: var(--card);
@@ -345,7 +335,25 @@
         .pair.upcoming {
             border: 2px solid var(--green);
         }
-        /* Модальне вікно QR */
+        /* 📍 Клікабельна адреса */
+        
+        .place-link {
+            display: inline-block;
+            margin-top: 6px;
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 700;
+            background: rgba(14, 165, 233, 0.1);
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        
+        .place-link:active {
+            background: rgba(14, 165, 233, 0.25);
+            transform: scale(0.97);
+        }
+        /* Модальні вікна */
         
         .modal-overlay {
             position: fixed;
@@ -479,6 +487,16 @@
             <div class="muted">Наведіть камеру на цей код</div>
             <img id="qrImage" src="" alt="QR Code">
             <button class="close-btn" id="closeQr">Закрити</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="mapsModal">
+        <div class="modal-content" style="max-width: 300px; padding: 24px;">
+            <h3 style="margin:0 0 20px 0; font-size: 19px; font-weight: 800;">Маршрут до корпусу</h3>
+            <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3);" id="btnWaze">🚗 Відкрити в Waze</button>
+            <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);" id="btnGoogleMaps">🗺️ Google Maps</button>
+            <button class="btn" style="width:100%; margin-bottom:20px; font-size:16px; padding:14px;" id="btnAppleMaps">🍎 Apple Maps</button>
+            <button class="close-btn" id="closeMaps">Скасувати</button>
         </div>
     </div>
 

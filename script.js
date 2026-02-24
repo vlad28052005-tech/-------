@@ -353,9 +353,16 @@ const brandElement = document.getElementById('secretTitle');
 let clickCount = 0;
 let clickTimer = null;
 
+// Функція для встановлення заголовка з гербом
+function setSlytherinTitle() {
+    // Вказуємо шлях до вашої локальної картинки
+    const crestUrl = './Slytherin.png';
+    brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest">Факультет Слизерин`;
+}
+
 // Перевіряємо при завантаженні, чи була збережена тема Слизерину
 if (savedTheme === 'slytherin') {
-    brandElement.textContent = '🐍 Факультет Слизерин';
+    setSlytherinTitle();
 }
 
 brandElement.addEventListener('click', () => {
@@ -367,15 +374,15 @@ brandElement.addEventListener('click', () => {
         if (currentTheme !== 'slytherin') {
             document.body.setAttribute('data-theme', 'slytherin');
             localStorage.setItem('schedule_theme', 'slytherin');
-            brandElement.textContent = '🐍 Факультет Слизерин';
+            setSlytherinTitle(); // Застосовуємо герб і текст
         } else {
             document.body.setAttribute('data-theme', 'dark');
             localStorage.setItem('schedule_theme', 'dark');
-            brandElement.textContent = 'Розклад — 4 курс, група В';
+            brandElement.textContent = 'Розклад — 4 курс, група В'; // Повертаємо текст
         }
         clickCount = 0;
     } else {
-        clickTimer = setTimeout(() => { clickCount = 0; }, 400); // Скидаємо лічильник, якщо клікаєш надто повільно
+        clickTimer = setTimeout(() => { clickCount = 0; }, 400); // Скидаємо лічильник
     }
 });
 

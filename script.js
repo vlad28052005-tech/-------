@@ -8,7 +8,7 @@ const defaultData = {
         { start: '12:40', end: '14:00' }, // IV
         { start: '14:10', end: '15:30' }, // V
         { start: '15:40', end: '17:00' }, // VI
-        { start: '17:10', end: '22:30' } // VII
+        { start: '18:10', end: '22:30' } // VII
     ],
     template: {
         top: {

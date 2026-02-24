@@ -115,7 +115,7 @@
             margin: 0 auto;
             padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
-        /* 💎 Преміальний Glassmorphism для верхньої панелі */
+        /* 💎 Преміальний Glassmorphism для верхньої панелі (з фіксом чолки iPhone) */
         
         .topbar {
             display: flex;
@@ -126,7 +126,8 @@
             position: sticky;
             top: 0;
             background: var(--glass-bg);
-            padding: max(16px, env(safe-area-inset-top, 16px)) 12px 16px 12px;
+            /* ФІКС: додаємо спеціальний відступ для чолки (safe-area-inset-top) */
+            padding: calc(env(safe-area-inset-top, 48px) + 12px) 16px 16px 16px;
             margin: -12px -12px 20px -12px;
             z-index: 40;
             border-bottom: 1px solid var(--border);

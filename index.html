@@ -3,9 +3,11 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Розклад — 4 курс, група В</title>
     <meta name="theme-color" content="#0ea5e9" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="manifest" href="manifest.json" />
     <style>
@@ -33,7 +35,7 @@
         }
         
         * {
-            box-sizing: border-box
+            box-sizing: border-box;
         }
         
         html,
@@ -42,15 +44,15 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+            font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
         
         .wrap {
             max-width: 1250px;
             margin: 0 auto;
-            padding: 12px
+            /* Враховуємо системні відступи смартфонів (чубчик та нижню смужку) */
+            padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
         /* Topbar */
         
@@ -62,98 +64,90 @@
             flex-wrap: wrap;
             position: sticky;
             top: 0;
-            background: linear-gradient(to bottom, var(--bg) 95%, transparent);
-            padding: 10px 0;
-            z-index: 40
+            background: var(--bg);
+            padding: max(12px, env(safe-area-inset-top, 12px)) 0 12px 0;
+            z-index: 40;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        @supports (backdrop-filter: blur(12px)) {
+            .topbar {
+                background: rgba(var(--bg), 0.85);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+            }
         }
         
         .brand {
-            font-weight: 800
+            font-weight: 800;
+            font-size: 16px;
         }
         
         .muted {
             color: var(--muted);
-            font-size: 13px
+            font-size: 13px;
         }
         /* controls */
         
         .controls {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             background: var(--panel);
-            padding: 6px;
-            border-radius: 10px;
-            border: 1px solid var(--border)
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
         
         .btn {
             border: 1px solid var(--border);
             background: var(--panel);
             color: var(--text);
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform .14s ease, box-shadow .18s ease, background .18s ease;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(2, 8, 23, .25)
+            font-weight: 500;
+            transition: transform .14s ease, box-shadow .18s ease;
         }
         
         .btn:active {
-            transform: translateY(-1px) scale(.99)
+            transform: translateY(1px) scale(.98);
         }
         
-        .btn.primary {
-            background: linear-gradient(135deg, var(--accent), #22d3ee);
-            color: #fff;
-            border-color: transparent
+        @media (hover: hover) {
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+            }
         }
-        /* grid wrapper for slide animations */
+        /* Grid */
         
         .grid-wrap {
-            overflow: hidden
+            overflow: hidden;
         }
         
         .grid {
             display: grid;
-            gap: 14px;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease
-        }
-        /* 🔹 Завжди 5 колонок на ПК */
-        
-        @media (min-width: 1100px) {
-            .grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
-        
-        @media (max-width: 1099px) and (min-width: 681px) {
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 680px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
+            gap: 16px;
+            /* Автоматично підбирає кількість колонок залежно від ширини екрана */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            /* ЦЕЙ ПАРАМЕТР НЕ ДАЄ ДНЯМ РОЗТЯГУВАТИСЯ ПІД ВИСОТУ ВІВТОРКА: */
+            align-items: start;
+            transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
         }
         
         .card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px;
+            border-radius: 16px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            min-height: 120px;
             opacity: 0;
             transform: translateY(8px);
-            animation: cardIn .42s forwards;
+            animation: cardIn .4s forwards;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .04);
         }
         
         @keyframes cardIn {
@@ -167,90 +161,117 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
         }
         
         .day {
-            font-weight: 700
+            font-weight: 800;
+            font-size: 17px;
         }
         
         .dateSmall {
             font-size: 13px;
-            color: var(--muted)
+            color: var(--muted);
+            font-weight: 500;
         }
         
         .pair {
-            border-radius: 10px;
-            padding: 8px;
-            margin: 6px 0;
-            border: 1px solid rgba(255, 255, 255, .03);
-            background: transparent;
-            transition: transform .12s, border .18s, box-shadow .18s, opacity .12s
+            border-radius: 12px;
+            padding: 12px;
+            margin: 0 0 12px 0;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            transition: transform .12s, border .18s;
+        }
+        
+        .pair:last-child {
+            margin-bottom: 0;
+        }
+        
+        .pair h4 {
+            margin: 8px 0;
+            font-size: 14.5px;
+            line-height: 1.35;
         }
         
         .pair .meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
-            font-size: 13px
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
         }
+        /* Оновлені, м'якші бейджі */
         
         .chip {
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 999px
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 6px;
         }
         
         .lec {
-            background: var(--lec);
-            color: #fff
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--lec);
         }
         
         .prac {
-            background: var(--prac);
-            color: #000
+            background: rgba(250, 204, 21, 0.15);
+            color: #d97706;
         }
         
-        .textpair {
-            color: var(--muted);
-            font-style: italic
+        [data-theme="dark"] .prac {
+            color: var(--prac);
         }
-        /* highlights */
+        /* Підсвітка поточного/наступного заняття */
         
         .card.now {
-            position: relative;
-            border: 3px solid rgba(14, 165, 233, .9);
-            /* внутрішня обводка */
-            box-shadow: 0 0 12px rgba(14, 165, 233, .6);
-            /* світіння */
-            border-radius: 12px;
+            border: 2px solid var(--accent);
         }
         
         .pair.current {
-            border: 2px solid rgba(59, 130, 246, .95);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, .06);
+            border: 2px solid var(--accent);
+            background: rgba(14, 165, 233, 0.05);
         }
         
         .pair.next {
-            border: 2px solid rgba(245, 158, 11, .95);
-            box-shadow: 0 10px 30px rgba(245, 158, 11, .06);
-            position: relative;
-        }
-        
-        .pair.next .badge {
-            position: absolute;
-            right: 8px;
-            top: 8px;
-            padding: 3px 6px;
-            border-radius: 8px;
-            font-size: 12px;
-            background: rgba(255, 255, 255, .03);
-            color: var(--text)
+            border: 2px solid #f59e0b;
         }
         
         .pair.upcoming {
             border: 2px solid var(--green);
+        }
+        /* Оптимізація для вертикальних екранів */
+        
+        @media (max-width: 580px) {
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .topbar>div:first-child {
+                text-align: center;
+            }
+            .topbar>div:last-child {
+                justify-content: space-between;
+            }
+            .controls {
+                flex: 1;
+                justify-content: space-between;
+            }
+            .btn {
+                flex: 1;
+                text-align: center;
+                padding: 10px;
+            }
+            #toggleTheme {
+                flex: 0.3;
+            }
         }
     </style>
 </head>
@@ -260,24 +281,24 @@
         <div class="topbar" role="banner">
             <div>
                 <div class="brand">Розклад — 4 курс, група В</div>
-                <div class="muted">Двотижневий • Пн–Пт</div>
+                <div class="muted">Юридичний факультет</div>
             </div>
 
             <div style="display:flex;gap:10px;align-items:center">
-                <button id="toggleTheme" class="btn" title="Тема">Тема</button>
+                <button id="toggleTheme" class="btn" title="Тема">🌓</button>
                 <button id="todayBtn" class="btn" title="Сьогодні">Сьогодні</button>
 
                 <div class="controls" role="navigation" aria-label="Тиждень">
                     <button id="prevWeek" class="btn" aria-label="Попередній тиждень">◀</button>
                     <div style="min-width:110px;text-align:center"><strong id="weekLabel">Нижній</strong>
-                        <div id="weekRange" class="muted" style="font-size:12px"></div>
+                        <div id="weekRange" class="muted" style="font-size:12px; margin-top:2px;"></div>
                     </div>
                     <button id="nextWeek" class="btn" aria-label="Наступний тиждень">▶</button>
                 </div>
             </div>
         </div>
 
-        <div class="grid-wrap" style="margin-top:12px">
+        <div class="grid-wrap">
             <div id="weekGrid" class="grid cards" aria-live="polite"></div>
         </div>
     </div>

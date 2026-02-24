@@ -1,7 +1,7 @@
 // Конфігурація розкладу та даних
 const defaultData = {
     settings: {
-        baseTopWeekISO: '2026-02-16' // Дата будь-якого понеділка ВЕРХНЬОГО тижня для синхронізації
+        baseTopWeekISO: '2026-02-16'
     },
     times: [
         { start: '08:00', end: '09:20' }, // I
@@ -62,9 +62,8 @@ const defaultData = {
 const savedTheme = localStorage.getItem('schedule_theme') || 'dark';
 document.body.setAttribute('data-theme', savedTheme);
 
-// Основна логіка
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
-const DAY_NAMES = { mon: 'Пн', tue: 'Вт', wed: 'Ср', thu: 'Чт', fri: 'Пт' };
+const DAY_NAMES = { mon: 'Понеділок', tue: 'Вівторок', wed: 'Середа', thu: 'Четвер', fri: 'П\'ятниця' };
 
 function mondayOf(date) {
     const d = new Date(date);
@@ -120,27 +119,28 @@ function render(withStagger = true) {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const viewingCurrentWeek = mondayOf(today).getTime() === currentMonday.getTime();
 
+    let cardsRendered = 0;
+
     for (let i = 0; i < DAYS.length; i++) {
         const dKey = DAYS[i];
         const dayDate = new Date(currentMonday.getTime() + i * 86400000);
+
+        const pairs = getPairsForDay(dKey, dayDate).map((p, idx) => ({ p, idx })).filter(x => x.p);
+
+        // ГОЛОВНА ЗМІНА: Якщо пар немає, ми просто пропускаємо цей день і не малюємо картку
+        if (pairs.length === 0) {
+            continue;
+        }
+
         const card = document.createElement('div');
         card.className = 'card';
-        if (withStagger) card.style.animationDelay = `${i*0.06}s`;
+        if (withStagger) card.style.animationDelay = `${cardsRendered * 0.08}s`;
+        cardsRendered++;
 
         const head = document.createElement('div');
         head.className = 'head';
         head.innerHTML = `<div><div class="day">${DAY_NAMES[dKey]}</div><div class="dateSmall">${formatDateShort(dayDate)}</div></div>`;
         card.appendChild(head);
-
-        const pairs = getPairsForDay(dKey, dayDate).map((p, idx) => ({ p, idx })).filter(x => x.p);
-        if (pairs.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'muted';
-            empty.textContent = 'Вільний день 🎉';
-            card.appendChild(empty);
-            grid.appendChild(card);
-            continue;
-        }
 
         let currentIdx = -1,
             nextIdx = -1;
@@ -182,7 +182,7 @@ function render(withStagger = true) {
             }
 
             const chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
-            box.innerHTML = `<div class="meta"><div>${t.start||''}–${t.end||''}</div>${chip}</div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${p.place?(' • '+p.place):''}</div>`;
+            box.innerHTML = `<div class="meta"><div>${t.start||''} – ${t.end||''}</div>${chip}</div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${p.place?(' • '+p.place):''}</div>`;
 
             if (box.classList.contains('next')) {
                 const badge = document.createElement('div');
@@ -239,7 +239,7 @@ document.getElementById('toggleTheme').addEventListener('click', () => {
     const cur = document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
     const next = cur === 'light' ? 'dark' : 'light';
     document.body.setAttribute('data-theme', next);
-    localStorage.setItem('schedule_theme', next); // Збереження теми
+    localStorage.setItem('schedule_theme', next);
 });
 
 let startX = 0,

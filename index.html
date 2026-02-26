@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Розклад Університету</title>
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#89122F" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="icon.png" />
@@ -60,6 +60,47 @@
             --green: #059669;
             --glass-bg: rgba(6, 10, 8, 0.85);
         }
+        /* 🏫 Університетська тема (ДонНУ) - Зроблено з логотипу */
+        
+        [data-theme="university"] {
+            --bg: #F2EBE1;
+            /* Кремовий фон з логотипу */
+            --panel: #FFFFFF;
+            --text: #3D101C;
+            /* Темно-бордовий для тексту */
+            --muted: #8A646E;
+            --card: #FFFFFF;
+            --border: #D8C397;
+            /* Золотий з логотипу */
+            --accent: #89122F;
+            /* Бордовий (червоний) з логотипу */
+            --lec: #89122F;
+            /* Лекції - бордові */
+            --prac: #C5A059;
+            /* Практики - темно-золоті */
+            --green: #48bb78;
+            --glass-bg: rgba(242, 235, 225, 0.85);
+        }
+        /* 👸 Тема Рапунцель */
+        
+        [data-theme="rapunzel"] {
+            --bg: #F5EEFF;
+            /* Ніжно-бузковий */
+            --panel: #FFFFFF;
+            --text: #4A2B65;
+            /* Темно-фіолетовий текст */
+            --muted: #9D84B0;
+            --card: #FFFFFF;
+            --border: #E8D5F9;
+            --accent: #FFC000;
+            /* Золоте волосся */
+            --lec: #B784E6;
+            /* Бузкова сукня */
+            --prac: #FF9EBB;
+            /* Рожеві квіти */
+            --green: #4FD1C5;
+            --glass-bg: rgba(245, 238, 255, 0.85);
+        }
         
         [data-theme="slytherin"] .card.now {
             border-color: var(--accent);
@@ -80,6 +121,27 @@
         [data-theme="slytherin"] .prac {
             background: rgba(203, 213, 225, 0.1);
             color: var(--prac);
+        }
+        /* Стилізація активних карток для нових тем */
+        
+        [data-theme="university"] .card.now {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(137, 18, 47, 0.15);
+        }
+        
+        [data-theme="university"] .pair.current {
+            border-color: var(--accent);
+            background: rgba(137, 18, 47, 0.05);
+        }
+        
+        [data-theme="rapunzel"] .card.now {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 192, 0, 0.2);
+        }
+        
+        [data-theme="rapunzel"] .pair.current {
+            border-color: var(--accent);
+            background: rgba(255, 192, 0, 0.1);
         }
         
         * {
@@ -102,7 +164,6 @@
             margin: 0 auto;
             padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
-        /* 💎 Чиста верхня панель */
         
         .topbar {
             display: flex;
@@ -294,6 +355,11 @@
             color: var(--prac);
         }
         
+        [data-theme="university"] .prac,
+        [data-theme="rapunzel"] .prac {
+            color: var(--prac);
+        }
+        
         .timer-chip {
             background: rgba(14, 165, 233, 0.15);
             color: var(--accent);
@@ -313,16 +379,6 @@
             }
         }
         
-        .card.now {
-            border: 2px solid var(--accent);
-            box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
-        }
-        
-        .pair.current {
-            border: 2px solid var(--accent);
-            background: rgba(14, 165, 233, 0.05);
-        }
-        
         .place-link {
             cursor: pointer;
             transition: opacity 0.2s;
@@ -331,7 +387,6 @@
         .place-link:active {
             opacity: 0.6;
         }
-        /* Модальні вікна */
         
         .modal-overlay {
             position: fixed;
@@ -365,6 +420,8 @@
             width: 90%;
             transform: scale(0.95) translateY(10px);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            max-height: 90vh;
         }
         
         .modal-overlay.active .modal-content {
@@ -422,14 +479,13 @@
             display: flex;
             gap: 8px;
             margin-bottom: 8px;
+            flex-wrap: wrap;
         }
-        /* 📱 Оптимізація для телефонів (щоб кнопки не наїжджали) */
         
         @media (max-width: 680px) {
             .topbar {
                 padding: 12px 12px 16px 12px;
                 flex-wrap: wrap;
-                /* Дозволяємо переносити блоки на новий рядок */
             }
             .brand-text-full {
                 display: none;
@@ -437,7 +493,6 @@
             .brand {
                 font-size: 17px;
             }
-            /* Переносимо навігацію по тижнях вниз по центру */
             .top-center {
                 position: static;
                 transform: none;
@@ -452,11 +507,14 @@
             .topbar>div:last-child {
                 flex: 0 0 auto;
             }
+            .modal-content {
+                padding: 18px;
+            }
         }
     </style>
 </head>
 
-<body data-theme="dark">
+<body data-theme="university">
     <div class="wrap">
         <div class="topbar" role="banner">
             <div style="flex: 1;">
@@ -522,12 +580,19 @@
 
             <div class="menu-section">
                 <div class="menu-title">Вигляд розкладу</div>
+
+                <button class="btn theme-btn" data-set-theme="university" style="width: 100%; text-align: left; padding: 14px; background: #89122F; color: #F2EBE1; border-color: #D8C397; margin-bottom: 8px;">🏫 Університет (Базова)</button>
+
                 <div class="menu-row">
-                    <button class="btn theme-btn" data-set-theme="light" style="flex:1; background: #f8fafc; color: #0f172a;">Світла</button>
                     <button class="btn theme-btn" data-set-theme="dark" style="flex:1; background: #1e293b; color: #f8fafc;">Темна</button>
+                    <button class="btn theme-btn" data-set-theme="light" style="flex:1; background: #f8fafc; color: #0f172a;">Світла</button>
+                    <button class="btn theme-btn" data-set-theme="oled" style="flex:1; background: #000000; color: #ffffff;">🖤 OLED</button>
                 </div>
-                <button class="btn theme-btn" data-set-theme="oled" style="width: 100%; background: #000000; color: #ffffff; margin-bottom: 8px;">🖤 OLED (Чорна)</button>
-                <button class="btn theme-btn" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; width: 100%; background: #060a08; color: #e2e8e5; border-color: #10b981;">🐍 Факультет Слизерин</button>
+
+                <div class="menu-row">
+                    <button class="btn theme-btn" data-set-theme="rapunzel" style="width: 100%; text-align: left; padding: 14px; background: #F5EEFF; color: #4A2B65; border-color: #FFC000; margin-top: 8px;">👸 Стиль Рапунцель</button>
+                    <button class="btn theme-btn" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; width: 100%; text-align: left; padding: 14px; background: #060a08; color: #e2e8e5; border-color: #10b981; margin-top: 8px;">🐍 Факультет Слизерин</button>
+                </div>
             </div>
 
             <div class="menu-section">
@@ -536,11 +601,15 @@
             </div>
 
             <div class="menu-section">
+                <div class="menu-title">Зв'язок</div>
+                <a href="https://t.me/gymvlad" target="_blank" style="text-decoration: none;">
+                    <button class="btn" style="width: 100%; text-align: left; padding: 14px; background: rgba(14, 165, 233, 0.1); color: var(--accent); border-color: rgba(14, 165, 233, 0.3); margin-bottom: 8px;">✈️ Зв'язок зі мною (@gymvlad)</button>
+                </a>
+            </div>
+
+            <div class="menu-section">
                 <div class="menu-title">Система</div>
                 <button class="btn" id="forceUpdateBtn" style="width: 100%; text-align: left; padding: 14px; background: var(--bg); margin-bottom: 8px;">🔄 Оновити розклад (Очистити кеш)</button>
-                <a href="https://t.me/твій_юзернейм" target="_blank" style="text-decoration: none;">
-                    <button class="btn" style="width: 100%; text-align: left; padding: 14px; background: rgba(14, 165, 233, 0.1); color: var(--accent); border-color: rgba(14, 165, 233, 0.3);">✈️ Написати розробнику</button>
-                </a>
             </div>
 
             <button class="close-btn" id="closeSettingsBtn">Закрити</button>
@@ -566,7 +635,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=7"></script>
 </body>
 
 </html>

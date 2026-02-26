@@ -30,7 +30,8 @@ async function loadSchedule(course, group) {
 }
 
 // --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
-const savedTheme = localStorage.getItem('schedule_theme') || 'dark';
+// Тепер за замовчуванням вмикається тема Університету (university)
+const savedTheme = localStorage.getItem('schedule_theme') || 'university';
 document.body.setAttribute('data-theme', savedTheme);
 
 const savedCourse = localStorage.getItem('user_course');
@@ -364,7 +365,6 @@ if (prevWeekBtn) prevWeekBtn.addEventListener('click', () => changeWeekAnimated(
 const nextWeekBtn = document.getElementById('nextWeek');
 if (nextWeekBtn) nextWeekBtn.addEventListener('click', () => changeWeekAnimated(1));
 
-// ДОДАНО: Логіка для кнопки "Сьогодні"
 const todayBtn = document.getElementById('todayBtn');
 if (todayBtn) {
     todayBtn.addEventListener('click', () => {
@@ -457,7 +457,7 @@ if (brandElement) {
     });
 }
 
-// 🔗 ДОДАНО: Логіка QR-коду
+// 🔗 Логіка QR-коду
 const qrBtn = document.getElementById('qrBtn');
 const qrModal = document.getElementById('qrModal');
 const closeQr = document.getElementById('closeQr');
@@ -465,17 +465,14 @@ const qrImage = document.getElementById('qrImage');
 
 if (qrBtn && qrModal && closeQr && qrImage) {
     qrBtn.addEventListener('click', () => {
-        // Генеруємо лінк без параметрів версії
         const currentUrl = window.location.href.split('#')[0].split('?')[0];
         qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
 
-        // Закриваємо меню налаштувань
         if (settingsModal) {
             settingsModal.classList.remove('active');
             setTimeout(() => settingsModal.style.display = 'none', 300);
         }
 
-        // Відкриваємо QR-код
         setTimeout(() => {
             qrModal.style.display = 'flex';
             setTimeout(() => qrModal.classList.add('active'), 10);

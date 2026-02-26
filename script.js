@@ -10,7 +10,6 @@ async function loadSchedule(course, group) {
     const url = `./Group/${course}/${course}-${fileGroup}.json`;
 
     try {
-        // Спеціальний хвостик, щоб телефон ЗАВЖДИ качав свіжий розклад і не зависав
         const response = await fetch(`${url}?t=${new Date().getTime()}`);
         if (!response.ok) throw new Error('Файл не знайдено');
 
@@ -58,12 +57,15 @@ if (!savedCourse || !savedGroup) {
     loadSchedule(savedCourse, savedGroup);
 }
 
-// Кнопка входу (безпечний клік)
+// Кнопка входу 
 const saveOnboardingBtn = document.getElementById('saveOnboardingBtn');
 if (saveOnboardingBtn) {
     saveOnboardingBtn.addEventListener('click', () => {
-        const courseVal = document.getElementById('courseSelect') ? .value;
-        const groupVal = document.getElementById('groupSelect') ? .value;
+        const courseSelect = document.getElementById('courseSelect');
+        const groupSelect = document.getElementById('groupSelect');
+
+        const courseVal = courseSelect ? courseSelect.value : null;
+        const groupVal = groupSelect ? groupSelect.value : null;
 
         if (courseVal && groupVal) {
             localStorage.setItem('user_course', courseVal);
@@ -83,35 +85,47 @@ if (saveOnboardingBtn) {
 
 // --- ЦЕНТР УПРАВЛІННЯ (Налаштування) ---
 const settingsModal = document.getElementById('settingsModal');
+const openSettingsBtn = document.getElementById('openSettingsBtn');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const changeGroupBtn = document.getElementById('changeGroupBtn');
+const forceUpdateBtn = document.getElementById('forceUpdateBtn');
 
-document.getElementById('openSettingsBtn') ? .addEventListener('click', () => {
-    if (settingsModal) {
-        settingsModal.style.display = 'flex';
-        setTimeout(() => settingsModal.classList.add('active'), 10);
-    }
-});
-
-document.getElementById('closeSettingsBtn') ? .addEventListener('click', () => {
-    if (settingsModal) {
-        settingsModal.classList.remove('active');
-        setTimeout(() => settingsModal.style.display = 'none', 300);
-    }
-});
-
-document.getElementById('changeGroupBtn') ? .addEventListener('click', () => {
-    if (settingsModal) settingsModal.classList.remove('active');
-    setTimeout(() => {
-        if (settingsModal) settingsModal.style.display = 'none';
-        if (welcomeModal) {
-            welcomeModal.style.display = 'flex';
-            setTimeout(() => welcomeModal.classList.add('active'), 10);
+if (openSettingsBtn) {
+    openSettingsBtn.addEventListener('click', () => {
+        if (settingsModal) {
+            settingsModal.style.display = 'flex';
+            setTimeout(() => settingsModal.classList.add('active'), 10);
         }
-    }, 300);
-});
+    });
+}
 
-document.getElementById('forceUpdateBtn') ? .addEventListener('click', () => {
-    window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime();
-});
+if (closeSettingsBtn) {
+    closeSettingsBtn.addEventListener('click', () => {
+        if (settingsModal) {
+            settingsModal.classList.remove('active');
+            setTimeout(() => settingsModal.style.display = 'none', 300);
+        }
+    });
+}
+
+if (changeGroupBtn) {
+    changeGroupBtn.addEventListener('click', () => {
+        if (settingsModal) settingsModal.classList.remove('active');
+        setTimeout(() => {
+            if (settingsModal) settingsModal.style.display = 'none';
+            if (welcomeModal) {
+                welcomeModal.style.display = 'flex';
+                setTimeout(() => welcomeModal.classList.add('active'), 10);
+            }
+        }, 300);
+    });
+}
+
+if (forceUpdateBtn) {
+    forceUpdateBtn.addEventListener('click', () => {
+        window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime();
+    });
+}
 
 // --- ЛОГІКА ТЕМ ---
 const slytherinThemeBtn = document.getElementById('slytherinThemeBtn');
@@ -125,7 +139,11 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
         document.body.setAttribute('data-theme', newTheme);
         localStorage.setItem('schedule_theme', newTheme);
 
-        if (newTheme === 'slytherin') { setSlytherinTitle(); } else { updateHeaderTitle(localStorage.getItem('user_course') || '4', localStorage.getItem('user_group') || 'В'); }
+        if (newTheme === 'slytherin') {
+            setSlytherinTitle();
+        } else {
+            updateHeaderTitle(localStorage.getItem('user_course') || '4', localStorage.getItem('user_group') || 'В');
+        }
 
         if (settingsModal) {
             settingsModal.classList.remove('active');
@@ -340,8 +358,11 @@ function changeWeekAnimated(direction) {
     }, 320);
 }
 
-document.getElementById('prevWeek') ? .addEventListener('click', () => changeWeekAnimated(-1));
-document.getElementById('nextWeek') ? .addEventListener('click', () => changeWeekAnimated(1));
+const prevWeekBtn = document.getElementById('prevWeek');
+if (prevWeekBtn) prevWeekBtn.addEventListener('click', () => changeWeekAnimated(-1));
+
+const nextWeekBtn = document.getElementById('nextWeek');
+if (nextWeekBtn) nextWeekBtn.addEventListener('click', () => changeWeekAnimated(1));
 
 let startX = 0,
     startY = 0;
@@ -408,22 +429,24 @@ function setSlytherinTitle() {
 
 if (savedTheme === 'slytherin') { setSlytherinTitle(); }
 
-brandElement ? .addEventListener('click', () => {
-    clickCount++;
-    clearTimeout(clickTimer);
+if (brandElement) {
+    brandElement.addEventListener('click', () => {
+        clickCount++;
+        clearTimeout(clickTimer);
 
-    if (clickCount === 5) {
-        localStorage.setItem('slytherin_unlocked', 'true');
-        if (slytherinThemeBtn) slytherinThemeBtn.style.display = 'block';
+        if (clickCount === 5) {
+            localStorage.setItem('slytherin_unlocked', 'true');
+            if (slytherinThemeBtn) slytherinThemeBtn.style.display = 'block';
 
-        document.body.setAttribute('data-theme', 'slytherin');
-        localStorage.setItem('schedule_theme', 'slytherin');
-        setSlytherinTitle();
-        clickCount = 0;
-    } else {
-        clickTimer = setTimeout(() => { clickCount = 0; }, 400);
-    }
-});
+            document.body.setAttribute('data-theme', 'slytherin');
+            localStorage.setItem('schedule_theme', 'slytherin');
+            setSlytherinTitle();
+            clickCount = 0;
+        } else {
+            clickTimer = setTimeout(() => { clickCount = 0; }, 400);
+        }
+    });
+}
 
 // 🗺️ Логіка для Навігатора
 const mapsModal = document.getElementById('mapsModal');
@@ -440,13 +463,21 @@ document.addEventListener('click', (e) => {
     }
 });
 
-document.getElementById('closeMaps') ? .addEventListener('click', () => {
-    mapsModal.classList.remove('active');
-    setTimeout(() => mapsModal.style.display = 'none', 300);
-});
+const closeMapsBtn = document.getElementById('closeMaps');
+if (closeMapsBtn) {
+    closeMapsBtn.addEventListener('click', () => {
+        mapsModal.classList.remove('active');
+        setTimeout(() => mapsModal.style.display = 'none', 300);
+    });
+}
 
-document.getElementById('btnWaze') ? .addEventListener('click', () => { window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`; });
-document.getElementById('btnGoogleMaps') ? .addEventListener('click', () => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`; });
-document.getElementById('btnAppleMaps') ? .addEventListener('click', () => { window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`; });
+const btnWaze = document.getElementById('btnWaze');
+if (btnWaze) btnWaze.addEventListener('click', () => { window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`; });
+
+const btnGoogleMaps = document.getElementById('btnGoogleMaps');
+if (btnGoogleMaps) btnGoogleMaps.addEventListener('click', () => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`; });
+
+const btnAppleMaps = document.getElementById('btnAppleMaps');
+if (btnAppleMaps) btnAppleMaps.addEventListener('click', () => { window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`; });
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }

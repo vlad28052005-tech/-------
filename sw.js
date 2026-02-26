@@ -1,19 +1,31 @@
+const CACHE_NAME = 'rozklad-v3'; // Змінили назву кешу
+
 self.addEventListener('install', function(e) {
-    e.waitUntil(caches.open('rozklad-v2').then(function(cache) {
+    e.waitUntil(caches.open(CACHE_NAME).then(function(cache) {
         return cache.addAll(['./', './index.html', './script.js', './manifest.json', './icon.png']).catch(function() {});
     }));
     self.skipWaiting();
 });
 
+// Цей блок АВТОМАТИЧНО видаляє старі завислі файли
 self.addEventListener('activate', function(e) {
-    e.waitUntil(self.clients.claim());
+    e.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.map(function(cacheName) {
+                    if (cacheName !== CACHE_NAME) {
+                        return caches.delete(cacheName); // Видаляємо старий кеш
+                    }
+                })
+            );
+        }).then(() => self.clients.claim())
+    );
 });
 
+// Завжди спочатку йдемо в інтернет, а якщо його немає — беремо з кешу
 self.addEventListener('fetch', function(e) {
-    // Стратегія "Network First": завжди намагаємось взяти свіжі дані з мережі
     e.respondWith(
         fetch(e.request).catch(function() {
-            // Якщо інтернету немає, віддаємо збережений офлайн кеш
             return caches.match(e.request);
         })
     );

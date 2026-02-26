@@ -1,7 +1,6 @@
 // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
 let defaultData = null;
 
-// Словник: перекладаємо українські літери груп у назви файлів
 const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v" };
 
 // --- ФУНКЦІЯ ЗАВАНТАЖЕННЯ РОЗКЛАДУ ---
@@ -45,7 +44,7 @@ function updateHeaderTitle(course, group) {
     }
 }
 
-// --- ІНІЦІАЛІЗАЦІЯ (Перевірка при вході) ---
+// --- ІНІЦІАЛІЗАЦІЯ ---
 const welcomeModal = document.getElementById('welcomeModal');
 if (!savedCourse || !savedGroup) {
     if (welcomeModal) {
@@ -364,6 +363,15 @@ if (prevWeekBtn) prevWeekBtn.addEventListener('click', () => changeWeekAnimated(
 const nextWeekBtn = document.getElementById('nextWeek');
 if (nextWeekBtn) nextWeekBtn.addEventListener('click', () => changeWeekAnimated(1));
 
+// ДОДАНО: Логіка для кнопки "Сьогодні"
+const todayBtn = document.getElementById('todayBtn');
+if (todayBtn) {
+    todayBtn.addEventListener('click', () => {
+        currentMonday = mondayOf(new Date());
+        render(true);
+    });
+}
+
 let startX = 0,
     startY = 0;
 document.addEventListener('touchstart', e => {
@@ -445,6 +453,37 @@ if (brandElement) {
         } else {
             clickTimer = setTimeout(() => { clickCount = 0; }, 400);
         }
+    });
+}
+
+// 🔗 ДОДАНО: Логіка QR-коду
+const qrBtn = document.getElementById('qrBtn');
+const qrModal = document.getElementById('qrModal');
+const closeQr = document.getElementById('closeQr');
+const qrImage = document.getElementById('qrImage');
+
+if (qrBtn && qrModal && closeQr && qrImage) {
+    qrBtn.addEventListener('click', () => {
+        // Генеруємо лінк без параметрів версії
+        const currentUrl = window.location.href.split('#')[0].split('?')[0];
+        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+
+        // Закриваємо меню налаштувань
+        if (settingsModal) {
+            settingsModal.classList.remove('active');
+            setTimeout(() => settingsModal.style.display = 'none', 300);
+        }
+
+        // Відкриваємо QR-код
+        setTimeout(() => {
+            qrModal.style.display = 'flex';
+            setTimeout(() => qrModal.classList.add('active'), 10);
+        }, 300);
+    });
+
+    closeQr.addEventListener('click', () => {
+        qrModal.classList.remove('active');
+        setTimeout(() => qrModal.style.display = 'none', 300);
     });
 }
 

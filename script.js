@@ -30,19 +30,17 @@ async function loadSchedule(course, group) {
 }
 
 // --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
-// Тепер за замовчуванням вмикається тема Університету (university)
 const savedTheme = localStorage.getItem('schedule_theme') || 'university';
 document.body.setAttribute('data-theme', savedTheme);
 
 const savedCourse = localStorage.getItem('user_course');
 const savedGroup = localStorage.getItem('user_group');
 
+// ОНОВЛЕНО: Тепер ця функція повністю очищає заголовок (видаляє герб Слизерину)
 function updateHeaderTitle(course, group) {
-    const dCourse = document.getElementById('displayCourse');
-    const dGroup = document.getElementById('displayGroup');
-    if (dCourse && dGroup && course && group) {
-        dCourse.textContent = `${course} курс`;
-        dGroup.textContent = `Група ${group}`;
+    const brandElement = document.getElementById('secretTitle');
+    if (brandElement && course && group) {
+        brandElement.innerHTML = `<span id="displayCourse">${course} курс</span>, <span id="displayGroup">Група ${group}</span>`;
     }
 }
 

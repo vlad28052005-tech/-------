@@ -88,23 +88,23 @@
             --green: #4FD1C5;
             --glass-bg: rgba(245, 238, 255, 0.85);
         }
-        /* 🏎️ Справжня тема Ferrari (Червоний фон, Чорний карбон, Жовті акценти) */
+        /* 🏎️ Виправлена тема Ferrari (Фон під карбон, акценти Rosso Corsa) */
         
         [data-theme="ferrari"] {
-            --bg: #e32400;
-            /* Rosso Corsa Red */
-            --panel: #111111;
-            /* Carbon Black */
-            --text: #ffffff;
-            --muted: #a0a0a0;
-            --card: #111111;
-            --border: #2e2e2e;
-            --accent: #ffb800;
-            /* Giallo Modena Yellow */
+            --bg: #0f0f0f;
+            /* Темний асфальт / Карбон */
+            --panel: #1a1a1a;
+            --text: #f5f5f5;
+            --muted: #888888;
+            --card: #1a1a1a;
+            --border: #333333;
+            --accent: #e32400;
+            /* Rosso Corsa Red - акцент */
             --lec: #ff5252;
             --prac: #ffb800;
+            /* Giallo Yellow - практики */
             --green: #48bb78;
-            --glass-bg: rgba(227, 36, 0, 0.9);
+            --glass-bg: rgba(15, 15, 15, 0.85);
         }
         
         [data-theme="redbull"] {
@@ -120,6 +120,7 @@
             --green: #48bb78;
             --glass-bg: rgba(0, 16, 33, 0.85);
         }
+        /* Підсвітки поточних пар */
         
         [data-theme="slytherin"] .card.now {
             border-color: var(--accent);
@@ -161,23 +162,32 @@
             border-color: var(--accent);
             background: rgba(255, 192, 0, 0.1);
         }
+        /* Нова стилізація Ferrari */
         
         [data-theme="ferrari"] .card.now {
             border-color: var(--accent);
-            box-shadow: 0 0 25px rgba(255, 184, 0, 0.3);
+            box-shadow: 0 0 20px rgba(227, 36, 0, 0.25);
         }
         
         [data-theme="ferrari"] .pair.current {
             border-color: var(--accent);
-            background: rgba(255, 184, 0, 0.1);
+            background: rgba(227, 36, 0, 0.05);
         }
         
         [data-theme="ferrari"] .lec {
-            background: rgba(227, 36, 0, 0.2);
+            background: rgba(227, 36, 0, 0.15);
+            color: #ff5252;
         }
         
         [data-theme="ferrari"] .prac {
             background: rgba(255, 184, 0, 0.15);
+            color: #ffb800;
+        }
+        
+        [data-theme="ferrari"] .timer-chip {
+            background: rgba(227, 36, 0, 0.15);
+            color: #ff5252;
+            border: 1px solid rgba(227, 36, 0, 0.3);
         }
         
         [data-theme="redbull"] .card.now {
@@ -641,7 +651,7 @@
                     <button class="btn theme-btn" data-set-theme="oled" style="background: #000000; color: #ffffff; border-color: #333333;">🖤 OLED</button>
                     <button class="btn theme-btn" data-set-theme="rapunzel" style="background: #F5EEFF; color: #4A2B65; border-color: #FFC000;">👸 Рапунцель</button>
 
-                    <button class="btn theme-btn" data-set-theme="ferrari" style="background: #e32400; color: #ffffff; border-color: #ffb800;">🏎️ Ferrari</button>
+                    <button class="btn theme-btn" data-set-theme="ferrari" style="background: #111111; color: #ffffff; border-color: #e32400;">🏎️ Ferrari</button>
                     <button class="btn theme-btn" data-set-theme="redbull" style="background: #001021; color: #ffffff; border-color: #ffc200;">🐂 Red Bull</button>
 
                     <button class="btn theme-btn full-width" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; background: #060a08; color: #e2e8e5; border-color: #10b981;">🐍 Факультет Слизерин</button>
@@ -678,7 +688,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=10"></script>
+    <script src="script.js?v=11"></script>
 </body>
 
 </html>

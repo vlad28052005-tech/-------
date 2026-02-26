@@ -60,47 +60,69 @@
             --green: #059669;
             --glass-bg: rgba(6, 10, 8, 0.85);
         }
-        /* 🏫 Університетська тема (ДонНУ) - Зроблено з логотипу */
         
         [data-theme="university"] {
             --bg: #F2EBE1;
-            /* Кремовий фон з логотипу */
             --panel: #FFFFFF;
             --text: #3D101C;
-            /* Темно-бордовий для тексту */
             --muted: #8A646E;
             --card: #FFFFFF;
             --border: #D8C397;
-            /* Золотий з логотипу */
             --accent: #89122F;
-            /* Бордовий (червоний) з логотипу */
             --lec: #89122F;
-            /* Лекції - бордові */
             --prac: #C5A059;
-            /* Практики - темно-золоті */
             --green: #48bb78;
             --glass-bg: rgba(242, 235, 225, 0.85);
         }
-        /* 👸 Тема Рапунцель */
         
         [data-theme="rapunzel"] {
             --bg: #F5EEFF;
-            /* Ніжно-бузковий */
             --panel: #FFFFFF;
             --text: #4A2B65;
-            /* Темно-фіолетовий текст */
             --muted: #9D84B0;
             --card: #FFFFFF;
             --border: #E8D5F9;
             --accent: #FFC000;
-            /* Золоте волосся */
             --lec: #B784E6;
-            /* Бузкова сукня */
             --prac: #FF9EBB;
-            /* Рожеві квіти */
             --green: #4FD1C5;
             --glass-bg: rgba(245, 238, 255, 0.85);
         }
+        /* 🏎️ Тема Ferrari F1 (Rosso Corsa & Giallo) */
+        
+        [data-theme="ferrari"] {
+            --bg: #111111;
+            --panel: #1a1a1a;
+            --text: #ffffff;
+            --muted: #a0a0a0;
+            --card: #1a1a1a;
+            --border: #2e2e2e;
+            --accent: #e32400;
+            /* Ferrari Red */
+            --lec: #e32400;
+            --prac: #ffb800;
+            /* Ferrari Yellow */
+            --green: #48bb78;
+            --glass-bg: rgba(17, 17, 17, 0.85);
+        }
+        /* 🐂 Тема Red Bull Racing (Navy, Red & Yellow) */
+        
+        [data-theme="redbull"] {
+            --bg: #001021;
+            --panel: #001a30;
+            --text: #ffffff;
+            --muted: #8ea4b8;
+            --card: #001a30;
+            --border: #002b4d;
+            --accent: #ffc200;
+            /* RB Yellow */
+            --lec: #ed2939;
+            /* RB Red */
+            --prac: #ffc200;
+            --green: #48bb78;
+            --glass-bg: rgba(0, 16, 33, 0.85);
+        }
+        /* Налаштування підсвітки для всіх кастомних тем */
         
         [data-theme="slytherin"] .card.now {
             border-color: var(--accent);
@@ -122,7 +144,6 @@
             background: rgba(203, 213, 225, 0.1);
             color: var(--prac);
         }
-        /* Стилізація активних карток для нових тем */
         
         [data-theme="university"] .card.now {
             border-color: var(--accent);
@@ -142,6 +163,42 @@
         [data-theme="rapunzel"] .pair.current {
             border-color: var(--accent);
             background: rgba(255, 192, 0, 0.1);
+        }
+        
+        [data-theme="ferrari"] .card.now {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(227, 36, 0, 0.15);
+        }
+        
+        [data-theme="ferrari"] .pair.current {
+            border-color: var(--accent);
+            background: rgba(227, 36, 0, 0.08);
+        }
+        
+        [data-theme="ferrari"] .lec {
+            background: rgba(227, 36, 0, 0.15);
+        }
+        
+        [data-theme="ferrari"] .prac {
+            background: rgba(255, 184, 0, 0.15);
+        }
+        
+        [data-theme="redbull"] .card.now {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 194, 0, 0.15);
+        }
+        
+        [data-theme="redbull"] .pair.current {
+            border-color: var(--lec);
+            background: rgba(237, 41, 57, 0.08);
+        }
+        
+        [data-theme="redbull"] .lec {
+            background: rgba(237, 41, 57, 0.15);
+        }
+        
+        [data-theme="redbull"] .prac {
+            background: rgba(255, 194, 0, 0.15);
         }
         
         * {
@@ -474,12 +531,17 @@
             margin-bottom: 12px;
             letter-spacing: 0.5px;
         }
+        /* 🎛️ НОВА СІТКА ДЛЯ ТЕМ (Компактна) */
         
-        .menu-row {
-            display: flex;
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-bottom: 8px;
-            flex-wrap: wrap;
+        }
+        
+        .theme-grid .full-width {
+            grid-column: span 2;
         }
         
         @media (max-width: 680px) {
@@ -581,17 +643,19 @@
             <div class="menu-section">
                 <div class="menu-title">Вигляд розкладу</div>
 
-                <button class="btn theme-btn" data-set-theme="university" style="width: 100%; text-align: left; padding: 14px; background: #89122F; color: #F2EBE1; border-color: #D8C397; margin-bottom: 8px;">🏫 Університет (Базова)</button>
+                <div class="theme-grid">
+                    <button class="btn theme-btn full-width" data-set-theme="university" style="background: #89122F; color: #F2EBE1; border-color: #D8C397;">🏫 Університет (Базова)</button>
 
-                <div class="menu-row">
-                    <button class="btn theme-btn" data-set-theme="dark" style="flex:1; background: #1e293b; color: #f8fafc;">Темна</button>
-                    <button class="btn theme-btn" data-set-theme="light" style="flex:1; background: #f8fafc; color: #0f172a;">Світла</button>
-                    <button class="btn theme-btn" data-set-theme="oled" style="flex:1; background: #000000; color: #ffffff;">🖤 OLED</button>
-                </div>
+                    <button class="btn theme-btn" data-set-theme="dark" style="background: #1e293b; color: #f8fafc;">🌙 Темна</button>
+                    <button class="btn theme-btn" data-set-theme="light" style="background: #f8fafc; color: #0f172a;">☀️ Світла</button>
 
-                <div class="menu-row">
-                    <button class="btn theme-btn" data-set-theme="rapunzel" style="width: 100%; text-align: left; padding: 14px; background: #F5EEFF; color: #4A2B65; border-color: #FFC000; margin-top: 8px;">👸 Стиль Рапунцель</button>
-                    <button class="btn theme-btn" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; width: 100%; text-align: left; padding: 14px; background: #060a08; color: #e2e8e5; border-color: #10b981; margin-top: 8px;">🐍 Факультет Слизерин</button>
+                    <button class="btn theme-btn" data-set-theme="oled" style="background: #000000; color: #ffffff; border-color: #333333;">🖤 OLED</button>
+                    <button class="btn theme-btn" data-set-theme="rapunzel" style="background: #F5EEFF; color: #4A2B65; border-color: #FFC000;">👸 Рапунцель</button>
+
+                    <button class="btn theme-btn" data-set-theme="ferrari" style="background: #111111; color: #ffffff; border-color: #e32400;">🏎️ Ferrari</button>
+                    <button class="btn theme-btn" data-set-theme="redbull" style="background: #001021; color: #ffffff; border-color: #ffc200;">🐂 Red Bull</button>
+
+                    <button class="btn theme-btn full-width" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; background: #060a08; color: #e2e8e5; border-color: #10b981;">🐍 Факультет Слизерин</button>
                 </div>
             </div>
 
@@ -635,7 +699,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 
 </html>

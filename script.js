@@ -4,7 +4,6 @@ let defaultData = null;
 // Словник: перекладаємо українські літери груп у назви файлів
 const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
 
-// --- ФУНКЦІЯ ЗАВАНТАЖЕННЯ РОЗКЛАДУ ---
 async function loadSchedule(course, group) {
     const fileGroup = groupMap[group] || "v";
     const url = `./Group/${course}/${course}-${fileGroup}.json`;
@@ -36,7 +35,6 @@ document.body.setAttribute('data-theme', savedTheme);
 const savedCourse = localStorage.getItem('user_course');
 const savedGroup = localStorage.getItem('user_group');
 
-// Функція повністю очищає заголовок (видаляє герб Слизерину)
 function updateHeaderTitle(course, group) {
     const brandElement = document.getElementById('secretTitle');
     if (brandElement && course && group) {
@@ -56,7 +54,6 @@ if (!savedCourse || !savedGroup) {
     loadSchedule(savedCourse, savedGroup);
 }
 
-// Кнопка входу 
 const saveOnboardingBtn = document.getElementById('saveOnboardingBtn');
 if (saveOnboardingBtn) {
     saveOnboardingBtn.addEventListener('click', () => {
@@ -82,7 +79,7 @@ if (saveOnboardingBtn) {
     });
 }
 
-// --- ЦЕНТР УПРАВЛІННЯ (Налаштування) ---
+// --- ЦЕНТР УПРАВЛІННЯ ---
 const settingsModal = document.getElementById('settingsModal');
 const openSettingsBtn = document.getElementById('openSettingsBtn');
 const closeSettingsBtn = document.getElementById('closeSettingsBtn');
@@ -268,9 +265,15 @@ function render(withStagger = true) {
 
             let chipTimerHtml = '';
 
+            // 🔥 ДОДАНО: Кнопка рулетки
+            let rouletteBtnHtml = `<div class="roulette-trigger" title="Студентська рулетка">🎲</div>`;
+
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 const en = parseHMToDate(t.end, now);
-                if (en && now > en) box.classList.add('past');
+                if (en && now > en) {
+                    box.classList.add('past');
+                    rouletteBtnHtml = ''; // Прибираємо рулетку з минулих пар
+                }
                 if (idx === currentIdx) {
                     box.classList.add('current');
                     chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
@@ -282,11 +285,10 @@ function render(withStagger = true) {
             let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
             chip += chipTimerHtml;
 
-            // Карти видалені, тому текст аудиторії тепер звичайний (не клікабельний)
             let placeHtml = '';
             if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
-            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
+            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div style="display:flex;align-items:center;">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
             if (box.classList.contains('next')) {
                 const badge = document.createElement('div');
@@ -481,6 +483,66 @@ if (qrBtn && qrModal && closeQr && qrImage) {
     closeQr.addEventListener('click', () => {
         qrModal.classList.remove('active');
         setTimeout(() => qrModal.style.display = 'none', 300);
+    });
+}
+
+// 🎲 ЛОГІКА РУЛЕТКИ
+const rouletteModal = document.getElementById('rouletteModal');
+const closeRoulette = document.getElementById('closeRoulette');
+const spinRouletteBtn = document.getElementById('spinRouletteBtn');
+const rouletteIcon = document.getElementById('rouletteIcon');
+const rouletteResult = document.getElementById('rouletteResult');
+const rouletteDesc = document.getElementById('rouletteDesc');
+
+const roulettePhrases = [
+    "Йди, бо не допустять до сесії 😤",
+    "Спи, це всього лиш лекція 😴",
+    "Спитай у старости, чи є відмітка 📱",
+    "Сьогодні можна пропустити 🤫",
+    "Збирайся, кава сама себе не вип'є ☕",
+    "Йди, можливо сьогодні щось цікаве 🤓",
+    "5 хвилин ганьби і ти в ліжку 🛌"
+];
+
+// Відкриття рулетки при кліку на кубик
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.roulette-trigger');
+    if (btn && rouletteModal) {
+        rouletteResult.textContent = "Йти чи не йти?";
+        rouletteDesc.textContent = "Натисни кнопку, щоб доля вирішила за тебе";
+        rouletteIcon.textContent = "🎲";
+
+        rouletteModal.style.display = 'flex';
+        setTimeout(() => rouletteModal.classList.add('active'), 10);
+    }
+});
+
+if (closeRoulette) {
+    closeRoulette.addEventListener('click', () => {
+        rouletteModal.classList.remove('active');
+        setTimeout(() => rouletteModal.style.display = 'none', 300);
+    });
+}
+
+if (spinRouletteBtn) {
+    spinRouletteBtn.addEventListener('click', () => {
+        // Запуск анімації обертання
+        rouletteIcon.classList.remove('spin-anim');
+        void rouletteIcon.offsetWidth; // Скидання анімації
+        rouletteIcon.classList.add('spin-anim');
+
+        rouletteResult.textContent = "Доля думає...";
+        rouletteDesc.textContent = "Крутимо кубик...";
+
+        // Результат через 0.6 секунди (коли закінчиться анімація)
+        setTimeout(() => {
+            const random = Math.floor(Math.random() * roulettePhrases.length);
+            rouletteResult.textContent = roulettePhrases[random];
+            rouletteDesc.textContent = "Рішення прийнято!";
+
+            const emojiList = ["🎲", "🎱", "🎯", "🔮"];
+            rouletteIcon.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
+        }, 600);
     });
 }
 

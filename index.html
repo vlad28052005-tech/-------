@@ -57,7 +57,6 @@
             --accent: #10b981;
             --lec: #10b981;
             --prac: #cbd5e1;
-            --green: #059669;
             --glass-bg: rgba(6, 10, 8, 0.85);
         }
         
@@ -71,7 +70,6 @@
             --accent: #89122F;
             --lec: #89122F;
             --prac: #C5A059;
-            --green: #48bb78;
             --glass-bg: rgba(242, 235, 225, 0.85);
         }
         
@@ -85,26 +83,19 @@
             --accent: #FFC000;
             --lec: #B784E6;
             --prac: #FF9EBB;
-            --green: #4FD1C5;
             --glass-bg: rgba(245, 238, 255, 0.85);
         }
-        /* 🏎️ Тема Ferrari: Червоні картки (болід) та чорні пари (карбоновий кокпіт) */
         
         [data-theme="ferrari"] {
             --bg: #111111;
-            /* Темний асфальт */
             --panel: #d62300;
-            /* Червоні меню і кнопки */
             --text: #ffffff;
             --muted: #e0e0e0;
             --card: #e32400;
-            /* Яскраво-червоні картки днів */
             --border: #ff3300;
             --accent: #ffb800;
-            /* Жовті акценти */
             --lec: #ffb800;
             --prac: #ffffff;
-            --green: #48bb78;
             --glass-bg: rgba(17, 17, 17, 0.85);
         }
         
@@ -118,10 +109,8 @@
             --accent: #ffc200;
             --lec: #ed2939;
             --prac: #ffc200;
-            --green: #48bb78;
             --glass-bg: rgba(0, 16, 33, 0.85);
         }
-        /* Підсвітки поточних пар */
         
         [data-theme="slytherin"] .card.now {
             border-color: var(--accent);
@@ -163,7 +152,6 @@
             border-color: var(--accent);
             background: rgba(255, 192, 0, 0.1);
         }
-        /* 🔥 Спеціальні стилі для Ferrari (Чорні пари всередині червоної картки) */
         
         [data-theme="ferrari"] .card.now {
             border-color: #ffb800;
@@ -174,7 +162,6 @@
             background: #151515;
             border-color: #2a2a2a;
         }
-        /* Чорні блоки пар */
         
         [data-theme="ferrari"] .pair.current {
             border-color: #ffb800;
@@ -225,7 +212,7 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+            font: 14px/1.4 system-ui, -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
             transition: background 0.4s ease, color 0.4s ease;
         }
@@ -449,6 +436,42 @@
                 opacity: 1;
             }
         }
+        /* 🎲 Стилі рулетки */
+        
+        .roulette-trigger {
+            cursor: pointer;
+            font-size: 15px;
+            padding: 4px 6px;
+            margin-left: 6px;
+            background: rgba(148, 163, 184, 0.15);
+            border-radius: 8px;
+            transition: transform 0.2s, background 0.2s;
+            user-select: none;
+        }
+        
+        .roulette-trigger:active {
+            transform: scale(0.8);
+        }
+        
+        .roulette-trigger:hover {
+            background: rgba(148, 163, 184, 0.3);
+        }
+        
+        .spin-anim {
+            animation: spin 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(360deg) scale(1.3);
+            }
+            100% {
+                transform: rotate(720deg) scale(1);
+            }
+        }
         
         .modal-overlay {
             position: fixed;
@@ -615,24 +638,8 @@
         <div class="modal-content" style="text-align: center; padding: 32px 24px;">
             <h2 style="margin:0 0 8px 0; font-size: 24px; font-weight: 800;">Привіт! 👋</h2>
             <p class="muted" style="margin: 0 0 24px 0; font-size: 15px;">Обери свій курс та групу, щоб завантажити правильний розклад.</p>
-
-            <select id="courseSelect" class="custom-select">
-                <option value="" disabled selected>🎓 Оберіть курс</option>
-                <option value="1">1 курс</option>
-                <option value="2">2 курс</option>
-                <option value="3">3 курс</option>
-                <option value="4">4 курс</option>
-            </select>
-
-            <select id="groupSelect" class="custom-select">
-                <option value="" disabled selected>👥 Оберіть групу</option>
-                <option value="А">Група А</option>
-                <option value="Б">Група Б</option>
-                <option value="В">Група В</option>
-                <option value="Г">Група Г</option>
-                <option value="Д">Група Д</option>
-            </select>
-
+            <select id="courseSelect" class="custom-select"><option value="1">1 курс</option><option value="2">2 курс</option><option value="3">3 курс</option><option value="4" selected>4 курс</option></select>
+            <select id="groupSelect" class="custom-select"><option value="А">Група А</option><option value="Б">Група Б</option><option value="В" selected>Група В</option><option value="Г">Група Г</option><option value="Д">Група Д</option></select>
             <button class="btn" id="saveOnboardingBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 16px; font-size: 17px; margin-top: 12px;">Почати навчання 🚀</button>
         </div>
     </div>
@@ -648,19 +655,14 @@
 
             <div class="menu-section">
                 <div class="menu-title">Вигляд розкладу</div>
-
                 <div class="theme-grid">
                     <button class="btn theme-btn full-width" data-set-theme="university" style="background: #89122F; color: #F2EBE1; border-color: #D8C397;">🏫 Університет (Базова)</button>
-
                     <button class="btn theme-btn" data-set-theme="dark" style="background: #1e293b; color: #f8fafc;">🌙 Темна</button>
                     <button class="btn theme-btn" data-set-theme="light" style="background: #f8fafc; color: #0f172a;">☀️ Світла</button>
-
                     <button class="btn theme-btn" data-set-theme="oled" style="background: #000000; color: #ffffff; border-color: #333333;">🖤 OLED</button>
                     <button class="btn theme-btn" data-set-theme="rapunzel" style="background: #F5EEFF; color: #4A2B65; border-color: #FFC000;">👸 Рапунцель</button>
-
                     <button class="btn theme-btn" data-set-theme="ferrari" style="background: #e32400; color: #ffffff; border-color: #ffb800;">🏎️ Ferrari</button>
                     <button class="btn theme-btn" data-set-theme="redbull" style="background: #001021; color: #ffffff; border-color: #ffc200;">🐂 Red Bull</button>
-
                     <button class="btn theme-btn full-width" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; background: #060a08; color: #e2e8e5; border-color: #10b981;">🐍 Факультет Слизерин</button>
                 </div>
             </div>
@@ -695,7 +697,17 @@
         </div>
     </div>
 
-    <script src="script.js?v=12"></script>
+    <div class="modal-overlay" id="rouletteModal">
+        <div class="modal-content" style="text-align: center; padding: 40px 24px;">
+            <div id="rouletteIcon" style="font-size: 64px; margin-bottom: 16px;">🎲</div>
+            <h3 id="rouletteResult" style="margin:0 0 12px 0; font-size: 22px; font-weight: 800;">Йти чи не йти?</h3>
+            <p id="rouletteDesc" class="muted" style="margin-bottom: 24px; font-size: 15px;">Натисни кнопку, щоб доля вирішила за тебе</p>
+            <button class="btn" id="spinRouletteBtn" style="width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; font-size: 16px; font-weight: 800;">Крутити кубик 🎲</button>
+            <button class="close-btn" id="closeRoulette" style="margin-top: 12px; background: transparent; border: none;">Закрити</button>
+        </div>
+    </div>
+
+    <script src="script.js?v=13"></script>
 </body>
 
 </html>

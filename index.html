@@ -88,19 +88,23 @@
             --green: #4FD1C5;
             --glass-bg: rgba(245, 238, 255, 0.85);
         }
+        /* 🏎️ Справжня тема Ferrari (Червоний фон, Чорний карбон, Жовті акценти) */
         
         [data-theme="ferrari"] {
-            --bg: #111111;
-            --panel: #1a1a1a;
+            --bg: #e32400;
+            /* Rosso Corsa Red */
+            --panel: #111111;
+            /* Carbon Black */
             --text: #ffffff;
             --muted: #a0a0a0;
-            --card: #1a1a1a;
+            --card: #111111;
             --border: #2e2e2e;
-            --accent: #e32400;
-            --lec: #e32400;
+            --accent: #ffb800;
+            /* Giallo Modena Yellow */
+            --lec: #ff5252;
             --prac: #ffb800;
             --green: #48bb78;
-            --glass-bg: rgba(17, 17, 17, 0.85);
+            --glass-bg: rgba(227, 36, 0, 0.9);
         }
         
         [data-theme="redbull"] {
@@ -160,16 +164,16 @@
         
         [data-theme="ferrari"] .card.now {
             border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(227, 36, 0, 0.15);
+            box-shadow: 0 0 25px rgba(255, 184, 0, 0.3);
         }
         
         [data-theme="ferrari"] .pair.current {
             border-color: var(--accent);
-            background: rgba(227, 36, 0, 0.08);
+            background: rgba(255, 184, 0, 0.1);
         }
         
         [data-theme="ferrari"] .lec {
-            background: rgba(227, 36, 0, 0.15);
+            background: rgba(227, 36, 0, 0.2);
         }
         
         [data-theme="ferrari"] .prac {
@@ -429,15 +433,6 @@
             }
         }
         
-        .place-link {
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        
-        .place-link:active {
-            opacity: 0.6;
-        }
-        
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -646,7 +641,7 @@
                     <button class="btn theme-btn" data-set-theme="oled" style="background: #000000; color: #ffffff; border-color: #333333;">🖤 OLED</button>
                     <button class="btn theme-btn" data-set-theme="rapunzel" style="background: #F5EEFF; color: #4A2B65; border-color: #FFC000;">👸 Рапунцель</button>
 
-                    <button class="btn theme-btn" data-set-theme="ferrari" style="background: #111111; color: #ffffff; border-color: #e32400;">🏎️ Ferrari</button>
+                    <button class="btn theme-btn" data-set-theme="ferrari" style="background: #e32400; color: #ffffff; border-color: #ffb800;">🏎️ Ferrari</button>
                     <button class="btn theme-btn" data-set-theme="redbull" style="background: #001021; color: #ffffff; border-color: #ffc200;">🐂 Red Bull</button>
 
                     <button class="btn theme-btn full-width" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; background: #060a08; color: #e2e8e5; border-color: #10b981;">🐍 Факультет Слизерин</button>
@@ -683,17 +678,7 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="mapsModal">
-        <div class="modal-content" style="max-width: 300px; padding: 24px;">
-            <h3 style="margin:0 0 20px 0; font-size: 19px; font-weight: 800;">Маршрут до корпусу</h3>
-            <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3);" id="btnWaze">🚗 Waze</button>
-            <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);" id="btnGoogleMaps">🗺️ Google Maps</button>
-            <button class="btn" style="width:100%; margin-bottom:20px; font-size:16px; padding:14px;" id="btnAppleMaps">🍎 Apple Maps</button>
-            <button class="close-btn" id="closeMaps">Скасувати</button>
-        </div>
-    </div>
-
-    <script src="script.js?v=9"></script>
+    <script src="script.js?v=10"></script>
 </body>
 
 </html>

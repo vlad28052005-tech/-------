@@ -36,7 +36,7 @@ document.body.setAttribute('data-theme', savedTheme);
 const savedCourse = localStorage.getItem('user_course');
 const savedGroup = localStorage.getItem('user_group');
 
-// ОНОВЛЕНО: Тепер ця функція повністю очищає заголовок (видаляє герб Слизерину)
+// Функція повністю очищає заголовок (видаляє герб Слизерину)
 function updateHeaderTitle(course, group) {
     const brandElement = document.getElementById('secretTitle');
     if (brandElement && course && group) {
@@ -282,8 +282,9 @@ function render(withStagger = true) {
             let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
             chip += chipTimerHtml;
 
+            // Карти видалені, тому текст аудиторії тепер звичайний (не клікабельний)
             let placeHtml = '';
-            if (p.place) { placeHtml = ` • <span class="place-link" data-place="${p.place}">${p.place}</span>`; }
+            if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
             box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
@@ -482,37 +483,5 @@ if (qrBtn && qrModal && closeQr && qrImage) {
         setTimeout(() => qrModal.style.display = 'none', 300);
     });
 }
-
-// 🗺️ Логіка для Навігатора
-const mapsModal = document.getElementById('mapsModal');
-let currentDestination = '';
-
-document.addEventListener('click', (e) => {
-    const placeLink = e.target.closest('.place-link');
-    if (placeLink && mapsModal) {
-        let rawPlace = placeLink.getAttribute('data-place');
-        if (rawPlace.includes('Грушевського, 2')) { currentDestination = 'вулиця Грушевського, 2, Вінниця'; } else if (rawPlace.includes('Соборна, 48')) { currentDestination = 'вулиця Соборна, 48, Вінниця'; } else { currentDestination = rawPlace + ', Вінниця'; }
-
-        mapsModal.style.display = 'flex';
-        setTimeout(() => mapsModal.classList.add('active'), 10);
-    }
-});
-
-const closeMapsBtn = document.getElementById('closeMaps');
-if (closeMapsBtn) {
-    closeMapsBtn.addEventListener('click', () => {
-        mapsModal.classList.remove('active');
-        setTimeout(() => mapsModal.style.display = 'none', 300);
-    });
-}
-
-const btnWaze = document.getElementById('btnWaze');
-if (btnWaze) btnWaze.addEventListener('click', () => { window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`; });
-
-const btnGoogleMaps = document.getElementById('btnGoogleMaps');
-if (btnGoogleMaps) btnGoogleMaps.addEventListener('click', () => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`; });
-
-const btnAppleMaps = document.getElementById('btnAppleMaps');
-if (btnAppleMaps) btnAppleMaps.addEventListener('click', () => { window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`; });
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }

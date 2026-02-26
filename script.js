@@ -1,37 +1,36 @@
-// Тепер розклад буде завантажуватися з JSON файлів
+// --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
 let defaultData = null;
 
 // Словник: перекладаємо українські літери груп у назви файлів
-const groupMap = {
-    "А": "a",
-    "Б": "b",
-    "В": "v"
-};
+const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v" };
 
 // --- ФУНКЦІЯ ЗАВАНТАЖЕННЯ РОЗКЛАДУ ---
 async function loadSchedule(course, group) {
-    const fileGroup = groupMap[group];
+    const fileGroup = groupMap[group] || "v";
     const url = `./Group/${course}/${course}-${fileGroup}.json`;
 
     try {
-        const response = await fetch(url);
+        // Спеціальний хвостик, щоб телефон ЗАВЖДИ качав свіжий розклад і не зависав
+        const response = await fetch(`${url}?t=${new Date().getTime()}`);
         if (!response.ok) throw new Error('Файл не знайдено');
 
         defaultData = await response.json();
-        render(true); // Малюємо сітку тільки після того, як скачали розклад
+        render(true);
     } catch (error) {
-        console.error("Помилка:", error);
-        // Якщо файлу для групи ще немає, показуємо красиве повідомлення
-        document.getElementById('weekGrid').innerHTML = `
-            <div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);">
-                <h3 style="margin-bottom: 8px;">Ой, розкладу ще немає 😢</h3>
-                <p>Розклад для ${course} курсу, групи ${group} ще не додано в базу.</p>
-            </div>
-        `;
+        console.error("Помилка завантаження розкладу:", error);
+        const grid = document.getElementById('weekGrid');
+        if (grid) {
+            grid.innerHTML = `
+                <div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 8px;">Ой, розкладу ще немає 😢</h3>
+                    <p>Розклад для ${course} курсу, групи ${group} ще не додано в базу.</p>
+                </div>
+            `;
+        }
     }
 }
 
-// --- СИСТЕМА ЗБЕРЕЖЕННЯ (Тема, Курс, Група) ---
+// --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'dark';
 document.body.setAttribute('data-theme', savedTheme);
 
@@ -39,72 +38,84 @@ const savedCourse = localStorage.getItem('user_course');
 const savedGroup = localStorage.getItem('user_group');
 
 function updateHeaderTitle(course, group) {
-    if (course && group) {
-        document.getElementById('displayCourse').textContent = `${course} курс`;
-        document.getElementById('displayGroup').textContent = `Група ${group}`;
+    const dCourse = document.getElementById('displayCourse');
+    const dGroup = document.getElementById('displayGroup');
+    if (dCourse && dGroup && course && group) {
+        dCourse.textContent = `${course} курс`;
+        dGroup.textContent = `Група ${group}`;
     }
 }
 
-// Перевірка при вході
+// --- ІНІЦІАЛІЗАЦІЯ (Перевірка при вході) ---
+const welcomeModal = document.getElementById('welcomeModal');
 if (!savedCourse || !savedGroup) {
-    document.getElementById('welcomeModal').style.display = 'flex';
-    setTimeout(() => document.getElementById('welcomeModal').classList.add('active'), 10);
+    if (welcomeModal) {
+        welcomeModal.style.display = 'flex';
+        setTimeout(() => welcomeModal.classList.add('active'), 10);
+    }
 } else {
     updateHeaderTitle(savedCourse, savedGroup);
-    loadSchedule(savedCourse, savedGroup); // Відразу качаємо потрібний файл!
+    loadSchedule(savedCourse, savedGroup);
 }
 
-document.getElementById('saveOnboardingBtn').addEventListener('click', () => {
-    const courseVal = document.getElementById('courseSelect').value;
-    const groupVal = document.getElementById('groupSelect').value;
+// Кнопка входу (безпечний клік)
+const saveOnboardingBtn = document.getElementById('saveOnboardingBtn');
+if (saveOnboardingBtn) {
+    saveOnboardingBtn.addEventListener('click', () => {
+        const courseVal = document.getElementById('courseSelect') ? .value;
+        const groupVal = document.getElementById('groupSelect') ? .value;
 
-    if (courseVal && groupVal) {
-        localStorage.setItem('user_course', courseVal);
-        localStorage.setItem('user_group', groupVal);
-        updateHeaderTitle(courseVal, groupVal);
+        if (courseVal && groupVal) {
+            localStorage.setItem('user_course', courseVal);
+            localStorage.setItem('user_group', groupVal);
+            updateHeaderTitle(courseVal, groupVal);
 
-        const modal = document.getElementById('welcomeModal');
-        modal.classList.remove('active');
-        setTimeout(() => modal.style.display = 'none', 300);
-
-        loadSchedule(courseVal, groupVal); // Завантажуємо розклад після вибору
-    } else {
-        alert("Будь ласка, оберіть курс та групу!");
-    }
-});
-
+            if (welcomeModal) {
+                welcomeModal.classList.remove('active');
+                setTimeout(() => welcomeModal.style.display = 'none', 300);
+            }
+            loadSchedule(courseVal, groupVal);
+        } else {
+            alert("Будь ласка, оберіть курс та групу!");
+        }
+    });
+}
 
 // --- ЦЕНТР УПРАВЛІННЯ (Налаштування) ---
 const settingsModal = document.getElementById('settingsModal');
 
-document.getElementById('openSettingsBtn').addEventListener('click', () => {
-    settingsModal.style.display = 'flex';
-    setTimeout(() => settingsModal.classList.add('active'), 10);
+document.getElementById('openSettingsBtn') ? .addEventListener('click', () => {
+    if (settingsModal) {
+        settingsModal.style.display = 'flex';
+        setTimeout(() => settingsModal.classList.add('active'), 10);
+    }
 });
 
-document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-    settingsModal.classList.remove('active');
-    setTimeout(() => settingsModal.style.display = 'none', 300);
+document.getElementById('closeSettingsBtn') ? .addEventListener('click', () => {
+    if (settingsModal) {
+        settingsModal.classList.remove('active');
+        setTimeout(() => settingsModal.style.display = 'none', 300);
+    }
 });
 
-// Зміна групи з налаштувань
-document.getElementById('changeGroupBtn').addEventListener('click', () => {
-    settingsModal.classList.remove('active');
+document.getElementById('changeGroupBtn') ? .addEventListener('click', () => {
+    if (settingsModal) settingsModal.classList.remove('active');
     setTimeout(() => {
-        settingsModal.style.display = 'none';
-        document.getElementById('welcomeModal').style.display = 'flex';
-        setTimeout(() => document.getElementById('welcomeModal').classList.add('active'), 10);
+        if (settingsModal) settingsModal.style.display = 'none';
+        if (welcomeModal) {
+            welcomeModal.style.display = 'flex';
+            setTimeout(() => welcomeModal.classList.add('active'), 10);
+        }
     }, 300);
 });
 
-// Кнопка оновлення (Скидання кешу)
-document.getElementById('forceUpdateBtn').addEventListener('click', () => {
+document.getElementById('forceUpdateBtn') ? .addEventListener('click', () => {
     window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime();
 });
 
 // --- ЛОГІКА ТЕМ ---
 const slytherinThemeBtn = document.getElementById('slytherinThemeBtn');
-if (localStorage.getItem('slytherin_unlocked') === 'true' || savedTheme === 'slytherin') {
+if (slytherinThemeBtn && (localStorage.getItem('slytherin_unlocked') === 'true' || savedTheme === 'slytherin')) {
     slytherinThemeBtn.style.display = 'block';
 }
 
@@ -116,11 +127,12 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
 
         if (newTheme === 'slytherin') { setSlytherinTitle(); } else { updateHeaderTitle(localStorage.getItem('user_course') || '4', localStorage.getItem('user_group') || 'В'); }
 
-        settingsModal.classList.remove('active');
-        setTimeout(() => settingsModal.style.display = 'none', 300);
+        if (settingsModal) {
+            settingsModal.classList.remove('active');
+            setTimeout(() => settingsModal.style.display = 'none', 300);
+        }
     });
 });
-
 
 // --- ОСНОВНИЙ ДВИЖОК РОЗКЛАДУ ---
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
@@ -145,19 +157,19 @@ function parseHMToDate(hm, baseDate) {
 }
 
 function isTopWeek(date) {
-    if (!defaultData) return true;
+    if (!defaultData || !defaultData.settings) return true;
     const base = mondayOf(new Date(defaultData.settings.baseTopWeekISO || '2026-02-16'));
     const cur = mondayOf(date);
     return Math.round((cur - base) / (7 * 24 * 3600 * 1000)) % 2 === 0;
 }
 
 function getTimeFor(dayKey, pairIndex) {
-    if (!defaultData) return { start: '', end: '' };
+    if (!defaultData || !defaultData.times) return { start: '', end: '' };
     return defaultData.times[pairIndex] || { start: '', end: '' };
 }
 
 function getPairsForDay(dayKey, date) {
-    if (!defaultData) return [];
+    if (!defaultData || !defaultData.template) return [];
     const week = isTopWeek(date) ? 'top' : 'bottom';
     return (defaultData.template[week] && defaultData.template[week][dayKey]) ? defaultData.template[week][dayKey].slice() : [];
 }
@@ -170,14 +182,17 @@ let countdownInterval = null;
 function formatDateShort(d) { return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }); }
 
 function updateWeekLabel() {
-    document.getElementById('weekLabel').textContent = isTopWeek(currentMonday) ? 'Верхній' : 'Нижній';
+    const lbl = document.getElementById('weekLabel');
+    const rng = document.getElementById('weekRange');
+    if (lbl) lbl.textContent = isTopWeek(currentMonday) ? 'Верхній' : 'Нижній';
+
     const start = new Date(currentMonday);
     const end = new Date(currentMonday.getTime() + 4 * 86400000);
-    document.getElementById('weekRange').textContent = `${formatDateShort(start)} — ${formatDateShort(end)}`;
+    if (rng) rng.textContent = `${formatDateShort(start)} — ${formatDateShort(end)}`;
 }
 
 function render(withStagger = true) {
-    if (!defaultData) return; // Нічого не малюємо, поки не скачаємо файл
+    if (!defaultData || !grid) return;
 
     grid.innerHTML = '';
     updateWeekLabel();
@@ -305,7 +320,7 @@ function startLiveTimer() {
 let animating = false;
 
 function changeWeekAnimated(direction) {
-    if (animating) return;
+    if (animating || !grid) return;
     animating = true;
     grid.style.transition = `transform 360ms ease, opacity 300ms ease`;
     grid.style.transform = `translateX(${direction>0?'-40px':'40px'})`;
@@ -325,8 +340,8 @@ function changeWeekAnimated(direction) {
     }, 320);
 }
 
-document.getElementById('prevWeek').addEventListener('click', () => changeWeekAnimated(-1));
-document.getElementById('nextWeek').addEventListener('click', () => changeWeekAnimated(1));
+document.getElementById('prevWeek') ? .addEventListener('click', () => changeWeekAnimated(-1));
+document.getElementById('nextWeek') ? .addEventListener('click', () => changeWeekAnimated(1));
 
 let startX = 0,
     startY = 0;
@@ -382,19 +397,20 @@ let clickCount = 0;
 let clickTimer = null;
 
 function setSlytherinTitle() {
+    if (!brandElement) return;
     const crestUrl = './Slytherin.png';
-    brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest">Факультет Слизерин`;
+    brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest"><span id="displayCourse">${localStorage.getItem('user_course')||'4'} курс</span>, <span id="displayGroup">Група ${localStorage.getItem('user_group')||'В'}</span>`;
 }
 
 if (savedTheme === 'slytherin') { setSlytherinTitle(); }
 
-brandElement.addEventListener('click', () => {
+brandElement ? .addEventListener('click', () => {
     clickCount++;
     clearTimeout(clickTimer);
 
     if (clickCount === 5) {
         localStorage.setItem('slytherin_unlocked', 'true');
-        document.getElementById('slytherinThemeBtn').style.display = 'block';
+        if (slytherinThemeBtn) slytherinThemeBtn.style.display = 'block';
 
         document.body.setAttribute('data-theme', 'slytherin');
         localStorage.setItem('schedule_theme', 'slytherin');
@@ -411,7 +427,7 @@ let currentDestination = '';
 
 document.addEventListener('click', (e) => {
     const placeLink = e.target.closest('.place-link');
-    if (placeLink) {
+    if (placeLink && mapsModal) {
         let rawPlace = placeLink.getAttribute('data-place');
         if (rawPlace.includes('Грушевського, 2')) { currentDestination = 'вулиця Грушевського, 2, Вінниця'; } else if (rawPlace.includes('Соборна, 48')) { currentDestination = 'вулиця Соборна, 48, Вінниця'; } else { currentDestination = rawPlace + ', Вінниця'; }
 
@@ -420,15 +436,13 @@ document.addEventListener('click', (e) => {
     }
 });
 
-document.getElementById('closeMaps').addEventListener('click', () => {
+document.getElementById('closeMaps') ? .addEventListener('click', () => {
     mapsModal.classList.remove('active');
     setTimeout(() => mapsModal.style.display = 'none', 300);
 });
 
-document.getElementById('btnWaze').addEventListener('click', () => { window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`; });
-document.getElementById('btnGoogleMaps').addEventListener('click', () => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`; });
-document.getElementById('btnAppleMaps').addEventListener('click', () => { window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`; });
-
-// Видалили старий render(true) звідси, тепер він викликається ТІЛЬКИ коли дані завантажено
+document.getElementById('btnWaze') ? .addEventListener('click', () => { window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`; });
+document.getElementById('btnGoogleMaps') ? .addEventListener('click', () => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`; });
+document.getElementById('btnAppleMaps') ? .addEventListener('click', () => { window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`; });
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }

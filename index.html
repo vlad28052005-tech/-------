@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Розклад — 4 курс, група В</title>
+    <title>Розклад Університету</title>
     <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -35,7 +35,6 @@
             --border: #e2e8f0;
             --glass-bg: rgba(248, 250, 252, 0.8);
         }
-        /* 🖤 OLED-тема */
         
         [data-theme="oled"] {
             --bg: #000000;
@@ -47,7 +46,6 @@
             --accent: #38bdf8;
             --glass-bg: rgba(0, 0, 0, 0.8);
         }
-        /* 🪄 Тема Слизерину */
         
         [data-theme="slytherin"] {
             --bg: #060a08;
@@ -104,14 +102,13 @@
             margin: 0 auto;
             padding: 12px env(safe-area-inset-right, 12px) env(safe-area-inset-bottom, 30px) env(safe-area-inset-left, 12px);
         }
-        /* 💎 Glassmorphism (базовий для браузера) */
+        /* 💎 Чиста верхня панель */
         
         .topbar {
             display: flex;
             gap: 12px;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
             position: sticky;
             top: 0;
             background: var(--glass-bg);
@@ -123,7 +120,6 @@
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             transition: background 0.4s ease, border-color 0.4s ease;
         }
-        /* 🔥 БРОНЕБІЙНИЙ ФІКС ДЛЯ iOS: Спрацює ТІЛЬКИ коли розклад відкритий як додаток на екрані! */
         
         @media all and (display-mode: standalone) {
             .topbar {
@@ -180,10 +176,17 @@
             opacity: 0.8;
         }
         
-        @media (hover: hover) {
-            .btn:hover {
-                background: var(--border);
-            }
+        .icon-btn {
+            padding: 8px 12px;
+            font-size: 18px;
+            border-radius: 12px;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        
+        .icon-btn:hover {
+            background: var(--panel);
+            border: 1px solid var(--border);
         }
         
         .grid-wrap {
@@ -211,10 +214,6 @@
             animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
             transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
         }
         
         @keyframes cardIn {
@@ -252,10 +251,6 @@
             background: var(--bg);
             border: 1px solid transparent;
             transition: transform .2s ease, border .2s ease, background 0.4s ease;
-        }
-        
-        .pair:last-child {
-            margin-bottom: 0;
         }
         
         .pair h4 {
@@ -328,15 +323,6 @@
             background: rgba(14, 165, 233, 0.05);
         }
         
-        .pair.next {
-            border: 2px solid #f59e0b;
-        }
-        
-        .pair.upcoming {
-            border: 2px solid var(--green);
-        }
-        /* Приховане клікабельне посилання на карту */
-        
         .place-link {
             cursor: pointer;
             transition: opacity 0.2s;
@@ -345,7 +331,7 @@
         .place-link:active {
             opacity: 0.6;
         }
-        /* Модальні вікна */
+        /* Модальні вікна (Меню та Привітання) */
         
         .modal-overlay {
             position: fixed;
@@ -371,12 +357,11 @@
         
         .modal-content {
             background: var(--panel);
-            padding: 28px;
+            padding: 24px;
             border-radius: 28px;
-            text-align: center;
             border: 1px solid var(--border);
             box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
-            max-width: 340px;
+            max-width: 360px;
             width: 90%;
             transform: scale(0.95) translateY(10px);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -384,14 +369,6 @@
         
         .modal-overlay.active .modal-content {
             transform: scale(1) translateY(0);
-        }
-        
-        .modal-content img {
-            width: 100%;
-            border-radius: 16px;
-            margin: 20px 0;
-            background: white;
-            padding: 16px;
         }
         
         .close-btn {
@@ -405,41 +382,63 @@
             font-weight: 700;
             font-size: 16px;
             transition: background 0.2s;
+            margin-top: 16px;
         }
         
         .close-btn:active {
             background: var(--border);
         }
+        /* Стилі для селектів вибору групи */
+        
+        .custom-select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .menu-section {
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .menu-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        .menu-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
         
         @media (max-width: 680px) {
             .topbar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 14px;
-                padding: 16px;
-            }
-            .topbar>div:first-child {
-                text-align: center;
-            }
-            .topbar>div:last-child {
-                justify-content: space-between;
-                flex-wrap: wrap;
-            }
-            .controls {
-                flex: 1;
-                justify-content: space-between;
-                min-width: 100%;
-            }
-            .btn {
-                flex: 1;
-                text-align: center;
                 padding: 12px;
             }
-            #toggleTheme {
-                flex: 0.2;
+            .top-center {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
             }
-            #qrBtn {
-                flex: 0.2;
+            .brand-text-full {
+                display: none;
+            }
+            .brand {
+                font-size: 16px;
             }
         }
     </style>
@@ -448,23 +447,23 @@
 <body data-theme="dark">
     <div class="wrap">
         <div class="topbar" role="banner">
-            <div>
-                <div class="brand" id="secretTitle" title="Спробуй тапнути 5 разів...">Розклад — 4 курс, група В</div>
-                <div class="muted">Юридичний факультет</div>
+            <div style="flex: 1;">
+                <div class="brand" id="secretTitle" title="Спробуй тапнути 5 разів...">
+                    <span id="displayCourse">4 курс</span>, <span id="displayGroup">Група В</span>
+                </div>
+                <div class="muted brand-text-full">Юридичний факультет</div>
             </div>
 
-            <div style="display:flex;gap:8px;align-items:center">
-                <button id="toggleTheme" class="btn" title="Змінити тему">🌓</button>
-                <button id="qrBtn" class="btn" title="Поділитися QR-кодом">🔗 QR</button>
-                <button id="todayBtn" class="btn" title="Сьогодні">Сьогодні</button>
-
-                <div class="controls" role="navigation" aria-label="Тиждень">
-                    <button id="prevWeek" class="btn" aria-label="Попередній тиждень">◀</button>
-                    <div style="min-width:110px;text-align:center"><strong id="weekLabel">Нижній</strong>
-                        <div id="weekRange" class="muted" style="font-size:12.5px; margin-top:3px;"></div>
-                    </div>
-                    <button id="nextWeek" class="btn" aria-label="Наступний тиждень">▶</button>
+            <div class="controls top-center" role="navigation">
+                <button id="prevWeek" class="btn" style="padding: 6px 12px;">◀</button>
+                <div style="min-width:100px;text-align:center"><strong id="weekLabel">Нижній</strong>
+                    <div id="weekRange" class="muted" style="font-size:11.5px; margin-top:2px;"></div>
                 </div>
+                <button id="nextWeek" class="btn" style="padding: 6px 12px;">▶</button>
+            </div>
+
+            <div style="flex: 1; display: flex; justify-content: flex-end;">
+                <button id="openSettingsBtn" class="btn icon-btn" title="Налаштування">⚙️</button>
             </div>
         </div>
 
@@ -473,19 +472,65 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="qrModal">
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-content" style="text-align: center; padding: 32px 24px;">
+            <h2 style="margin:0 0 8px 0; font-size: 24px; font-weight: 800;">Привіт! 👋</h2>
+            <p class="muted" style="margin: 0 0 24px 0; font-size: 15px;">Обери свій курс та групу, щоб завантажити правильний розклад.</p>
+
+            <select id="courseSelect" class="custom-select">
+                <option value="" disabled selected>🎓 Оберіть курс</option>
+                <option value="1">1 курс</option>
+                <option value="2">2 курс</option>
+                <option value="3">3 курс</option>
+                <option value="4">4 курс</option>
+            </select>
+
+            <select id="groupSelect" class="custom-select">
+                <option value="" disabled selected>👥 Оберіть групу</option>
+                <option value="А">Група А</option>
+                <option value="Б">Група Б</option>
+                <option value="В">Група В</option>
+            </select>
+
+            <button class="btn" id="saveOnboardingBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 16px; font-size: 17px; margin-top: 12px;">Почати навчання 🚀</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settingsModal">
         <div class="modal-content">
-            <h3 style="margin:0 0 8px 0; font-size: 20px; font-weight: 800;">Розклад пар</h3>
-            <div class="muted">Наведіть камеру на цей код</div>
-            <img id="qrImage" src="" alt="QR Code">
-            <button class="close-btn" id="closeQr">Закрити</button>
+            <h3 style="margin:0 0 24px 0; font-size: 20px; font-weight: 800; text-align: left;">Центр управління</h3>
+
+            <div class="menu-section">
+                <div class="menu-title">Твоє навчання</div>
+                <button class="btn" id="changeGroupBtn" style="width: 100%; text-align: left; padding: 14px; background: var(--bg);">🔄 Змінити курс або групу</button>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-title">Вигляд розкладу</div>
+                <div class="menu-row">
+                    <button class="btn theme-btn" data-set-theme="light" style="flex:1; background: #f8fafc; color: #0f172a;">Світла</button>
+                    <button class="btn theme-btn" data-set-theme="dark" style="flex:1; background: #1e293b; color: #f8fafc;">Темна</button>
+                </div>
+                <button class="btn theme-btn" data-set-theme="oled" style="width: 100%; background: #000000; color: #ffffff; margin-bottom: 8px;">🖤 OLED (Чорна)</button>
+                <button class="btn theme-btn" id="slytherinThemeBtn" data-set-theme="slytherin" style="display: none; width: 100%; background: #060a08; color: #e2e8e5; border-color: #10b981;">🐍 Факультет Слизерин</button>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-title">Система</div>
+                <button class="btn" id="forceUpdateBtn" style="width: 100%; text-align: left; padding: 14px; background: var(--bg); margin-bottom: 8px;">🔄 Оновити розклад (Очистити кеш)</button>
+                <a href="https://t.me/твій_юзернейм" target="_blank" style="text-decoration: none;">
+                    <button class="btn" style="width: 100%; text-align: left; padding: 14px; background: rgba(14, 165, 233, 0.1); color: var(--accent); border-color: rgba(14, 165, 233, 0.3);">✈️ Написати розробнику (Помилка)</button>
+                </a>
+            </div>
+
+            <button class="close-btn" id="closeSettingsBtn">Закрити</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="mapsModal">
         <div class="modal-content" style="max-width: 300px; padding: 24px;">
             <h3 style="margin:0 0 20px 0; font-size: 19px; font-weight: 800;">Маршрут до корпусу</h3>
-            <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3);" id="btnWaze">🚗 Відкрити в Waze</button>
+            <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3);" id="btnWaze">🚗 Waze</button>
             <button class="btn" style="width:100%; margin-bottom:12px; font-size:16px; padding:14px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);" id="btnGoogleMaps">🗺️ Google Maps</button>
             <button class="btn" style="width:100%; margin-bottom:20px; font-size:16px; padding:14px;" id="btnAppleMaps">🍎 Apple Maps</button>
             <button class="close-btn" id="closeMaps">Скасувати</button>

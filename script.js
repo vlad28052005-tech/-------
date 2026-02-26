@@ -1,65 +1,128 @@
-// Конфігурація розкладу та даних
-const defaultData = {
-    settings: { baseTopWeekISO: '2026-02-16' },
-    times: [
-        { start: '08:00', end: '09:20' },
-        { start: '09:30', end: '10:50' },
-        { start: '11:00', end: '12:20' },
-        { start: '12:40', end: '14:00' },
-        { start: '14:10', end: '15:30' },
-        { start: '15:40', end: '17:00' },
-        { start: '17:10', end: '18:30' }
-    ],
-    template: {
-        top: {
-            mon: [],
-            tue: [null, null,
-                { type: 'lec', title: 'Міжнародний захист прав людини', teacher: 'Турченко О. Г.', place: '304, Грушевського, 2' },
-                { type: 'prac', title: 'Господарсько-процесуальне право (з 03.03)', teacher: 'Бахур О. В.', place: '303, Грушевського, 2' },
-                { type: 'lec', title: 'Фінансове право (з 03.03)', teacher: 'Петренко Г. О.', place: '305, Грушевського, 2' }
-            ],
-            wed: [
-                { type: 'lec', title: 'Фінансове право (01.04.2026)', teacher: 'Петренко Г. О.', place: '305, Грушевського, 2' },
-                { type: 'lec', title: 'Господарське право', teacher: 'Калаченкова К. О.', place: '313, Грушевського, 2' },
-                { type: 'lec', title: 'Господарсько-процесуальне право', teacher: 'Бахур О. В.', place: '313, Грушевського, 2' },
-                { type: 'lec', title: 'Аграрне право', teacher: 'Калаченкова К. О.', place: '313, Грушевського, 2' }
-            ],
-            thu: [],
-            fri: [null, null, null,
-                { type: 'lec', title: 'Криміналістика (загальна; тактика)', teacher: 'Кавун С. М.', place: '304, Грушевського, 2' },
-                { type: 'prac', title: 'Аграрне право', teacher: 'Калаченкова К. О.', place: '121, Грушевського, 2' }
-            ]
-        },
-        bottom: {
-            mon: [],
-            tue: [null,
-                { type: 'prac', title: 'Міжнародний захист прав людини', teacher: 'Турченко О. Г.', place: '315, Грушевського, 2' },
-                { type: 'lec', title: 'Міжнародний захист прав людини', teacher: 'Турченко О. Г.', place: '304, Грушевського, 2' },
-                { type: 'prac', title: 'Господарсько-процесуальне право', teacher: 'Бахур О. В.', place: '303, Грушевського, 2' },
-                { type: 'lec', title: 'Фінансове право', teacher: 'Петренко Г. О.', place: '305, Грушевського, 2' },
-                { type: 'prac', title: 'Господарське право', teacher: 'Калаченкова К. О.', place: '121, Грушевського, 2' }
-            ],
-            wed: [null,
-                { type: 'lec', title: 'Господарське право', teacher: 'Калаченкова К. О.', place: '313, Грушевського, 2' },
-                { type: 'lec', title: 'Господарсько-процесуальне право', teacher: 'Бахур О. В.', place: '313, Грушевського, 2' },
-                { type: 'lec', title: 'Аграрне право', teacher: 'Калаченкова К. О.', place: '313, Грушевського, 2' },
-                { type: 'prac', title: 'Фінансове право', teacher: 'Петренко Г. О.', place: '121, Грушевського, 2' }
-            ],
-            thu: [],
-            fri: [
-                null, // 1 пара
-                { type: 'prac', title: 'Криміналістика (Лаб)', teacher: 'Кавун С. М.', place: '116, Грушевського, 2' }, // 2 пара
-                null, // 3 пара
-                { type: 'lec', title: 'Криміналістика (загальна; тактика)', teacher: 'Кавун С. М.', place: '304, Грушевського, 2' }, // 4 пара
-                { type: 'prac', title: 'Аграрне право', teacher: 'Калаченкова К. О.', place: '121, Грушевського, 2' } // 5 пара
-            ]
-        }
-    }
+// Тепер розклад буде завантажуватися з JSON файлів
+let defaultData = null;
+
+// Словник: перекладаємо українські літери груп у назви файлів
+const groupMap = {
+    "А": "a",
+    "Б": "b",
+    "В": "v"
 };
 
+// --- ФУНКЦІЯ ЗАВАНТАЖЕННЯ РОЗКЛАДУ ---
+async function loadSchedule(course, group) {
+    const fileGroup = groupMap[group];
+    const url = `./Group/${course}/${course}-${fileGroup}.json`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Файл не знайдено');
+
+        defaultData = await response.json();
+        render(true); // Малюємо сітку тільки після того, як скачали розклад
+    } catch (error) {
+        console.error("Помилка:", error);
+        // Якщо файлу для групи ще немає, показуємо красиве повідомлення
+        document.getElementById('weekGrid').innerHTML = `
+            <div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);">
+                <h3 style="margin-bottom: 8px;">Ой, розкладу ще немає 😢</h3>
+                <p>Розклад для ${course} курсу, групи ${group} ще не додано в базу.</p>
+            </div>
+        `;
+    }
+}
+
+// --- СИСТЕМА ЗБЕРЕЖЕННЯ (Тема, Курс, Група) ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'dark';
 document.body.setAttribute('data-theme', savedTheme);
 
+const savedCourse = localStorage.getItem('user_course');
+const savedGroup = localStorage.getItem('user_group');
+
+function updateHeaderTitle(course, group) {
+    if (course && group) {
+        document.getElementById('displayCourse').textContent = `${course} курс`;
+        document.getElementById('displayGroup').textContent = `Група ${group}`;
+    }
+}
+
+// Перевірка при вході
+if (!savedCourse || !savedGroup) {
+    document.getElementById('welcomeModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('welcomeModal').classList.add('active'), 10);
+} else {
+    updateHeaderTitle(savedCourse, savedGroup);
+    loadSchedule(savedCourse, savedGroup); // Відразу качаємо потрібний файл!
+}
+
+document.getElementById('saveOnboardingBtn').addEventListener('click', () => {
+    const courseVal = document.getElementById('courseSelect').value;
+    const groupVal = document.getElementById('groupSelect').value;
+
+    if (courseVal && groupVal) {
+        localStorage.setItem('user_course', courseVal);
+        localStorage.setItem('user_group', groupVal);
+        updateHeaderTitle(courseVal, groupVal);
+
+        const modal = document.getElementById('welcomeModal');
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+
+        loadSchedule(courseVal, groupVal); // Завантажуємо розклад після вибору
+    } else {
+        alert("Будь ласка, оберіть курс та групу!");
+    }
+});
+
+
+// --- ЦЕНТР УПРАВЛІННЯ (Налаштування) ---
+const settingsModal = document.getElementById('settingsModal');
+
+document.getElementById('openSettingsBtn').addEventListener('click', () => {
+    settingsModal.style.display = 'flex';
+    setTimeout(() => settingsModal.classList.add('active'), 10);
+});
+
+document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+    setTimeout(() => settingsModal.style.display = 'none', 300);
+});
+
+// Зміна групи з налаштувань
+document.getElementById('changeGroupBtn').addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+    setTimeout(() => {
+        settingsModal.style.display = 'none';
+        document.getElementById('welcomeModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('welcomeModal').classList.add('active'), 10);
+    }, 300);
+});
+
+// Кнопка оновлення (Скидання кешу)
+document.getElementById('forceUpdateBtn').addEventListener('click', () => {
+    window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime();
+});
+
+// --- ЛОГІКА ТЕМ ---
+const slytherinThemeBtn = document.getElementById('slytherinThemeBtn');
+if (localStorage.getItem('slytherin_unlocked') === 'true' || savedTheme === 'slytherin') {
+    slytherinThemeBtn.style.display = 'block';
+}
+
+document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const newTheme = e.target.getAttribute('data-set-theme');
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('schedule_theme', newTheme);
+
+        if (newTheme === 'slytherin') { setSlytherinTitle(); } else { updateHeaderTitle(localStorage.getItem('user_course') || '4', localStorage.getItem('user_group') || 'В'); }
+
+        settingsModal.classList.remove('active');
+        setTimeout(() => settingsModal.style.display = 'none', 300);
+    });
+});
+
+
+// --- ОСНОВНИЙ ДВИЖОК РОЗКЛАДУ ---
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
 const DAY_NAMES = { mon: 'Понеділок', tue: 'Вівторок', wed: 'Середа', thu: 'Четвер', fri: 'П\'ятниця' };
 
@@ -82,14 +145,19 @@ function parseHMToDate(hm, baseDate) {
 }
 
 function isTopWeek(date) {
+    if (!defaultData) return true;
     const base = mondayOf(new Date(defaultData.settings.baseTopWeekISO || '2026-02-16'));
     const cur = mondayOf(date);
     return Math.round((cur - base) / (7 * 24 * 3600 * 1000)) % 2 === 0;
 }
 
-function getTimeFor(dayKey, pairIndex) { return defaultData.times[pairIndex] || { start: '', end: '' }; }
+function getTimeFor(dayKey, pairIndex) {
+    if (!defaultData) return { start: '', end: '' };
+    return defaultData.times[pairIndex] || { start: '', end: '' };
+}
 
 function getPairsForDay(dayKey, date) {
+    if (!defaultData) return [];
     const week = isTopWeek(date) ? 'top' : 'bottom';
     return (defaultData.template[week] && defaultData.template[week][dayKey]) ? defaultData.template[week][dayKey].slice() : [];
 }
@@ -109,6 +177,8 @@ function updateWeekLabel() {
 }
 
 function render(withStagger = true) {
+    if (!defaultData) return; // Нічого не малюємо, поки не скачаємо файл
+
     grid.innerHTML = '';
     updateWeekLabel();
     const now = new Date();
@@ -180,18 +250,14 @@ function render(withStagger = true) {
             let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
             chip += chipTimerHtml;
 
-            // Звичайний текст аудиторії, але зберігаємо його клікабельність
             let placeHtml = '';
-            if (p.place) {
-                placeHtml = ` • <span class="place-link" data-place="${p.place}">${p.place}</span>`;
-            }
+            if (p.place) { placeHtml = ` • <span class="place-link" data-place="${p.place}">${p.place}</span>`; }
 
             box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div>${t.start||''} – ${t.end||''}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
             if (box.classList.contains('next')) {
                 const badge = document.createElement('div');
                 badge.className = 'badge';
-                badge.textContent = '';
                 box.appendChild(badge);
             }
             card.appendChild(box);
@@ -218,10 +284,8 @@ function startLiveTimer() {
     countdownInterval = setInterval(() => {
         const timerEl = document.getElementById('liveTimer');
         if (!timerEl) return;
-
         const endStr = timerEl.getAttribute('data-end');
         if (!endStr) return;
-
         const now = new Date();
         const end = parseHMToDate(endStr, now);
 
@@ -263,34 +327,12 @@ function changeWeekAnimated(direction) {
 
 document.getElementById('prevWeek').addEventListener('click', () => changeWeekAnimated(-1));
 document.getElementById('nextWeek').addEventListener('click', () => changeWeekAnimated(1));
-document.getElementById('todayBtn').addEventListener('click', () => {
-    currentMonday = mondayOf(new Date());
-    render();
-});
-
-document.getElementById('toggleTheme').addEventListener('click', () => {
-    const cur = document.body.getAttribute('data-theme');
-    let next;
-    // Перемикання: light -> dark -> oled -> light
-    if (cur === 'light') next = 'dark';
-    else if (cur === 'dark') next = 'oled';
-    else next = 'light';
-
-    document.body.setAttribute('data-theme', next);
-    localStorage.setItem('schedule_theme', next);
-
-    if (cur === 'slytherin') {
-        document.getElementById('secretTitle').textContent = 'Розклад — 4 курс, група В';
-    }
-});
 
 let startX = 0,
     startY = 0;
 document.addEventListener('touchstart', e => {
-    if (e.changedTouches) {
-        startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY;
-    }
+    if (e.changedTouches) { startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY; }
 }, { passive: true });
 document.addEventListener('touchend', e => {
     if (!e.changedTouches) return;
@@ -302,10 +344,8 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 function scheduleNextPreciseUpdate() {
-    if (nextUpdateTimer) {
-        clearTimeout(nextUpdateTimer);
-        nextUpdateTimer = null;
-    }
+    if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
+        nextUpdateTimer = null; }
     const now = new Date();
     const todayKey = DAYS[(now.getDay() + 6) % 7];
     if (!todayKey) {
@@ -336,24 +376,6 @@ function scheduleNextPreciseUpdate() {
     nextUpdateTimer = setTimeout(() => render(false), delay);
 }
 
-// 🔗 Логіка QR-коду
-const qrBtn = document.getElementById('qrBtn');
-const qrModal = document.getElementById('qrModal');
-const closeQr = document.getElementById('closeQr');
-const qrImage = document.getElementById('qrImage');
-
-qrBtn.addEventListener('click', () => {
-    const currentUrl = window.location.href.split('#')[0].split('?')[0];
-    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentUrl)}`;
-    qrModal.style.display = 'flex';
-    setTimeout(() => qrModal.classList.add('active'), 10);
-});
-
-closeQr.addEventListener('click', () => {
-    qrModal.classList.remove('active');
-    setTimeout(() => qrModal.style.display = 'none', 300);
-});
-
 // 🪄 Пасхалка Слизерину
 const brandElement = document.getElementById('secretTitle');
 let clickCount = 0;
@@ -364,25 +386,19 @@ function setSlytherinTitle() {
     brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest">Факультет Слизерин`;
 }
 
-if (savedTheme === 'slytherin') {
-    setSlytherinTitle();
-}
+if (savedTheme === 'slytherin') { setSlytherinTitle(); }
 
 brandElement.addEventListener('click', () => {
     clickCount++;
     clearTimeout(clickTimer);
 
     if (clickCount === 5) {
-        const currentTheme = document.body.getAttribute('data-theme');
-        if (currentTheme !== 'slytherin') {
-            document.body.setAttribute('data-theme', 'slytherin');
-            localStorage.setItem('schedule_theme', 'slytherin');
-            setSlytherinTitle();
-        } else {
-            document.body.setAttribute('data-theme', 'dark');
-            localStorage.setItem('schedule_theme', 'dark');
-            brandElement.textContent = 'Розклад — 4 курс, група В';
-        }
+        localStorage.setItem('slytherin_unlocked', 'true');
+        document.getElementById('slytherinThemeBtn').style.display = 'block';
+
+        document.body.setAttribute('data-theme', 'slytherin');
+        localStorage.setItem('schedule_theme', 'slytherin');
+        setSlytherinTitle();
         clickCount = 0;
     } else {
         clickTimer = setTimeout(() => { clickCount = 0; }, 400);
@@ -397,15 +413,7 @@ document.addEventListener('click', (e) => {
     const placeLink = e.target.closest('.place-link');
     if (placeLink) {
         let rawPlace = placeLink.getAttribute('data-place');
-
-        // Перетворюємо номер аудиторії на правильну адресу для GPS
-        if (rawPlace.includes('Грушевського, 2')) {
-            currentDestination = 'вулиця Грушевського, 2, Вінниця';
-        } else if (rawPlace.includes('Соборна, 48')) {
-            currentDestination = 'вулиця Соборна, 48, Вінниця';
-        } else {
-            currentDestination = rawPlace + ', Вінниця';
-        }
+        if (rawPlace.includes('Грушевського, 2')) { currentDestination = 'вулиця Грушевського, 2, Вінниця'; } else if (rawPlace.includes('Соборна, 48')) { currentDestination = 'вулиця Соборна, 48, Вінниця'; } else { currentDestination = rawPlace + ', Вінниця'; }
 
         mapsModal.style.display = 'flex';
         setTimeout(() => mapsModal.classList.add('active'), 10);
@@ -417,19 +425,10 @@ document.getElementById('closeMaps').addEventListener('click', () => {
     setTimeout(() => mapsModal.style.display = 'none', 300);
 });
 
-// Відкриття в додатках навігації
-document.getElementById('btnWaze').addEventListener('click', () => {
-    window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`;
-});
+document.getElementById('btnWaze').addEventListener('click', () => { window.location.href = `https://waze.com/ul?q=${encodeURIComponent(currentDestination)}&navigate=yes`; });
+document.getElementById('btnGoogleMaps').addEventListener('click', () => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`; });
+document.getElementById('btnAppleMaps').addEventListener('click', () => { window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`; });
 
-document.getElementById('btnGoogleMaps').addEventListener('click', () => {
-    window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentDestination)}`;
-});
-
-document.getElementById('btnAppleMaps').addEventListener('click', () => {
-    window.location.href = `http://maps.apple.com/?q=${encodeURIComponent(currentDestination)}`;
-});
-
-render(true);
+// Видалили старий render(true) звідси, тепер він викликається ТІЛЬКИ коли дані завантажено
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }

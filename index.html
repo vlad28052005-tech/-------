@@ -11,6 +11,12 @@
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="manifest" href="manifest.json" />
     <style>
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+        
          :root {
             --bg: #0f172a;
             --panel: #1e293b;
@@ -192,49 +198,113 @@
         [data-theme="redbull"] .prac {
             background: rgba(255, 194, 0, 0.15);
         }
-        /* 🌸 МАГІЯ. РАПУНЦЕЛЬ 🌸 */
+        /* 🌸 ОНОВЛЕНА МАГІЯ РАПУНЦЕЛЬ (v2 - Магічне волосся) 🌸 */
         
         [data-theme="rapunzel"] .card.now {
             border-color: var(--accent);
             box-shadow: 0 0 20px rgba(255, 192, 0, 0.2);
         }
-        /* Чарівне волосся (Рамка поточної пари) */
+        /* Глобальна анімація обертання золотих ниток */
         
         [data-theme="rapunzel"] .pair.current {
             position: relative;
-            border: 3px solid #FFC000 !important;
-            background: rgba(255, 192, 0, 0.05);
-            box-shadow: 0 0 15px rgba(255, 192, 0, 0.4), inset 0 0 10px rgba(255, 192, 0, 0.1) !important;
+            background: #ffffff;
+            /* Чистий фон, щоб було видно частинки */
             border-radius: 16px;
+            border: none !important;
+            /* Усі рамки йдуть лісом */
+            padding: 16px !important;
+            box-shadow: 0 5px 20px rgba(74, 43, 101, 0.1) !important;
+            overflow: visible;
+            /* Дозволяємо Рапунцель вилазити */
         }
-        /* Картинка Рапунцель на поточній парі */
+        /* ЕФЕКТ ЧАРІВНИХ ЗОЛОТИХ НИТОК (Волосся, що обплітає) */
+        
+        [data-theme="rapunzel"] .pair.current::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: -4px;
+            /* Робимо "магічну рамку" навколо */
+            padding: 4px;
+            /* Товщина "волосся" */
+            border-radius: 20px;
+            /* Створення Swirling (обертового) градієнта */
+            background: conic-gradient(from var(--angle), #FFC000 0%, #FFF8DC 20%, #B784E6 40%, #FFC000 60%, #FFF8DC 80%, #FFC000 100%);
+            /* Робимо його розмитим і м'яким (як частинки) */
+            filter: blur(8px) opacity(0.9);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            /* Запускаємо магічне обертання */
+            animation: spin_hair 4s linear infinite, glow_hair 2s ease-in-out infinite alternate;
+        }
+        /* Картинка Рапунцель: Ставимо її ідеально біля "волосся" */
         
         [data-theme="rapunzel"] .pair.current::after {
             content: '';
             position: absolute;
-            top: -35px;
+            top: -38px;
             right: -10px;
             width: 85px;
             height: 85px;
             background: url('rapunzel.png') center/contain no-repeat;
             pointer-events: none;
             z-index: 10;
-            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 0 8px rgba(255, 192, 0, 0.6));
             animation: float 3s ease-in-out infinite;
+        }
+        /* Додаємо магічні частинки під Рапунцель */
+        
+        [data-theme="rapunzel"] .pair.now h4::before {
+            content: '✨';
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            font-size: 18px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes spin_hair {
+            to {
+                --angle: 360deg;
+            }
+        }
+        
+        @keyframes glow_hair {
+            0% {
+                filter: blur(8px) opacity(0.8);
+            }
+            100% {
+                filter: blur(12px) opacity(1);
+            }
+        }
+        
+        @keyframes sparkle {
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
         }
         
         @keyframes float {
             0% {
-                transform: translateY(0px);
+                transform: translateY(0px) rotate(0);
             }
             50% {
-                transform: translateY(-5px);
+                transform: translateY(-5px) rotate(2deg);
             }
             100% {
-                transform: translateY(0px);
+                transform: translateY(0px) rotate(0);
             }
         }
-        /* Хамелеон Паскаль (Схований за замовчуванням) */
+        /* 🦎 Паскаль сидить у кутку (Схований за замовчуванням) */
         
         #pascal-pet {
             display: none;
@@ -246,7 +316,6 @@
             pointer-events: none;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
         }
-        /* Показуємо Паскаля тільки в темі Рапунцель */
         
         [data-theme="rapunzel"] #pascal-pet {
             display: block;
@@ -442,6 +511,9 @@
             line-height: 1.4;
             font-weight: 700;
             letter-spacing: -0.2px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
         }
         
         .pair .meta {
@@ -785,7 +857,7 @@
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
 
-    <script src="script.js?v=16"></script>
+    <script src="script.js?v=17"></script>
 </body>
 
 </html>

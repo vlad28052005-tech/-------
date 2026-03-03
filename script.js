@@ -264,15 +264,13 @@ function render(withStagger = true) {
             box.dataset.index = idx;
 
             let chipTimerHtml = '';
-
-            // 🔥 ДОДАНО: Кнопка рулетки
             let rouletteBtnHtml = `<div class="roulette-trigger" title="Студентська рулетка">🎲</div>`;
 
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 const en = parseHMToDate(t.end, now);
                 if (en && now > en) {
                     box.classList.add('past');
-                    rouletteBtnHtml = ''; // Прибираємо рулетку з минулих пар
+                    rouletteBtnHtml = '';
                 }
                 if (idx === currentIdx) {
                     box.classList.add('current');
@@ -288,7 +286,8 @@ function render(withStagger = true) {
             let placeHtml = '';
             if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
-            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;">${chip}</div><div style="display:flex;align-items:center;">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
+            // 🔥 ВИПРАВЛЕНО: Додано align-items:center до контейнера чіпів, щоб плашка "Практика" не розтягувалася
+            box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;align-items:center;">${chip}</div><div style="display:flex;align-items:center;">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
             if (box.classList.contains('next')) {
                 const badge = document.createElement('div');
@@ -377,10 +376,8 @@ if (todayBtn) {
 let startX = 0,
     startY = 0;
 document.addEventListener('touchstart', e => {
-    if (e.changedTouches) {
-        startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY;
-    }
+    if (e.changedTouches) { startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY; }
 }, { passive: true });
 document.addEventListener('touchend', e => {
     if (!e.changedTouches) return;
@@ -392,10 +389,8 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 function scheduleNextPreciseUpdate() {
-    if (nextUpdateTimer) {
-        clearTimeout(nextUpdateTimer);
-        nextUpdateTimer = null;
-    }
+    if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
+        nextUpdateTimer = null; }
     const now = new Date();
     const todayKey = DAYS[(now.getDay() + 6) % 7];
     if (!todayKey) {
@@ -504,7 +499,6 @@ const roulettePhrases = [
     "5 хвилин ганьби і ти в ліжку 🛌"
 ];
 
-// Відкриття рулетки при кліку на кубик
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('.roulette-trigger');
     if (btn && rouletteModal) {
@@ -526,15 +520,13 @@ if (closeRoulette) {
 
 if (spinRouletteBtn) {
     spinRouletteBtn.addEventListener('click', () => {
-        // Запуск анімації обертання
         rouletteIcon.classList.remove('spin-anim');
-        void rouletteIcon.offsetWidth; // Скидання анімації
+        void rouletteIcon.offsetWidth;
         rouletteIcon.classList.add('spin-anim');
 
         rouletteResult.textContent = "Доля думає...";
         rouletteDesc.textContent = "Крутимо кубик...";
 
-        // Результат через 0.6 секунди (коли закінчиться анімація)
         setTimeout(() => {
             const random = Math.floor(Math.random() * roulettePhrases.length);
             rouletteResult.textContent = roulettePhrases[random];
@@ -545,5 +537,13 @@ if (spinRouletteBtn) {
         }, 600);
     });
 }
+
+// 🔥 ВИПРАВЛЕНО: Закриття вікон по кліку на фон (працює надійно)
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+        setTimeout(() => e.target.style.display = 'none', 300);
+    }
+});
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }

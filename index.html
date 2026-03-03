@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="manifest" href="manifest.json" />
     <style>
-        /* Дозволяємо анімувати кут для магічного кільця */
+        /* Дозволяємо плавно анімувати кут для світлячків */
         
         @property --angle {
             syntax: '<angle>';
@@ -40,7 +40,7 @@
             --text: #0f172a;
             --muted: #64748b;
             --card: #ffffff;
-            --border: #e2e8e0;
+            --border: #e2e8f0;
             --glass-bg: rgba(248, 250, 252, 0.8);
         }
         
@@ -201,85 +201,85 @@
             background: rgba(255, 194, 0, 0.15);
         }
         /* =========================================
-           🌸 ОНОВЛЕНА МАГІЯ РАПУНЦЕЛЬ (V3: ЗОЛОТИЙ ПИЛОК ЗА ПРОМЕНЕМ) 🌸
+           🌸 МАГІЯ РАПУНЦЕЛЬ (V4: СВІТЛЯЧКИ НА ОРБІТІ) 🌸
            ========================================= */
         
         [data-theme="rapunzel"] .card.now {
             border-color: transparent;
-            box-shadow: 0 0 30px rgba(255, 192, 0, 0.2);
+            box-shadow: 0 0 30px rgba(255, 192, 0, 0.15);
         }
-        /* Сама картка з внутрішнім світінням */
+        /* Сама картка + Тонка "орбіта" навколо неї */
         
         [data-theme="rapunzel"] .pair.current {
             position: relative;
             background: #ffffff;
             border-radius: 16px;
-            border: none !important;
+            border: 2px solid rgba(255, 192, 0, 0.2) !important;
+            /* Напівпрозорий слід орбіти */
             padding: 16px !important;
-            box-shadow: inset 0 0 15px rgba(255, 192, 0, 0.1) !important;
+            box-shadow: inset 0 0 15px rgba(255, 192, 0, 0.08) !important;
             overflow: visible;
-            /* Щоб пилок і картинки могли виходити за краї */
             z-index: 1;
         }
-        /* ЕФЕКТ ЧАРІВНОГО КІЛЬЦЯ (v3 - Золотий пилок за променем, як на референсі) */
+        /* ЕФЕКТ СВІТЛЯЧКІВ (Біжать по краю) */
         
         [data-theme="rapunzel"] .pair.current::before {
             content: '';
             position: absolute;
             z-index: -1;
-            inset: -8px;
-            /* Розмір хмари пилку навколо */
-            border-radius: 24px;
-            padding: 8px;
-            /* Товщина кільця пилку */
-            /* Створюємо шари золотого пилку та магічний промінь */
-            background: /* Яскравий промінь світла, що обертається */
-            conic-gradient(from var(--angle), transparent 10%, rgba(255, 215, 0, 0.9) 30%, #FFFFFF 40%, rgba(255, 215, 0, 0.9) 50%, transparent 70%), /* Шар 1: Великі золоті пластівці */
-            radial-gradient(circle, #FFC000 1.5px, transparent 2px) 0 0 / 12px 12px, /* Шар 2: Дрібний світлий пилок */
-            radial-gradient(circle, #FFF8DC 1px, transparent 1.5px) 6px 6px / 16px 16px, /* Шар 3: Темно-золоті іскри */
-            radial-gradient(circle, #DAA520 2px, transparent 2.5px) 3px 9px / 22px 22px;
-            /* Вирізаємо середину, щоб залишилося тільки кільце */
+            inset: -4px;
+            /* Виступає якраз на лінію бордера */
+            border-radius: 18px;
+            padding: 4px;
+            /* Товщина світлячка */
+            /* 2 світлячки з коротким хвостом */
+            background: conic-gradient( from var(--angle), transparent 0%, transparent 35%, rgba(255, 215, 0, 0.15) 45%, /* Хвіст 1 */
+            #FFC000 49%, /* Ядро 1 */
+            #FFFFFF 50%, /* Блік 1 */
+            transparent 50.5%, transparent 85%, rgba(255, 215, 0, 0.15) 95%, /* Хвіст 2 */
+            #FFC000 99%, /* Ядро 2 */
+            #FFFFFF 100%/* Блік 2 */
+            );
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
-            /* Запускаємо чарівне обертання */
-            animation: spin_magic 4s linear infinite;
-            filter: drop-shadow(0 0 6px rgba(255, 192, 0, 0.8));
+            /* М'яке неонове світіння навколо світлячків */
+            filter: drop-shadow(0 0 6px #FFC000) drop-shadow(0 0 10px #FFD700);
+            animation: spin_fireflies 3.5s linear infinite;
         }
         
-        @keyframes spin_magic {
+        @keyframes spin_fireflies {
             to {
                 --angle: 360deg;
             }
         }
-        /* Рапунцель на кутку */
+        /* РАПУНЦЕЛЬ НА КУТКУ */
         
         [data-theme="rapunzel"] .pair.current::after {
             content: '';
             position: absolute;
             top: -45px;
             right: -25px;
-            width: 95px;
-            /* Трохи збільшив для кращого вигляду */
-            height: 95px;
+            width: 100px;
+            height: 100px;
             background: url('rapunzel.png') center/contain no-repeat;
             pointer-events: none;
             z-index: 10;
-            filter: drop-shadow(0 5px 10px rgba(255, 192, 0, 0.6));
+            filter: drop-shadow(0 5px 10px rgba(255, 192, 0, 0.5));
             animation: float_rapunzel 4s ease-in-out infinite;
         }
         
         @keyframes float_rapunzel {
             0%,
             100% {
-                transform: translateY(0px) rotate(0);
+                transform: translateY(0px) rotate(0deg);
             }
             50% {
                 transform: translateY(-6px) rotate(2deg);
             }
         }
-        /* 🌸 РЯСНІ ЛІТАЮЧІ КВІТИ (Оновлені, ніяких ✨) 🌸 */
+        /* 🌸 М'ЯКІ ЛІТАЮЧІ КВІТОЧКИ (Без іскор) 🌸 */
         
         [data-theme="rapunzel"] .pair.current .meta {
             position: relative;
@@ -295,7 +295,7 @@
             position: relative;
             z-index: 20;
         }
-        /* Квітка 1: Зліва зверху */
+        /* Квітка 1 */
         
         [data-theme="rapunzel"] .pair.current .meta::before {
             content: '🌸';
@@ -306,7 +306,7 @@
             pointer-events: none;
             animation: magic_dust_flower 3s ease-in-out infinite alternate;
         }
-        /* Квітка 2: Посередині вгорі */
+        /* Квітка 2 */
         
         [data-theme="rapunzel"] .pair.current .meta::after {
             content: '🌸';
@@ -317,7 +317,7 @@
             pointer-events: none;
             animation: magic_dust_flower 3.5s ease-in-out infinite alternate-reverse 0.5s;
         }
-        /* Квітка 3: Зліва по центру (біля назви) */
+        /* Квітка 3 */
         
         [data-theme="rapunzel"] .pair.current h4::before {
             content: '🌸';
@@ -328,7 +328,7 @@
             pointer-events: none;
             animation: magic_dust_flower 2.8s ease-in-out infinite alternate 1s;
         }
-        /* Квітка 4: Внизу посередині */
+        /* Квітка 4 */
         
         [data-theme="rapunzel"] .pair.current h4::after {
             content: '🌸';
@@ -339,7 +339,7 @@
             pointer-events: none;
             animation: magic_dust_flower 3.2s ease-in-out infinite alternate-reverse 1.5s;
         }
-        /* Квітка 5: Зліва внизу (біля вчителя) */
+        /* Квітка 5 */
         
         [data-theme="rapunzel"] .pair.current .muted::before {
             content: '🌸';
@@ -350,7 +350,7 @@
             pointer-events: none;
             animation: magic_dust_flower 2.5s ease-in-out infinite alternate 2s;
         }
-        /* Квітка 6: Справа внизу (під Рапунцель) */
+        /* Квітка 6 */
         
         [data-theme="rapunzel"] .pair.current .muted::after {
             content: '🌸';
@@ -361,22 +361,22 @@
             pointer-events: none;
             animation: magic_dust_flower 3s ease-in-out infinite alternate-reverse 0.2s;
         }
-        /* Оновлена анімація для квітів: Поява, м'який рух вгору, м'яке зникнення */
+        /* М'яка анімація тільки для квітів */
         
         @keyframes magic_dust_flower {
             0% {
                 transform: translateY(0) rotate(0deg) scale(0.6);
                 opacity: 0;
-                filter: drop-shadow(0 0 2px #FF9EBB);
+                filter: drop-shadow(0 0 2px rgba(255, 158, 187, 0.5));
             }
             50% {
                 opacity: 1;
-                filter: drop-shadow(0 0 10px #FF9EBB);
+                filter: drop-shadow(0 0 8px rgba(255, 158, 187, 0.8));
             }
             100% {
                 transform: translateY(-20px) rotate(20deg) scale(1.1);
                 opacity: 0;
-                filter: drop-shadow(0 0 15px #FF9EBB);
+                filter: drop-shadow(0 0 10px rgba(255, 158, 187, 0.3));
             }
         }
         /* 🦎 Паскаль сидить у кутку */
@@ -407,6 +407,7 @@
                 opacity: 1;
             }
         }
+        /* ========================================= */
         
         * {
             box-sizing: border-box;
@@ -932,7 +933,7 @@
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
 
-    <script src="script.js?v=19"></script>
+    <script src="script.js?v=20"></script>
 </body>
 
 </html>

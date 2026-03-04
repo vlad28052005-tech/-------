@@ -28,9 +28,29 @@ async function loadSchedule(course, group) {
     }
 }
 
-// --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
+// --- СИСТЕМА ЗБЕРЕЖЕННЯ ТА КОЛЬОРІВ ТЕЛЕФОНУ ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'university';
 document.body.setAttribute('data-theme', savedTheme);
+
+// 🔥 ДОДАНО: Словник кольорів фону для перефарбовування шторки телефону
+const themeBgColors = {
+    'university': '#F2EBE1',
+    'dark': '#0f172a',
+    'light': '#f8fafc',
+    'oled': '#000000',
+    'rapunzel': '#F5EEFF',
+    'ferrari': '#111111',
+    'redbull': '#001021',
+    'slytherin': '#060a08'
+};
+
+function applyThemeColorToPhone(theme) {
+    const metaThemeColor = document.getElementById('meta-theme-color');
+    if (metaThemeColor && themeBgColors[theme]) {
+        metaThemeColor.setAttribute('content', themeBgColors[theme]);
+    }
+}
+applyThemeColorToPhone(savedTheme); // Фарбуємо шторку при завантаженні
 
 const savedCourse = localStorage.getItem('user_course');
 const savedGroup = localStorage.getItem('user_group');
@@ -132,8 +152,12 @@ if (slytherinThemeBtn && (localStorage.getItem('slytherin_unlocked') === 'true' 
 document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         const newTheme = e.target.getAttribute('data-set-theme');
+        if (!newTheme) return;
+
         document.body.setAttribute('data-theme', newTheme);
         localStorage.setItem('schedule_theme', newTheme);
+
+        applyThemeColorToPhone(newTheme); // 🔥 Оновлюємо колір шторки телефону на льоту
 
         if (newTheme === 'slytherin') {
             setSlytherinTitle();
@@ -286,7 +310,6 @@ function render(withStagger = true) {
             let placeHtml = '';
             if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
-            // 🔥 ВИПРАВЛЕНО: Додано align-items:center до контейнера чіпів, щоб плашка "Практика" не розтягувалася
             box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;align-items:center;">${chip}</div><div style="display:flex;align-items:center;">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
             if (box.classList.contains('next')) {
@@ -445,6 +468,7 @@ if (brandElement) {
 
             document.body.setAttribute('data-theme', 'slytherin');
             localStorage.setItem('schedule_theme', 'slytherin');
+            applyThemeColorToPhone('slytherin');
             setSlytherinTitle();
             clickCount = 0;
         } else {
@@ -538,7 +562,6 @@ if (spinRouletteBtn) {
     });
 }
 
-// 🔥 ВИПРАВЛЕНО: Закриття вікон по кліку на фон (працює надійно)
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');

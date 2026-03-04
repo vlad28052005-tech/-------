@@ -4,6 +4,25 @@ let defaultData = null;
 // Словник: перекладаємо українські літери груп у назви файлів
 const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
 
+// 🔥 ДОДАНО: Словник кольорів фону для перефарбовування шторки телефону
+const themeBgColors = {
+    'university': '#F2EBE1',
+    'dark': '#0f172a',
+    'light': '#f8fafc',
+    'oled': '#000000',
+    'rapunzel': '#F5EEFF',
+    'ferrari': '#111111',
+    'redbull': '#001021',
+    'slytherin': '#060a08'
+};
+
+function applyThemeColorToPhone(theme) {
+    const metaThemeColor = document.getElementById('meta-theme-color');
+    if (metaThemeColor && themeBgColors[theme]) {
+        metaThemeColor.setAttribute('content', themeBgColors[theme]);
+    }
+}
+
 async function loadSchedule(course, group) {
     const fileGroup = groupMap[group] || "v";
     const url = `./Group/${course}/${course}-${fileGroup}.json`;
@@ -28,28 +47,9 @@ async function loadSchedule(course, group) {
     }
 }
 
-// --- СИСТЕМА ЗБЕРЕЖЕННЯ ТА КОЛЬОРІВ ТЕЛЕФОНУ ---
+// --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'university';
 document.body.setAttribute('data-theme', savedTheme);
-
-// 🔥 ДОДАНО: Словник кольорів фону для перефарбовування шторки телефону
-const themeBgColors = {
-    'university': '#F2EBE1',
-    'dark': '#0f172a',
-    'light': '#f8fafc',
-    'oled': '#000000',
-    'rapunzel': '#F5EEFF',
-    'ferrari': '#111111',
-    'redbull': '#001021',
-    'slytherin': '#060a08'
-};
-
-function applyThemeColorToPhone(theme) {
-    const metaThemeColor = document.getElementById('meta-theme-color');
-    if (metaThemeColor && themeBgColors[theme]) {
-        metaThemeColor.setAttribute('content', themeBgColors[theme]);
-    }
-}
 applyThemeColorToPhone(savedTheme); // Фарбуємо шторку при завантаженні
 
 const savedCourse = localStorage.getItem('user_course');
@@ -399,8 +399,10 @@ if (todayBtn) {
 let startX = 0,
     startY = 0;
 document.addEventListener('touchstart', e => {
-    if (e.changedTouches) { startX = e.changedTouches[0].screenX;
-        startY = e.changedTouches[0].screenY; }
+    if (e.changedTouches) {
+        startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
+    }
 }, { passive: true });
 document.addEventListener('touchend', e => {
     if (!e.changedTouches) return;
@@ -412,8 +414,10 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 function scheduleNextPreciseUpdate() {
-    if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
-        nextUpdateTimer = null; }
+    if (nextUpdateTimer) {
+        clearTimeout(nextUpdateTimer);
+        nextUpdateTimer = null;
+    }
     const now = new Date();
     const todayKey = DAYS[(now.getDay() + 6) % 7];
     if (!todayKey) {
@@ -468,7 +472,7 @@ if (brandElement) {
 
             document.body.setAttribute('data-theme', 'slytherin');
             localStorage.setItem('schedule_theme', 'slytherin');
-            applyThemeColorToPhone('slytherin');
+            applyThemeColorToPhone('slytherin'); // Оновлюємо шторку при відкритті пасхалки
             setSlytherinTitle();
             clickCount = 0;
         } else {
@@ -502,6 +506,27 @@ if (qrBtn && qrModal && closeQr && qrImage) {
     closeQr.addEventListener('click', () => {
         qrModal.classList.remove('active');
         setTimeout(() => qrModal.style.display = 'none', 300);
+    });
+}
+
+// 🔥 ЛОГІКА ПОШИРЕННЯ
+const copyLinkBtn = document.getElementById('copyLinkBtn');
+if (copyLinkBtn) {
+    copyLinkBtn.addEventListener('click', () => {
+        const course = localStorage.getItem('user_course') || '4';
+        const group = localStorage.getItem('user_group') || 'В';
+        const cleanUrl = window.location.href.split('#')[0].split('?')[0];
+        const shareUrl = `${cleanUrl}?course=${course}&group=${group.toLowerCase()}`;
+
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            const originalText = copyLinkBtn.innerHTML;
+            copyLinkBtn.innerHTML = "✅ Скопійовано!";
+            copyLinkBtn.style.background = "rgba(16, 185, 129, 0.2)";
+            setTimeout(() => {
+                copyLinkBtn.innerHTML = originalText;
+                copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)";
+            }, 2000);
+        });
     });
 }
 
@@ -562,6 +587,7 @@ if (spinRouletteBtn) {
     });
 }
 
+// 🔥 ВИПРАВЛЕНО: Закриття вікон по кліку на фон (працює надійно)
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');

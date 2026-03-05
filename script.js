@@ -35,19 +35,38 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadSchedule(course, group) {
         const fileGroup = groupMap[group] || "v";
         const url = `./Group/${course}/${course}-${fileGroup}.json`;
+        const cacheKey = `saved_schedule_${course}_${group}`; // Ключ для збереження розкладу
 
         try {
+            // Пробуємо завантажити свіжий розклад з сервера
             const response = await fetch(`${url}?t=${new Date().getTime()}`);
             if (!response.ok) throw new Error('NOT_FOUND');
 
             defaultData = await response.json();
+
+            // 🔥 ОФЛАЙН РЕЖИМ: Тихо зберігаємо копію в пам'ять телефону
+            safeSetItem(cacheKey, JSON.stringify(defaultData));
+
             render(true);
         } catch (error) {
-            console.error("Помилка завантаження розкладу:", error);
+            console.error("Помилка мережі:", error);
+
+            // 🔥 ОФЛАЙН РЕЖИМ (Тихий бекап): Якщо мережі немає, дістаємо з пам'яті
+            const cachedData = safeGetItem(cacheKey);
+            if (cachedData) {
+                try {
+                    defaultData = JSON.parse(cachedData);
+                    render(true);
+                    return; // Успішно відмалювали з пам'яті, виходимо
+                } catch (e) {
+                    console.error("Помилка читання кешу:", e);
+                }
+            }
+
+            // Якщо кешу немає взагалі і мережі теж немає – показуємо помилку
             const grid = document.getElementById('weekGrid');
             if (!grid) return;
 
-            // 🔥 ЗАХИСТ ВІД ОФЛАЙНУ: Перевіряємо чи є інтернет
             if (!navigator.onLine || error.message !== 'NOT_FOUND') {
                 grid.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);"><h3 style="margin-bottom: 8px;">Немає зв'язку 📶</h3><p>Перевірте інтернет та оновіть сторінку.</p></div>`;
             } else {

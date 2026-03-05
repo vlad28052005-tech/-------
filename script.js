@@ -1,9 +1,10 @@
 // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
 let defaultData = null;
 
+// Словник: перекладаємо українські літери груп у назви файлів
 const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
 
-// 🔥 Словник кольорів фону для перефарбовування шторки телефону
+// 🔥 ДОДАНО: Словник кольорів фону для перефарбовування шторки телефону
 const themeBgColors = {
     'university': '#F2EBE1',
     'dark': '#0f172a',
@@ -48,7 +49,7 @@ async function loadSchedule(course, group) {
 
 // --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'university';
-// 🔥 ОСЬ ЦЕЙ РЯДОК ЛАГОДИТЬ ФОН (змінюємо колір для html, а не body)
+// 🔥 ОСЬ ЦЕЙ РЯДОК ЛАГОДИТЬ ФОН (documentElement замість body)
 document.documentElement.setAttribute('data-theme', savedTheme);
 applyThemeColorToPhone(savedTheme);
 
@@ -531,7 +532,7 @@ if (copyLinkBtn) {
     });
 }
 
-// 🎲 ЛОГІКА  РУЛЕТКИ
+// 🎲 ЛОГІКА РУЛЕТКИ
 const rouletteModal = document.getElementById('rouletteModal');
 const closeRoulette = document.getElementById('closeRoulette');
 const spinRouletteBtn = document.getElementById('spinRouletteBtn');
@@ -588,6 +589,7 @@ if (spinRouletteBtn) {
     });
 }
 
+// 🔥 ВИПРАВЛЕНО: Закриття вікон по кліку на фон (працює надійно)
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');

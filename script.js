@@ -531,7 +531,7 @@ if (copyLinkBtn) {
     });
 }
 
-// 🎲 ЛОГІКА РУЛЕТКИ
+// 🎲 ЛОГІКА  РУЛЕТКИ
 const rouletteModal = document.getElementById('rouletteModal');
 const closeRoulette = document.getElementById('closeRoulette');
 const spinRouletteBtn = document.getElementById('spinRouletteBtn');

@@ -3,6 +3,7 @@ let defaultData = null;
 
 const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
 
+// 🔥 Словник кольорів фону для перефарбовування шторки телефону
 const themeBgColors = {
     'university': '#F2EBE1',
     'dark': '#0f172a',
@@ -47,7 +48,7 @@ async function loadSchedule(course, group) {
 
 // --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'university';
-// 🔥 ВИПРАВЛЕНО: Фарбуємо весь екран (documentElement замість body)
+// 🔥 ОСЬ ЦЕЙ РЯДОК ЛАГОДИТЬ ФОН (змінюємо колір для html, а не body)
 document.documentElement.setAttribute('data-theme', savedTheme);
 applyThemeColorToPhone(savedTheme);
 
@@ -153,7 +154,7 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
         const newTheme = e.target.getAttribute('data-set-theme');
         if (!newTheme) return;
 
-        // 🔥 ВИПРАВЛЕНО: Змінюємо тему на documentElement, щоб колір був скрізь
+        // 🔥 І ТУТ ТАКОЖ ЗМІНЮЄМО НА documentElement
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('schedule_theme', newTheme);
 
@@ -470,7 +471,6 @@ if (brandElement) {
             localStorage.setItem('slytherin_unlocked', 'true');
             if (slytherinThemeBtn) slytherinThemeBtn.style.display = 'block';
 
-            // 🔥 ВИПРАВЛЕНО: Застосовуємо тему до <html>
             document.documentElement.setAttribute('data-theme', 'slytherin');
             localStorage.setItem('schedule_theme', 'slytherin');
             applyThemeColorToPhone('slytherin');

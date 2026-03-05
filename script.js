@@ -1,10 +1,8 @@
 // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
 let defaultData = null;
 
-// Словник: перекладаємо українські літери груп у назви файлів
 const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
 
-// 🔥 ДОДАНО: Словник кольорів фону для перефарбовування шторки телефону
 const themeBgColors = {
     'university': '#F2EBE1',
     'dark': '#0f172a',
@@ -49,8 +47,9 @@ async function loadSchedule(course, group) {
 
 // --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
 const savedTheme = localStorage.getItem('schedule_theme') || 'university';
-document.body.setAttribute('data-theme', savedTheme);
-applyThemeColorToPhone(savedTheme); // Фарбуємо шторку при завантаженні
+// 🔥 ВИПРАВЛЕНО: Фарбуємо весь екран (documentElement замість body)
+document.documentElement.setAttribute('data-theme', savedTheme);
+applyThemeColorToPhone(savedTheme);
 
 const savedCourse = localStorage.getItem('user_course');
 const savedGroup = localStorage.getItem('user_group');
@@ -154,10 +153,11 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
         const newTheme = e.target.getAttribute('data-set-theme');
         if (!newTheme) return;
 
-        document.body.setAttribute('data-theme', newTheme);
+        // 🔥 ВИПРАВЛЕНО: Змінюємо тему на documentElement, щоб колір був скрізь
+        document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('schedule_theme', newTheme);
 
-        applyThemeColorToPhone(newTheme); // 🔥 Оновлюємо колір шторки телефону на льоту
+        applyThemeColorToPhone(newTheme);
 
         if (newTheme === 'slytherin') {
             setSlytherinTitle();
@@ -470,9 +470,10 @@ if (brandElement) {
             localStorage.setItem('slytherin_unlocked', 'true');
             if (slytherinThemeBtn) slytherinThemeBtn.style.display = 'block';
 
-            document.body.setAttribute('data-theme', 'slytherin');
+            // 🔥 ВИПРАВЛЕНО: Застосовуємо тему до <html>
+            document.documentElement.setAttribute('data-theme', 'slytherin');
             localStorage.setItem('schedule_theme', 'slytherin');
-            applyThemeColorToPhone('slytherin'); // Оновлюємо шторку при відкритті пасхалки
+            applyThemeColorToPhone('slytherin');
             setSlytherinTitle();
             clickCount = 0;
         } else {
@@ -587,7 +588,6 @@ if (spinRouletteBtn) {
     });
 }
 
-// 🔥 ВИПРАВЛЕНО: Закриття вікон по кліку на фон (працює надійно)
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');

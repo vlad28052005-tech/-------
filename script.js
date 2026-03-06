@@ -1,19 +1,43 @@
-// 🔥 ЗАХИСТ ЗАВАНТАЖЕННЯ: Скрипт запуститься тільки коли HTML повністю готовий
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- БЕЗПЕЧНА РОБОТА З ПАМ'ЯТТЮ (захист від інкогніто-режиму) ---
+    // --- БЕЗПЕЧНА РОБОТА З ПАМ'ЯТТЮ ---
     function safeSetItem(key, value) {
-        try { localStorage.setItem(key, value); } catch (e) { console.warn("Пам'ять заблокована браузером"); }
+        try { localStorage.setItem(key, value); } catch (e) { console.warn("Пам'ять заблокована"); }
     }
 
     function safeGetItem(key) {
         try { return localStorage.getItem(key); } catch (e) { return null; }
     }
 
+    // 🔥 АУДІО-ВІЗУАЛЬНИЙ ДЗЕН: Taptic Engine
+    function playHaptic() {
+        try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
+    }
+
+    // Слухаємо всі кліки по кнопках і даємо вібровідгук
+    document.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.btn') || e.target.closest('.roulette-trigger') || e.target.closest('.theme-btn') || e.target.closest('.close-btn') || e.target.closest('.brand')) {
+            playHaptic();
+        }
+    }, { passive: true });
+
+    // 🔥 Звук для рулетки (Синтезатор)
+    function playRouletteSound() {
+        try {
+            const ctx = new(window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.3);
+            osc.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        } catch (e) {}
+    }
+
     // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
     let defaultData = null;
     const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
-
     const themeBgColors = {
         'university': '#F2EBE1',
         'dark': '#0f172a',
@@ -35,38 +59,26 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadSchedule(course, group) {
         const fileGroup = groupMap[group] || "v";
         const url = `./Group/${course}/${course}-${fileGroup}.json`;
-        const cacheKey = `saved_schedule_${course}_${group}`; // Ключ для збереження розкладу
+        const cacheKey = `saved_schedule_${course}_${group}`;
 
         try {
-            // Пробуємо завантажити свіжий розклад з сервера
             const response = await fetch(`${url}?t=${new Date().getTime()}`);
             if (!response.ok) throw new Error('NOT_FOUND');
-
             defaultData = await response.json();
-
-            // 🔥 ОФЛАЙН РЕЖИМ: Тихо зберігаємо копію в пам'ять телефону
             safeSetItem(cacheKey, JSON.stringify(defaultData));
-
             render(true);
         } catch (error) {
             console.error("Помилка мережі:", error);
-
-            // 🔥 ОФЛАЙН РЕЖИМ (Тихий бекап): Якщо мережі немає, дістаємо з пам'яті
             const cachedData = safeGetItem(cacheKey);
             if (cachedData) {
                 try {
                     defaultData = JSON.parse(cachedData);
                     render(true);
-                    return; // Успішно відмалювали з пам'яті, виходимо
-                } catch (e) {
-                    console.error("Помилка читання кешу:", e);
-                }
+                    return;
+                } catch (e) {}
             }
-
-            // Якщо кешу немає взагалі і мережі теж немає – показуємо помилку
             const grid = document.getElementById('weekGrid');
             if (!grid) return;
-
             if (!navigator.onLine || error.message !== 'NOT_FOUND') {
                 grid.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);"><h3 style="margin-bottom: 8px;">Немає зв'язку 📶</h3><p>Перевірте інтернет та оновіть сторінку.</p></div>`;
             } else {
@@ -75,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- СИСТЕМА ЗБЕРЕЖЕННЯ ---
     const savedTheme = safeGetItem('schedule_theme') || 'university';
     document.documentElement.setAttribute('data-theme', savedTheme);
     applyThemeColorToPhone(savedTheme);
@@ -90,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- ІНІЦІАЛІЗАЦІЯ ---
     const welcomeModal = document.getElementById('welcomeModal');
     if (!savedCourse || !savedGroup) {
         if (welcomeModal) {
@@ -107,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         saveOnboardingBtn.addEventListener('click', () => {
             const courseSelect = document.getElementById('courseSelect');
             const groupSelect = document.getElementById('groupSelect');
-
             const courseVal = courseSelect ? courseSelect.value : null;
             const groupVal = groupSelect ? groupSelect.value : null;
 
@@ -115,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 safeSetItem('user_course', courseVal);
                 safeSetItem('user_group', groupVal);
                 updateHeaderTitle(courseVal, groupVal);
-
                 if (welcomeModal) {
                     welcomeModal.classList.remove('active');
                     setTimeout(() => welcomeModal.style.display = 'none', 300);
@@ -127,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- ЦЕНТР УПРАВЛІННЯ ---
     const settingsModal = document.getElementById('settingsModal');
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const closeSettingsBtn = document.getElementById('closeSettingsBtn');
@@ -136,42 +143,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openSettingsBtn) {
         openSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) {
-                settingsModal.style.display = 'flex';
-                setTimeout(() => settingsModal.classList.add('active'), 10);
-            }
+            if (settingsModal) { settingsModal.style.display = 'flex';
+                setTimeout(() => settingsModal.classList.add('active'), 10); }
         });
     }
-
     if (closeSettingsBtn) {
         closeSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) {
-                settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300);
-            }
+            if (settingsModal) { settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     }
-
     if (changeGroupBtn) {
         changeGroupBtn.addEventListener('click', () => {
             if (settingsModal) settingsModal.classList.remove('active');
             setTimeout(() => {
                 if (settingsModal) settingsModal.style.display = 'none';
-                if (welcomeModal) {
-                    welcomeModal.style.display = 'flex';
-                    setTimeout(() => welcomeModal.classList.add('active'), 10);
-                }
+                if (welcomeModal) { welcomeModal.style.display = 'flex';
+                    setTimeout(() => welcomeModal.classList.add('active'), 10); }
             }, 300);
         });
     }
-
     if (forceUpdateBtn) {
-        forceUpdateBtn.addEventListener('click', () => {
-            window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime();
-        });
+        forceUpdateBtn.addEventListener('click', () => { window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime(); });
     }
 
-    // --- ЛОГІКА ТЕМ ---
     const slytherinThemeBtn = document.getElementById('slytherinThemeBtn');
     if (slytherinThemeBtn && (safeGetItem('slytherin_unlocked') === 'true' || savedTheme === 'slytherin')) {
         slytherinThemeBtn.style.display = 'block';
@@ -181,25 +176,16 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             const newTheme = e.target.getAttribute('data-set-theme');
             if (!newTheme) return;
-
             document.documentElement.setAttribute('data-theme', newTheme);
             safeSetItem('schedule_theme', newTheme);
             applyThemeColorToPhone(newTheme);
-
-            if (newTheme === 'slytherin') {
-                setSlytherinTitle();
-            } else {
-                updateHeaderTitle(safeGetItem('user_course') || '4', safeGetItem('user_group') || 'В');
-            }
-
-            if (settingsModal) {
-                settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300);
-            }
+            if (newTheme === 'slytherin') setSlytherinTitle();
+            else updateHeaderTitle(safeGetItem('user_course') || '4', safeGetItem('user_group') || 'В');
+            if (settingsModal) { settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     });
 
-    // --- ОСНОВНИЙ ДВИЖОК РОЗКЛАДУ ---
     const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
     const DAY_NAMES = { mon: 'Понеділок', tue: 'Вівторок', wed: 'Середа', thu: 'Четвер', fri: 'П\'ятниця' };
 
@@ -250,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const lbl = document.getElementById('weekLabel');
         const rng = document.getElementById('weekRange');
         if (lbl) lbl.textContent = isTopWeek(currentMonday) ? 'Верхній' : 'Нижній';
-
         const start = new Date(currentMonday);
         const end = new Date(currentMonday.getTime() + 4 * 86400000);
         if (rng) rng.textContent = `${formatDateShort(start)} — ${formatDateShort(end)}`;
@@ -258,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function render(withStagger = true) {
         if (!defaultData || !grid) return;
-
         grid.innerHTML = '';
         updateWeekLabel();
         const now = new Date();
@@ -305,10 +289,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            let prevEnd = null; // Для розрахунку вікон
+
             for (const v of pairs) {
                 const p = v.p,
                     idx = v.idx;
                 const t = getTimeFor(dKey, idx);
+
+                // 🔥 ІНТЕЛЕКТУАЛЬНА ПІДСВІТКА "ВІКОН"
+                if (prevEnd && t.start) {
+                    const peDate = parseHMToDate(prevEnd, now);
+                    const csDate = parseHMToDate(t.start, now);
+                    if (peDate && csDate) {
+                        const diffMs = csDate - peDate;
+                        if (diffMs > 20 * 60000) { // Якщо вікно більше 20 хвилин
+                            const diffMins = Math.round(diffMs / 60000);
+                            const h = Math.floor(diffMins / 60);
+                            const m = diffMins % 60;
+                            const gapStr = h > 0 ? `${h} год ${m > 0 ? m + ' хв' : ''}` : `${m} хв`;
+
+                            const gapEl = document.createElement('div');
+                            gapEl.className = 'free-window';
+                            gapEl.innerHTML = `☕ Вікно: ${gapStr}`;
+                            card.appendChild(gapEl);
+                        }
+                    }
+                }
+                prevEnd = t.end;
+
                 const box = document.createElement('div');
                 box.className = 'pair';
                 box.dataset.day = dKey;
@@ -319,10 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (viewingCurrentWeek && sameDay(dayDate, today)) {
                     const en = parseHMToDate(t.end, now);
-                    if (en && now > en) {
-                        box.classList.add('past');
-                        rouletteBtnHtml = '';
-                    }
+                    if (en && now > en) { box.classList.add('past');
+                        rouletteBtnHtml = ''; }
                     if (idx === currentIdx) {
                         box.classList.add('current');
                         chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
@@ -354,7 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mondayOf(new Date()).getTime() === currentMonday.getTime()) {
             setTimeout(() => {
                 const todayCard = document.querySelector('.card.now');
-                if (todayCard) todayCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (todayCard) {
+                    // Плавний скрол з урахуванням планшетного режиму
+                    todayCard.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                }
             }, 120);
         }
 
@@ -426,10 +435,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let startX = 0,
         startY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.changedTouches) {
-            startX = e.changedTouches[0].screenX;
-            startY = e.changedTouches[0].screenY;
-        }
+        if (e.changedTouches) { startX = e.changedTouches[0].screenX;
+            startY = e.changedTouches[0].screenY; }
     }, { passive: true });
     document.addEventListener('touchend', e => {
         if (!e.changedTouches) return;
@@ -441,10 +448,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     function scheduleNextPreciseUpdate() {
-        if (nextUpdateTimer) {
-            clearTimeout(nextUpdateTimer);
-            nextUpdateTimer = null;
-        }
+        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
+            nextUpdateTimer = null; }
         const now = new Date();
         const todayKey = DAYS[(now.getDay() + 6) % 7];
         if (!todayKey) {
@@ -475,6 +480,19 @@ document.addEventListener('DOMContentLoaded', () => {
         nextUpdateTimer = setTimeout(() => render(false), delay);
     }
 
+    // 🔥 ФІКС НІЧНОГО БАГУ (АВТО-ПЕРЕМИКАННЯ ДНЯ РІВНО О 00:00)
+    function scheduleMidnightRefresh() {
+        const now = new Date();
+        const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+        const msUntilMidnight = midnight - now;
+        setTimeout(() => {
+            currentMonday = mondayOf(new Date());
+            render(false);
+            scheduleMidnightRefresh();
+        }, msUntilMidnight);
+    }
+    scheduleMidnightRefresh();
+
     // 🪄 Пасхалка Слизерину
     const brandElement = document.getElementById('secretTitle');
     let clickCount = 0;
@@ -492,12 +510,10 @@ document.addEventListener('DOMContentLoaded', () => {
         brandElement.addEventListener('click', () => {
             clickCount++;
             clearTimeout(clickTimer);
-
             if (clickCount === 5) {
                 safeSetItem('slytherin_unlocked', 'true');
                 const slythBtn = document.getElementById('slytherinThemeBtn');
                 if (slythBtn) slythBtn.style.display = 'block';
-
                 document.documentElement.setAttribute('data-theme', 'slytherin');
                 safeSetItem('schedule_theme', 'slytherin');
                 applyThemeColorToPhone('slytherin');
@@ -519,18 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
         qrBtn.addEventListener('click', () => {
             const currentUrl = window.location.href.split('#')[0].split('?')[0];
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-
-            if (settingsModal) {
-                settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300);
-            }
-
-            setTimeout(() => {
-                qrModal.style.display = 'flex';
-                setTimeout(() => qrModal.classList.add('active'), 10);
-            }, 300);
+            if (settingsModal) { settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300); }
+            setTimeout(() => { qrModal.style.display = 'flex';
+                setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
         });
-
         closeQr.addEventListener('click', () => {
             qrModal.classList.remove('active');
             setTimeout(() => qrModal.style.display = 'none', 300);
@@ -545,15 +554,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const group = safeGetItem('user_group') || 'В';
             const cleanUrl = window.location.href.split('#')[0].split('?')[0];
             const shareUrl = `${cleanUrl}?course=${course}&group=${group.toLowerCase()}`;
-
             navigator.clipboard.writeText(shareUrl).then(() => {
                 const originalText = copyLinkBtn.innerHTML;
                 copyLinkBtn.innerHTML = "✅ Скопійовано!";
                 copyLinkBtn.style.background = "rgba(16, 185, 129, 0.2)";
-                setTimeout(() => {
-                    copyLinkBtn.innerHTML = originalText;
-                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)";
-                }, 2000);
+                setTimeout(() => { copyLinkBtn.innerHTML = originalText;
+                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
             });
         });
     }
@@ -567,12 +573,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const rouletteDesc = document.getElementById('rouletteDesc');
 
     const roulettePhrases = [
-        "Йди, бо не допустять до сесії 😤",
-        "Спи, це всього лиш лекція 😴",
-        "Спитай у старости, чи є відмітка 📱",
-        "Сьогодні можна пропустити 🤫",
-        "Збирайся, кава сама себе не вип'є ☕",
-        "Йди, можливо сьогодні щось цікаве 🤓",
+        "Йди, бо не допустять до сесії 😤", "Спи, це всього лиш лекція 😴",
+        "Спитай у старости, чи є відмітка 📱", "Сьогодні можна пропустити 🤫",
+        "Збирайся, кава сама себе не вип'є ☕", "Йди, можливо сьогодні щось цікаве 🤓",
         "5 хвилин ганьби і ти в ліжку 🛌"
     ];
 
@@ -582,7 +585,6 @@ document.addEventListener('DOMContentLoaded', () => {
             rouletteResult.textContent = "Йти чи не йти?";
             rouletteDesc.textContent = "Натисни кнопку, щоб доля вирішила за тебе";
             rouletteIcon.textContent = "🎲";
-
             rouletteModal.style.display = 'flex';
             setTimeout(() => rouletteModal.classList.add('active'), 10);
         }
@@ -597,6 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (spinRouletteBtn) {
         spinRouletteBtn.addEventListener('click', () => {
+            playRouletteSound(); // 🔥 Запускаємо звук
             rouletteIcon.classList.remove('spin-anim');
             void rouletteIcon.offsetWidth;
             rouletteIcon.classList.add('spin-anim');
@@ -608,7 +611,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const random = Math.floor(Math.random() * roulettePhrases.length);
                 rouletteResult.textContent = roulettePhrases[random];
                 rouletteDesc.textContent = "Рішення прийнято!";
-
                 const emojiList = ["🎲", "🎱", "🎯", "🔮"];
                 rouletteIcon.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
             }, 600);
@@ -624,4 +626,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }
 
-}); // Кінець захищеного блоку DOMContentLoaded
+});

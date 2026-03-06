@@ -117,21 +117,62 @@
             --prac: #ffc200;
             --glass-bg: rgba(0, 16, 33, 0.85);
         }
+        /* 🔥 УНІВЕРСАЛЬНА ОБВОДКА ДЛЯ ВСІХ ТЕМ (ВИПРАВЛЯЄ БАГ ЗІ ЗНИКНЕННЯМ) */
+        
+        .card.now {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pair.current {
+            border-color: var(--accent) !important;
+            background: rgba(14, 165, 233, 0.05);
+        }
+        /* Індивідуальні тіні для світлих/темних режимів */
+        
+        [data-theme="oled"] .card.now {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+        }
+        
+        [data-theme="dark"] .card.now,
+        [data-theme="light"] .card.now {
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.25);
+        }
         
         [data-theme="slytherin"] .card.now {
-            border-color: var(--accent);
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
         }
         
         [data-theme="university"] .card.now {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(137, 18, 47, 0.15);
+            box-shadow: 0 0 20px rgba(137, 18, 47, 0.2);
         }
         
         [data-theme="ferrari"] .card.now {
-            border-color: #ffb800;
             box-shadow: 0 0 25px rgba(255, 184, 0, 0.4);
         }
+        
+        [data-theme="redbull"] .card.now {
+            box-shadow: 0 0 25px rgba(255, 194, 0, 0.25);
+        }
+        
+        [data-theme="slytherin"] .pair.current {
+            background: rgba(16, 185, 129, 0.08);
+        }
+        
+        [data-theme="university"] .pair.current {
+            background: rgba(137, 18, 47, 0.05);
+        }
+        
+        [data-theme="ferrari"] .pair.current {
+            background: #222;
+            border-color: #ffb800 !important;
+        }
+        
+        [data-theme="redbull"] .pair.current {
+            background: rgba(237, 41, 57, 0.08);
+            border-color: var(--lec) !important;
+        }
+        /* МАГІЯ РАПУНЦЕЛЬ */
         
         [data-theme="rapunzel"] .pair.current {
             position: relative;
@@ -189,83 +230,7 @@
                 transform: translateY(-6px) rotate(2deg);
             }
         }
-        
-        [data-theme="rapunzel"] .pair.current .meta::before {
-            content: '🌸';
-            position: absolute;
-            top: -30px;
-            left: -10px;
-            font-size: 18px;
-            pointer-events: none;
-            animation: magic_dust_flower 3s ease-in-out infinite alternate;
-        }
-        
-        [data-theme="rapunzel"] .pair.current .meta::after {
-            content: '🌸';
-            position: absolute;
-            top: -20px;
-            right: 40%;
-            font-size: 14px;
-            pointer-events: none;
-            animation: magic_dust_flower 3.5s ease-in-out infinite alternate-reverse 0.5s;
-        }
-        
-        [data-theme="rapunzel"] .pair.current h4::before {
-            content: '🌸';
-            position: absolute;
-            left: -25px;
-            top: 0;
-            font-size: 16px;
-            pointer-events: none;
-            animation: magic_dust_flower 2.8s ease-in-out infinite alternate 1s;
-        }
-        
-        [data-theme="rapunzel"] .pair.current h4::after {
-            content: '🌸';
-            position: absolute;
-            bottom: -35px;
-            left: 30%;
-            font-size: 14px;
-            pointer-events: none;
-            animation: magic_dust_flower 3.2s ease-in-out infinite alternate-reverse 1.5s;
-        }
-        
-        [data-theme="rapunzel"] .pair.current .muted::before {
-            content: '🌸';
-            position: absolute;
-            bottom: -15px;
-            left: 10%;
-            font-size: 17px;
-            pointer-events: none;
-            animation: magic_dust_flower 2.5s ease-in-out infinite alternate 2s;
-        }
-        
-        [data-theme="rapunzel"] .pair.current .muted::after {
-            content: '🌸';
-            position: absolute;
-            bottom: -10px;
-            right: 80px;
-            font-size: 19px;
-            pointer-events: none;
-            animation: magic_dust_flower 3s ease-in-out infinite alternate-reverse 0.2s;
-        }
-        
-        @keyframes magic_dust_flower {
-            0% {
-                transform: translateY(0) rotate(0deg) scale(0.6);
-                opacity: 0;
-                filter: drop-shadow(0 0 2px rgba(255, 158, 187, 0.5));
-            }
-            50% {
-                opacity: 1;
-                filter: drop-shadow(0 0 8px rgba(255, 158, 187, 0.8));
-            }
-            100% {
-                transform: translateY(-20px) rotate(20deg) scale(1.1);
-                opacity: 0;
-                filter: drop-shadow(0 0 10px rgba(255, 158, 187, 0.3));
-            }
-        }
+        /* ПАСКАЛЬ */
         
         #pascal-pet {
             display: none;
@@ -297,7 +262,6 @@
         * {
             box-sizing: border-box;
         }
-        /* 🔥 ЗАХИСТ ІНТЕРФЕЙСУ: 100dvh (динамічна висота) + блокування відтягування (overscroll) */
         
         html,
         body {
@@ -415,6 +379,32 @@
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             align-items: start;
             transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
+        }
+        /* 🔥 ПЛАНШЕТНИЙ/ДЕСКТОП РЕЖИМ (KANBAN-СІТКА) */
+        
+        @media (min-width: 1024px) {
+            .grid {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 30px;
+                scroll-snap-type: x mandatory;
+            }
+            .card {
+                flex: 0 0 340px;
+                scroll-snap-align: start;
+            }
+            /* Кастомний скролбар для десктопу */
+            .grid::-webkit-scrollbar {
+                height: 8px;
+            }
+            .grid::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .grid::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 10px;
+            }
         }
         
         .card {
@@ -534,6 +524,23 @@
             100% {
                 opacity: 1;
             }
+        }
+        /* 🔥 ДИЗАЙН ІНТЕЛЕКТУАЛЬНИХ "ВІКОН" (ВІЛЬНОГО ЧАСУ) */
+        
+        .free-window {
+            text-align: center;
+            padding: 12px;
+            margin: 0 0 12px 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(148, 163, 184, 0.05) 10px, rgba(148, 163, 184, 0.05) 20px);
+            border-radius: 12px;
+            border: 1px dashed var(--border);
+            color: var(--muted);
+            font-size: 13.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         
         .roulette-trigger {
@@ -711,7 +718,7 @@
     <div class="wrap">
         <div class="topbar" role="banner">
             <div style="flex: 1;">
-                <div class="brand" id="secretTitle" title="Спробуй тапнути 5 разів...">
+                <div class="brand haptic-btn" id="secretTitle" title="Спробуй тапнути 5 разів...">
                     <span id="displayCourse">4 курс</span>, <span id="displayGroup">Група В</span>
                 </div>
                 <div class="muted brand-text-full">Юридичний факультет</div>
@@ -812,7 +819,7 @@
     </div>
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
-    <script src="script.js?v=40"></script>
+    <script src="script.js?v=45"></script>
 </body>
 
 </html>

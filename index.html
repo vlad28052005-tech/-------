@@ -272,11 +272,11 @@
         }
         
         .wrap {
-            max-width: 1250px;
+            max-width: 1400px;
+            /* Збільшена ширина для ПК, щоб все влазило в ряд */
             margin: 0 auto;
             padding: 16px;
         }
-        /* 🔥 Шапка ПК: плаваюча картка */
         
         .topbar {
             display: flex;
@@ -366,6 +366,7 @@
             overflow: hidden;
             padding-bottom: 20px;
         }
+        /* Стандартний мобільний вигляд (одна колонка) */
         
         .grid {
             display: grid;
@@ -374,17 +375,24 @@
             align-items: start;
             transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
         }
-        /* 🔥 ПК РЕЖИМ (СІТКА БЕЗ СКРОЛУ) */
+        /* 🔥 ПК РЕЖИМ (ФІКС: ВСІ ДНІ В ОДИН РЯД БЕЗ ПЕРЕНЕСЕНЬ) */
         
         @media (min-width: 1024px) {
             .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                display: flex;
+                flex-wrap: nowrap;
+                /* Жорстко забороняє переносити картки на новий рядок */
+                justify-content: flex-start;
                 gap: 20px;
                 padding-bottom: 30px;
             }
             .card {
-                width: 100%;
+                flex: 1 1 0;
+                /* Картки рівномірно заповнюють ширину */
+                min-width: 250px;
+                /* Мінімальна ширина, щоб не злипалися */
+                max-width: 350px;
+                /* Максимальна ширина, щоб не були занадто широкими */
             }
         }
         
@@ -661,22 +669,19 @@
         .theme-grid .full-width {
             grid-column: span 2;
         }
-        /* 🔥 МОБІЛЬНА ШАПКА З УРАХУВАННЯМ "ЧІЛКИ" (Dynamic Island/Notch) */
+        /* 🔥 ФІКС ДЛЯ ТЕЛЕФОНІВ: УРАХУВАННЯ ЧІЛКИ IOS ТА ВІДСТУПІВ */
         
         @media (max-width: 680px) {
             .wrap {
                 padding: 0 12px 12px 12px;
             }
-            /* Забираємо відступ зверху, щоб шапка прилипла */
             .topbar {
                 top: 0;
                 border-radius: 0 0 20px 20px;
-                /* Заокруглюємо тільки низ */
-                /* Динамічний відступ, який враховує годинник та батарею на iOS */
+                /* env(safe-area-inset-top) відштовхує шапку від системного годинника */
                 padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 16px 16px;
                 flex-wrap: wrap;
                 margin: 0 -12px 20px -12px;
-                /* Розтягуємо на всю ширину екрана */
             }
             .brand-text-full {
                 display: none;
@@ -812,8 +817,8 @@
     </div>
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
-    <!-- Підняв версію до 48 для примусового оновлення кешу -->
-    <script src="script.js?v=48"></script>
+    <!-- Версія піднята до 49 -->
+    <script src="script.js?v=49"></script>
 </body>
 
 </html>

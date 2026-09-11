@@ -1,0 +1,60 @@
+{
+    "settings": {
+        "baseTopWeekISO": "2026-09-14"
+    },
+    "times": [
+        { "start": "08:00", "end": "09:20" },
+        { "start": "09:30", "end": "10:50" },
+        { "start": "11:00", "end": "12:20" },
+        { "start": "12:40", "end": "14:00" },
+        { "start": "14:10", "end": "15:30" }
+    ],
+    "template": {
+        "top": {
+            "mon": [
+                null,
+                { "type": "lec", "title": "Проблеми податкового права", "teacher": "Костенко Ю. О.", "place": "MS Teams" },
+                { "type": "prac", "title": "Academic Writing", "teacher": "Гоцуляк Ю. В.", "place": "MS Teams" },
+                { "type": "prac", "title": "Професійна іноземна мова", "teacher": "Одінцова О. О.", "place": "MS Teams" }
+            ],
+            "tue": [
+                null,
+                { "type": "lec", "title": "Міжнародне право та право Європейського Союзу", "teacher": "Турченко О. Г.", "place": "MS Teams" },
+                { "type": "lec", "title": "Етичні стандарти професійної діяльності працівників", "teacher": "Міхайліна Т. В.", "place": "MS Teams" }
+            ],
+            "wed": [
+                { "type": "info", "title": "Програма minor / СОП / Дисципліна з переліку", "teacher": "Самостійна робота", "place": "" }
+            ],
+            "thu": [
+                null,
+                null,
+                { "type": "lec", "title": "Теорія і практика конституціоналізму", "teacher": "Щебетун І. С.", "place": "MS Teams" },
+                { "type": "lec", "title": "Проблеми трудового права: теорія і практика застосування", "teacher": "Амелічева Л. П.", "place": "MS Teams" }
+            ],
+            "fri": []
+        },
+        "bottom": {
+            "mon": [
+                null,
+                { "type": "prac", "title": "Проблеми податкового права", "teacher": "Костенко Ю. О.", "place": "MS Teams" },
+                { "type": "prac", "title": "Academic Writing", "teacher": "Гоцуляк Ю. В.", "place": "MS Teams" },
+                { "type": "prac", "title": "Професійна іноземна мова", "teacher": "Одінцова О. О.", "place": "MS Teams" }
+            ],
+            "tue": [
+                null,
+                { "type": "prac", "title": "Міжнародне право та право Європейського Союзу", "teacher": "Турченко О. Г.", "place": "MS Teams" },
+                { "type": "prac", "title": "Етичні стандарти професійної діяльності працівників", "teacher": "Міхайліна Т. В.", "place": "MS Teams" }
+            ],
+            "wed": [
+                { "type": "info", "title": "Програма minor / СОП / Дисципліна з переліку", "teacher": "Самостійна робота", "place": "" }
+            ],
+            "thu": [
+                null,
+                { "type": "prac", "title": "Проблеми трудового права: теорія і практика застосування", "teacher": "Амелічева Л. П.", "place": "MS Teams" },
+                { "type": "prac", "title": "Теорія і практика конституціоналізму", "teacher": "Щебетун І. С.", "place": "MS Teams" },
+                null
+            ],
+            "fri": []
+        }
+    }
+}

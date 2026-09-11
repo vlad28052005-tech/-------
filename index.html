@@ -117,7 +117,6 @@
             --prac: #ffc200;
             --glass-bg: rgba(0, 16, 33, 0.85);
         }
-        /* 🔥 УНІВЕРСАЛЬНА ОБВОДКА ДЛЯ ВСІХ ТЕМ (ВИПРАВЛЯЄ БАГ ЗІ ЗНИКНЕННЯМ) */
         
         .card.now {
             border-color: var(--accent);
@@ -128,7 +127,6 @@
             border-color: var(--accent) !important;
             background: rgba(14, 165, 233, 0.05);
         }
-        /* Індивідуальні тіні для світлих/темних режимів */
         
         [data-theme="oled"] .card.now {
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
@@ -172,7 +170,6 @@
             background: rgba(237, 41, 57, 0.08);
             border-color: var(--lec) !important;
         }
-        /* МАГІЯ РАПУНЦЕЛЬ */
         
         [data-theme="rapunzel"] .pair.current {
             position: relative;
@@ -230,7 +227,6 @@
                 transform: translateY(-6px) rotate(2deg);
             }
         }
-        /* ПАСКАЛЬ */
         
         #pascal-pet {
             display: none;
@@ -380,7 +376,6 @@
             align-items: start;
             transition: transform var(--anim-ms) ease, opacity var(--anim-ms) ease;
         }
-        /* 🔥 ПЛАНШЕТНИЙ/ДЕСКТОП РЕЖИМ (KANBAN-СІТКА) */
         
         @media (min-width: 1024px) {
             .grid {
@@ -394,7 +389,6 @@
                 flex: 0 0 340px;
                 scroll-snap-align: start;
             }
-            /* Кастомний скролбар для десктопу */
             .grid::-webkit-scrollbar {
                 height: 8px;
             }
@@ -525,7 +519,6 @@
                 opacity: 1;
             }
         }
-        /* 🔥 ДИЗАЙН ІНТЕЛЕКТУАЛЬНИХ "ВІКОН" (ВІЛЬНОГО ЧАСУ) */
         
         .free-window {
             text-align: center;
@@ -746,8 +739,16 @@
         <div class="modal-content" style="text-align: center; padding: 32px 24px;">
             <h2 style="margin:0 0 8px 0; font-size: 24px; font-weight: 800;">Привіт! 👋</h2>
             <p class="muted" style="margin: 0 0 24px 0; font-size: 15px;">Обери свій курс та групу, щоб завантажити правильний розклад.</p>
-            <select id="courseSelect" class="custom-select"><option value="1">1 курс</option><option value="2">2 курс</option><option value="3">3 курс</option><option value="4" selected>4 курс</option></select>
-            <select id="groupSelect" class="custom-select"><option value="А">Група А</option><option value="Б">Група Б</option><option value="В" selected>Група В</option><option value="Г">Група Г</option><option value="Д">Група Д</option></select>
+            <select id="courseSelect" class="custom-select">
+                <option value="1">1 курс (Порожньо)</option>
+                <option value="2">2 курс (Порожньо)</option>
+                <option value="3">3 курс (Порожньо)</option>
+                <option value="4">4 курс (Порожньо)</option>
+                <option value="magistr" selected>1 курс (Магістратура)</option>
+            </select>
+            <select id="groupSelect" class="custom-select">
+                <option value="М" selected>Група М26_д/D8</option>
+            </select>
             <button class="btn haptic-btn" id="saveOnboardingBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 16px; font-size: 17px; margin-top: 12px;">Почати навчання 🚀</button>
         </div>
     </div>
@@ -819,7 +820,7 @@
     </div>
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
-    <script src="script.js?v=45"></script>
+    <script src="script.js?v=46"></script>
 </body>
 
 </html>

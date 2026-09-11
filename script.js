@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
     let defaultData = null;
-    const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d" };
+    const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "М": "m", "M": "m" };
     const themeBgColors = {
         'university': '#F2EBE1',
         'dark': '#0f172a',
@@ -143,14 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openSettingsBtn) {
         openSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) { settingsModal.style.display = 'flex';
-                setTimeout(() => settingsModal.classList.add('active'), 10); }
+            if (settingsModal) {
+                settingsModal.style.display = 'flex';
+                setTimeout(() => settingsModal.classList.add('active'), 10);
+            }
         });
     }
     if (closeSettingsBtn) {
         closeSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) { settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300); }
+            if (settingsModal) {
+                settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300);
+            }
         });
     }
     if (changeGroupBtn) {
@@ -158,8 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (settingsModal) settingsModal.classList.remove('active');
             setTimeout(() => {
                 if (settingsModal) settingsModal.style.display = 'none';
-                if (welcomeModal) { welcomeModal.style.display = 'flex';
-                    setTimeout(() => welcomeModal.classList.add('active'), 10); }
+                if (welcomeModal) {
+                    welcomeModal.style.display = 'flex';
+                    setTimeout(() => welcomeModal.classList.add('active'), 10);
+                }
             }, 300);
         });
     }
@@ -181,8 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
             applyThemeColorToPhone(newTheme);
             if (newTheme === 'slytherin') setSlytherinTitle();
             else updateHeaderTitle(safeGetItem('user_course') || '4', safeGetItem('user_group') || 'В');
-            if (settingsModal) { settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300); }
+            if (settingsModal) {
+                settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300);
+            }
         });
     });
 
@@ -327,8 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (viewingCurrentWeek && sameDay(dayDate, today)) {
                     const en = parseHMToDate(t.end, now);
-                    if (en && now > en) { box.classList.add('past');
-                        rouletteBtnHtml = ''; }
+                    if (en && now > en) {
+                        box.classList.add('past');
+                        rouletteBtnHtml = '';
+                    }
                     if (idx === currentIdx) {
                         box.classList.add('current');
                         chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
@@ -435,8 +445,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let startX = 0,
         startY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.changedTouches) { startX = e.changedTouches[0].screenX;
-            startY = e.changedTouches[0].screenY; }
+        if (e.changedTouches) {
+            startX = e.changedTouches[0].screenX;
+            startY = e.changedTouches[0].screenY;
+        }
     }, { passive: true });
     document.addEventListener('touchend', e => {
         if (!e.changedTouches) return;
@@ -448,8 +460,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     function scheduleNextPreciseUpdate() {
-        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
-            nextUpdateTimer = null; }
+        if (nextUpdateTimer) {
+            clearTimeout(nextUpdateTimer);
+            nextUpdateTimer = null;
+        }
         const now = new Date();
         const todayKey = DAYS[(now.getDay() + 6) % 7];
         if (!todayKey) {
@@ -535,10 +549,14 @@ document.addEventListener('DOMContentLoaded', () => {
         qrBtn.addEventListener('click', () => {
             const currentUrl = window.location.href.split('#')[0].split('?')[0];
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-            if (settingsModal) { settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300); }
-            setTimeout(() => { qrModal.style.display = 'flex';
-                setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
+            if (settingsModal) {
+                settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300);
+            }
+            setTimeout(() => {
+                qrModal.style.display = 'flex';
+                setTimeout(() => qrModal.classList.add('active'), 10);
+            }, 300);
         });
         closeQr.addEventListener('click', () => {
             qrModal.classList.remove('active');
@@ -558,8 +576,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalText = copyLinkBtn.innerHTML;
                 copyLinkBtn.innerHTML = "✅ Скопійовано!";
                 copyLinkBtn.style.background = "rgba(16, 185, 129, 0.2)";
-                setTimeout(() => { copyLinkBtn.innerHTML = originalText;
-                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
+                setTimeout(() => {
+                    copyLinkBtn.innerHTML = originalText;
+                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)";
+                }, 2000);
             });
         });
     }

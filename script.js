@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
     let defaultData = null;
+    // Додано групу М для магістрів
     const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "М": "m", "M": "m" };
     const themeBgColors = {
         'university': '#F2EBE1',
@@ -94,10 +95,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedCourse = safeGetItem('user_course');
     const savedGroup = safeGetItem('user_group');
 
+    // 🔥 Оновлена функція шапки, щоб красиво писало "Магістратура"
     function updateHeaderTitle(course, group) {
         const brandElement = document.getElementById('secretTitle');
         if (brandElement && course && group) {
-            brandElement.innerHTML = `<span id="displayCourse">${course} курс</span>, <span id="displayGroup">Група ${group}</span>`;
+            let courseText = course === 'magistr' ? 'Магістратура' : `${course} курс`;
+            brandElement.innerHTML = `<span id="displayCourse">${courseText}</span>, <span id="displayGroup">Група ${group}</span>`;
         }
     }
 
@@ -297,20 +300,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            let prevEnd = null; // Для розрахунку вікон
+            let prevEnd = null;
 
             for (const v of pairs) {
                 const p = v.p,
                     idx = v.idx;
                 const t = getTimeFor(dKey, idx);
 
-                // 🔥 ІНТЕЛЕКТУАЛЬНА ПІДСВІТКА "ВІКОН"
                 if (prevEnd && t.start) {
                     const peDate = parseHMToDate(prevEnd, now);
                     const csDate = parseHMToDate(t.start, now);
                     if (peDate && csDate) {
                         const diffMs = csDate - peDate;
-                        if (diffMs > 20 * 60000) { // Якщо вікно більше 20 хвилин
+                        if (diffMs > 20 * 60000) {
                             const diffMins = Math.round(diffMs / 60000);
                             const h = Math.floor(diffMins / 60);
                             const m = diffMins % 60;
@@ -371,7 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const todayCard = document.querySelector('.card.now');
                 if (todayCard) {
-                    // Плавний скрол з урахуванням планшетного режиму
                     todayCard.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
                 }
             }, 120);
@@ -494,7 +495,6 @@ document.addEventListener('DOMContentLoaded', () => {
         nextUpdateTimer = setTimeout(() => render(false), delay);
     }
 
-    // 🔥 ФІКС НІЧНОГО БАГУ (АВТО-ПЕРЕМИКАННЯ ДНЯ РІВНО О 00:00)
     function scheduleMidnightRefresh() {
         const now = new Date();
         const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
@@ -507,7 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     scheduleMidnightRefresh();
 
-    // 🪄 Пасхалка Слизерину
     const brandElement = document.getElementById('secretTitle');
     let clickCount = 0;
     let clickTimer = null;
@@ -515,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setSlytherinTitle() {
         if (!brandElement) return;
         const crestUrl = './Slytherin.png';
-        brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest"><span id="displayCourse">${safeGetItem('user_course')||'4'} курс</span>, <span id="displayGroup">Група ${safeGetItem('user_group')||'В'}</span>`;
+        brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest"><span id="displayCourse">Магістратура</span>, <span id="displayGroup">Група М</span>`;
     }
 
     if (savedTheme === 'slytherin') { setSlytherinTitle(); }
@@ -539,7 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🔗 Логіка QR-коду
     const qrBtn = document.getElementById('qrBtn');
     const qrModal = document.getElementById('qrModal');
     const closeQr = document.getElementById('closeQr');
@@ -564,12 +562,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🔥 ЛОГІКА ПОШИРЕННЯ
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
-            const course = safeGetItem('user_course') || '4';
-            const group = safeGetItem('user_group') || 'В';
+            const course = safeGetItem('user_course') || 'magistr';
+            const group = safeGetItem('user_group') || 'М';
             const cleanUrl = window.location.href.split('#')[0].split('?')[0];
             const shareUrl = `${cleanUrl}?course=${course}&group=${group.toLowerCase()}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
@@ -584,7 +581,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🎲 ЛОГІКА РУЛЕТКИ
     const rouletteModal = document.getElementById('rouletteModal');
     const closeRoulette = document.getElementById('closeRoulette');
     const spinRouletteBtn = document.getElementById('spinRouletteBtn');
@@ -619,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (spinRouletteBtn) {
         spinRouletteBtn.addEventListener('click', () => {
-            playRouletteSound(); // 🔥 Запускаємо звук
+            playRouletteSound();
             rouletteIcon.classList.remove('spin-anim');
             void rouletteIcon.offsetWidth;
             rouletteIcon.classList.add('spin-anim');

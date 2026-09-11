@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
     let defaultData = null;
-    // Додано групу М для магістрів
     const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "М": "m", "M": "m" };
     const themeBgColors = {
         'university': '#F2EBE1',
@@ -95,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedCourse = safeGetItem('user_course');
     const savedGroup = safeGetItem('user_group');
 
-    // 🔥 Оновлена функція шапки, щоб красиво писало "Магістратура"
+    // 🔥 Коректне відображення тексту для Магістратури
     function updateHeaderTitle(course, group) {
         const brandElement = document.getElementById('secretTitle');
         if (brandElement && course && group) {

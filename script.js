@@ -312,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (en && now > en) { box.classList.add('past'); rouletteBtnHtml = ''; }
                     if (idx === currentIdx) {
                         box.classList.add('current');
+                        // 🔥 ФІКС: Таймер генерується окремо від типу пари
                         chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
                     }
                     if (idx === nextIdx && currentIdx !== -1) box.classList.add('next');
@@ -319,12 +320,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
-                chip += chipTimerHtml;
-
+                
                 let placeHtml = '';
                 if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
-                box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;align-items:center;">${chip}</div><div class="pair-time">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
+                // 🔥 ФІКС: Таймер виводиться окремим блоком під часом (margin-bottom: 10px)
+                let timerBlockHtml = chipTimerHtml ? `<div style="margin-bottom: 10px;">${chipTimerHtml}</div>` : '';
+
+                box.innerHTML = `
+                    <div class="meta">
+                        <div style="display:flex;gap:6px;align-items:center;">${chip}</div>
+                        <div class="pair-time">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div>
+                    </div>
+                    ${timerBlockHtml}
+                    <h4>${p.title}</h4>
+                    <div class="muted">${p.teacher||''}${placeHtml}</div>
+                `;
 
                 if (box.classList.contains('next')) {
                     const badge = document.createElement('div');

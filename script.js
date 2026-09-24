@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- БЕЗПЕЧНА РОБОТА З ПАМ'ЯТТЮ ---
     function safeSetItem(key, value) {
         try { localStorage.setItem(key, value); } catch (e) { console.warn("Пам'ять заблокована"); }
     }
@@ -9,19 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return localStorage.getItem(key); } catch (e) { return null; }
     }
 
-    // 🔥 АУДІО-ВІЗУАЛЬНИЙ ДЗЕН: Taptic Engine
     function playHaptic() {
         try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
     }
 
-    // Слухаємо всі кліки по кнопках і даємо вібровідгук
     document.addEventListener('pointerdown', (e) => {
         if (e.target.closest('.btn') || e.target.closest('.roulette-trigger') || e.target.closest('.theme-btn') || e.target.closest('.close-btn') || e.target.closest('.brand')) {
             playHaptic();
         }
     }, { passive: true });
 
-    // 🔥 Звук для рулетки (Синтезатор)
     function playRouletteSound() {
         try {
             const ctx = new(window.AudioContext || window.webkitAudioContext)();
@@ -35,18 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     }
 
-    // --- НАЛАШТУВАННЯ ТА БАЗА ДАНИХ ---
     let defaultData = null;
     const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "М": "m", "M": "m" };
     const themeBgColors = {
-        'university': '#F2EBE1',
-        'dark': '#0f172a',
-        'light': '#f8fafc',
-        'oled': '#000000',
-        'rapunzel': '#F5EEFF',
-        'ferrari': '#111111',
-        'redbull': '#001021',
-        'slytherin': '#060a08'
+        'university': '#F2EBE1', 'dark': '#0f172a', 'light': '#f8fafc',
+        'oled': '#000000', 'rapunzel': '#F5EEFF', 'ferrari': '#111111',
+        'redbull': '#001021', 'slytherin': '#060a08'
     };
 
     function applyThemeColorToPhone(theme) {
@@ -94,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedCourse = safeGetItem('user_course');
     const savedGroup = safeGetItem('user_group');
 
-    // 🔥 Коректне відображення тексту для Магістратури
     function updateHeaderTitle(course, group) {
         const brandElement = document.getElementById('secretTitle');
         if (brandElement && course && group) {
@@ -145,18 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openSettingsBtn) {
         openSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) {
-                settingsModal.style.display = 'flex';
-                setTimeout(() => settingsModal.classList.add('active'), 10);
-            }
+            if (settingsModal) { settingsModal.style.display = 'flex'; setTimeout(() => settingsModal.classList.add('active'), 10); }
         });
     }
     if (closeSettingsBtn) {
         closeSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) {
-                settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300);
-            }
+            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     }
     if (changeGroupBtn) {
@@ -164,10 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (settingsModal) settingsModal.classList.remove('active');
             setTimeout(() => {
                 if (settingsModal) settingsModal.style.display = 'none';
-                if (welcomeModal) {
-                    welcomeModal.style.display = 'flex';
-                    setTimeout(() => welcomeModal.classList.add('active'), 10);
-                }
+                if (welcomeModal) { welcomeModal.style.display = 'flex'; setTimeout(() => welcomeModal.classList.add('active'), 10); }
             }, 300);
         });
     }
@@ -189,15 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
             applyThemeColorToPhone(newTheme);
             if (newTheme === 'slytherin') setSlytherinTitle();
             else updateHeaderTitle(safeGetItem('user_course') || '4', safeGetItem('user_group') || 'В');
-            if (settingsModal) {
-                settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300);
-            }
+            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     });
 
-    const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
-    const DAY_NAMES = { mon: 'Понеділок', tue: 'Вівторок', wed: 'Середа', thu: 'Четвер', fri: 'П\'ятниця' };
+    const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const DAY_NAMES = { mon: 'Понеділок', tue: 'Вівторок', wed: 'Середа', thu: 'Четвер', fri: 'П\'ятниця', sat: 'Субота' };
 
     function mondayOf(date) {
         const d = new Date(date);
@@ -247,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rng = document.getElementById('weekRange');
         if (lbl) lbl.textContent = isTopWeek(currentMonday) ? 'Верхній' : 'Нижній';
         const start = new Date(currentMonday);
-        const end = new Date(currentMonday.getTime() + 4 * 86400000);
+        const end = new Date(currentMonday.getTime() + 5 * 86400000); 
         if (rng) rng.textContent = `${formatDateShort(start)} — ${formatDateShort(end)}`;
     }
 
@@ -277,13 +254,11 @@ document.addEventListener('DOMContentLoaded', () => {
             head.innerHTML = `<div><div class="day">${DAY_NAMES[dKey]}</div><div class="dateSmall">${formatDateShort(dayDate)}</div></div>`;
             card.appendChild(head);
 
-            let currentIdx = -1,
-                nextIdx = -1;
+            let currentIdx = -1, nextIdx = -1;
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 for (const v of pairs) {
                     const t = getTimeFor(dKey, v.idx);
-                    const st = parseHMToDate(t.start, now),
-                        en = parseHMToDate(t.end, now);
+                    const st = parseHMToDate(t.start, now), en = parseHMToDate(t.end, now);
                     if (st && en && now >= st && now <= en) { currentIdx = v.idx; break; }
                 }
                 if (currentIdx !== -1) {
@@ -302,8 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let prevEnd = null;
 
             for (const v of pairs) {
-                const p = v.p,
-                    idx = v.idx;
+                const p = v.p, idx = v.idx;
                 const t = getTimeFor(dKey, idx);
 
                 if (prevEnd && t.start) {
@@ -316,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             const h = Math.floor(diffMins / 60);
                             const m = diffMins % 60;
                             const gapStr = h > 0 ? `${h} год ${m > 0 ? m + ' хв' : ''}` : `${m} хв`;
-
                             const gapEl = document.createElement('div');
                             gapEl.className = 'free-window';
                             gapEl.innerHTML = `☕ Вікно: ${gapStr}`;
@@ -336,10 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (viewingCurrentWeek && sameDay(dayDate, today)) {
                     const en = parseHMToDate(t.end, now);
-                    if (en && now > en) {
-                        box.classList.add('past');
-                        rouletteBtnHtml = '';
-                    }
+                    if (en && now > en) { box.classList.add('past'); rouletteBtnHtml = ''; }
                     if (idx === currentIdx) {
                         box.classList.add('current');
                         chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
@@ -354,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let placeHtml = '';
                 if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
-                box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;align-items:center;">${chip}</div><div style="display:flex;align-items:center;">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
+                box.innerHTML = `<div class="meta"><div style="display:flex;gap:6px;align-items:center;">${chip}</div><div class="pair-time">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div></div><h4>${p.title}</h4><div class="muted">${p.teacher||''}${placeHtml}</div>`;
 
                 if (box.classList.contains('next')) {
                     const badge = document.createElement('div');
@@ -383,7 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startLiveTimer() {
         if (countdownInterval) clearInterval(countdownInterval);
-
         countdownInterval = setInterval(() => {
             const timerEl = document.getElementById('liveTimer');
             if (!timerEl) return;
@@ -442,13 +411,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let startX = 0,
-        startY = 0;
+    let startX = 0, startY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.changedTouches) {
-            startX = e.changedTouches[0].screenX;
-            startY = e.changedTouches[0].screenY;
-        }
+        if (e.changedTouches) { startX = e.changedTouches[0].screenX; startY = e.changedTouches[0].screenY; }
     }, { passive: true });
     document.addEventListener('touchend', e => {
         if (!e.changedTouches) return;
@@ -460,10 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     function scheduleNextPreciseUpdate() {
-        if (nextUpdateTimer) {
-            clearTimeout(nextUpdateTimer);
-            nextUpdateTimer = null;
-        }
+        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer); nextUpdateTimer = null; }
         const now = new Date();
         const todayKey = DAYS[(now.getDay() + 6) % 7];
         if (!todayKey) {
@@ -546,14 +508,8 @@ document.addEventListener('DOMContentLoaded', () => {
         qrBtn.addEventListener('click', () => {
             const currentUrl = window.location.href.split('#')[0].split('?')[0];
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-            if (settingsModal) {
-                settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300);
-            }
-            setTimeout(() => {
-                qrModal.style.display = 'flex';
-                setTimeout(() => qrModal.classList.add('active'), 10);
-            }, 300);
+            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
+            setTimeout(() => { qrModal.style.display = 'flex'; setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
         });
         closeQr.addEventListener('click', () => {
             qrModal.classList.remove('active');
@@ -572,10 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalText = copyLinkBtn.innerHTML;
                 copyLinkBtn.innerHTML = "✅ Скопійовано!";
                 copyLinkBtn.style.background = "rgba(16, 185, 129, 0.2)";
-                setTimeout(() => {
-                    copyLinkBtn.innerHTML = originalText;
-                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)";
-                }, 2000);
+                setTimeout(() => { copyLinkBtn.innerHTML = originalText; copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
             });
         });
     }
@@ -614,14 +567,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (spinRouletteBtn) {
         spinRouletteBtn.addEventListener('click', () => {
-            playRouletteSound();
+            playRouletteSound(); 
             rouletteIcon.classList.remove('spin-anim');
             void rouletteIcon.offsetWidth;
             rouletteIcon.classList.add('spin-anim');
-
             rouletteResult.textContent = "Доля думає...";
             rouletteDesc.textContent = "Крутимо кубик...";
-
             setTimeout(() => {
                 const random = Math.floor(Math.random() * roulettePhrases.length);
                 rouletteResult.textContent = roulettePhrases[random];

@@ -34,14 +34,15 @@
         { "type": "lec", "title": "Теорія і практика конституціоналізму", "teacher": "Щебетун І. С.", "place": "MS Teams" },
         { "type": "lec", "title": "Проблеми трудового права: теорія і практика застосування", "teacher": "Амелічева Л. П.", "place": "MS Teams" }
       ],
-      "fri": []
+      "fri": [],
+      "sat": []
     },
     "bottom": {
       "mon": [
         null,
         { "type": "prac", "title": "Проблеми податкового права", "teacher": "Костенко Ю. О.", "place": "MS Teams" },
         { "type": "prac", "title": "Academic Writing", "teacher": "Гоцуляк Ю. В.", "place": "MS Teams" },
-        { "type": "prac", "title": "Професійна іноземна мова", "teacher": "Одінцова О. О.", "place": "MS Teams" }
+        null
       ],
       "tue": [
         null,
@@ -57,7 +58,11 @@
         { "type": "prac", "title": "Теорія і практика конституціоналізму", "teacher": "Щебетун І. С.", "place": "MS Teams" },
         null
       ],
-      "fri": []
+      "fri": [],
+      "sat": [
+        null,
+        { "type": "prac", "title": "Професійна іноземна мова (Відпрацювання)", "teacher": "Одінцова О. О.", "place": "MS Teams" }
+      ]
     }
   }
 }

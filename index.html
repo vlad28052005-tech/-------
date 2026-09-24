@@ -91,12 +91,12 @@
         
         .pair h4 { margin: 10px 0; font-size: 15px; line-height: 1.4; font-weight: 700; letter-spacing: -0.2px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         
-        /* 🔥 ФІКС ДЛЯ НАКЛАДАННЯ: Додано flex-wrap: wrap та вирівнювання flex-start */
-        .pair .meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; gap: 8px; flex-wrap: wrap; }
+        /* 🔥 ФІКС ДЛЯ ВЕРХНЬОГО РЯДКА: Тільки Плашка та Час. Жодних перенесень, чітко по краях */
+        .pair .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; }
         
         .pair-time { white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; }
         
-        .chip { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 10px; border-radius: 8px; flex-shrink: 0; }
+        .chip { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
         .lec { background: rgba(59, 130, 246, 0.15); color: var(--lec); }
         .prac { background: rgba(250, 204, 21, 0.15); color: #d97706; }
         [data-theme="dark"] .prac, [data-theme="oled"] .prac { color: var(--prac); }
@@ -247,7 +247,7 @@
     </div>
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
-    <script src="script.js?v=53"></script>
+    <script src="script.js?v=54"></script>
 </body>
 
 </html>

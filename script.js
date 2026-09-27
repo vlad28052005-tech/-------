@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return localStorage.getItem(key); } catch (e) { return null; }
     }
 
+    // Автоматична міграція старих магістрів на "Підгрупу А", щоб не було помилок 404
+    let savedGroupMigrate = safeGetItem('user_group');
+    if (savedGroupMigrate === 'М') {
+        safeSetItem('user_group', 'МА');
+    }
+
     function playHaptic() {
         try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
     }
@@ -32,11 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let defaultData = null;
-    const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "М": "m", "M": "m" };
+    const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "МА": "ma", "МБ": "mb" };
     const themeBgColors = {
-        'university': '#F2EBE1', 'dark': '#0f172a', 'light': '#f8fafc',
-        'oled': '#000000', 'rapunzel': '#F5EEFF', 'ferrari': '#111111',
-        'redbull': '#001021', 'slytherin': '#060a08'
+        'university': '#F2EBE1',
+        'dark': '#0f172a',
+        'light': '#f8fafc',
+        'oled': '#000000',
+        'rapunzel': '#F5EEFF',
+        'ferrari': '#111111',
+        'redbull': '#001021',
+        'slytherin': '#060a08'
     };
 
     function applyThemeColorToPhone(theme) {
@@ -88,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const brandElement = document.getElementById('secretTitle');
         if (brandElement && course && group) {
             let courseText = course === 'magistr' ? 'Магістратура' : `${course} курс`;
-            brandElement.innerHTML = `<span id="displayCourse">${courseText}</span>, <span id="displayGroup">Група ${group}</span>`;
+            let groupText = group === 'МА' ? 'Підгрупа А' : group === 'МБ' ? 'Підгрупа Б' : `Група ${group}`;
+            brandElement.innerHTML = `<span id="displayCourse">${courseText}</span>, <span id="displayGroup">${groupText}</span>`;
         }
     }
 
@@ -134,12 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openSettingsBtn) {
         openSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) { settingsModal.style.display = 'flex'; setTimeout(() => settingsModal.classList.add('active'), 10); }
+            if (settingsModal) { settingsModal.style.display = 'flex';
+                setTimeout(() => settingsModal.classList.add('active'), 10); }
         });
     }
     if (closeSettingsBtn) {
         closeSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
+            if (settingsModal) { settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     }
     if (changeGroupBtn) {
@@ -147,7 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (settingsModal) settingsModal.classList.remove('active');
             setTimeout(() => {
                 if (settingsModal) settingsModal.style.display = 'none';
-                if (welcomeModal) { welcomeModal.style.display = 'flex'; setTimeout(() => welcomeModal.classList.add('active'), 10); }
+                if (welcomeModal) { welcomeModal.style.display = 'flex';
+                    setTimeout(() => welcomeModal.classList.add('active'), 10); }
             }, 300);
         });
     }
@@ -169,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
             applyThemeColorToPhone(newTheme);
             if (newTheme === 'slytherin') setSlytherinTitle();
             else updateHeaderTitle(safeGetItem('user_course') || '4', safeGetItem('user_group') || 'В');
-            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
+            if (settingsModal) { settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     });
 
@@ -224,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rng = document.getElementById('weekRange');
         if (lbl) lbl.textContent = isTopWeek(currentMonday) ? 'Верхній' : 'Нижній';
         const start = new Date(currentMonday);
-        const end = new Date(currentMonday.getTime() + 5 * 86400000); 
+        const end = new Date(currentMonday.getTime() + 5 * 86400000);
         if (rng) rng.textContent = `${formatDateShort(start)} — ${formatDateShort(end)}`;
     }
 
@@ -254,11 +270,13 @@ document.addEventListener('DOMContentLoaded', () => {
             head.innerHTML = `<div><div class="day">${DAY_NAMES[dKey]}</div><div class="dateSmall">${formatDateShort(dayDate)}</div></div>`;
             card.appendChild(head);
 
-            let currentIdx = -1, nextIdx = -1;
+            let currentIdx = -1,
+                nextIdx = -1;
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 for (const v of pairs) {
                     const t = getTimeFor(dKey, v.idx);
-                    const st = parseHMToDate(t.start, now), en = parseHMToDate(t.end, now);
+                    const st = parseHMToDate(t.start, now),
+                        en = parseHMToDate(t.end, now);
                     if (st && en && now >= st && now <= en) { currentIdx = v.idx; break; }
                 }
                 if (currentIdx !== -1) {
@@ -277,7 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let prevEnd = null;
 
             for (const v of pairs) {
-                const p = v.p, idx = v.idx;
+                const p = v.p,
+                    idx = v.idx;
                 const t = getTimeFor(dKey, idx);
 
                 if (prevEnd && t.start) {
@@ -309,10 +328,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (viewingCurrentWeek && sameDay(dayDate, today)) {
                     const en = parseHMToDate(t.end, now);
-                    if (en && now > en) { box.classList.add('past'); rouletteBtnHtml = ''; }
+                    if (en && now > en) { box.classList.add('past');
+                        rouletteBtnHtml = ''; }
                     if (idx === currentIdx) {
                         box.classList.add('current');
-                        // 🔥 ФІКС: Таймер генерується окремо від типу пари
                         chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
                     }
                     if (idx === nextIdx && currentIdx !== -1) box.classList.add('next');
@@ -320,11 +339,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
-                
+
                 let placeHtml = '';
                 if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
-                // 🔥 ФІКС: Таймер виводиться окремим блоком під часом (margin-bottom: 10px)
                 let timerBlockHtml = chipTimerHtml ? `<div style="margin-bottom: 10px;">${chipTimerHtml}</div>` : '';
 
                 box.innerHTML = `
@@ -422,9 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let startX = 0, startY = 0;
+    let startX = 0,
+        startY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.changedTouches) { startX = e.changedTouches[0].screenX; startY = e.changedTouches[0].screenY; }
+        if (e.changedTouches) { startX = e.changedTouches[0].screenX;
+            startY = e.changedTouches[0].screenY; }
     }, { passive: true });
     document.addEventListener('touchend', e => {
         if (!e.changedTouches) return;
@@ -436,7 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     function scheduleNextPreciseUpdate() {
-        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer); nextUpdateTimer = null; }
+        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
+            nextUpdateTimer = null; }
         const now = new Date();
         const todayKey = DAYS[(now.getDay() + 6) % 7];
         if (!todayKey) {
@@ -486,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setSlytherinTitle() {
         if (!brandElement) return;
         const crestUrl = './Slytherin.png';
-        brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest"><span id="displayCourse">Магістратура</span>, <span id="displayGroup">Група М</span>`;
+        brandElement.innerHTML = `<img src="${crestUrl}" alt="Slytherin Crest" class="brand-crest"><span id="displayCourse">Магістратура</span>, <span id="displayGroup">Підгрупа А</span>`;
     }
 
     if (savedTheme === 'slytherin') { setSlytherinTitle(); }
@@ -519,8 +540,10 @@ document.addEventListener('DOMContentLoaded', () => {
         qrBtn.addEventListener('click', () => {
             const currentUrl = window.location.href.split('#')[0].split('?')[0];
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
-            setTimeout(() => { qrModal.style.display = 'flex'; setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
+            if (settingsModal) { settingsModal.classList.remove('active');
+                setTimeout(() => settingsModal.style.display = 'none', 300); }
+            setTimeout(() => { qrModal.style.display = 'flex';
+                setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
         });
         closeQr.addEventListener('click', () => {
             qrModal.classList.remove('active');
@@ -532,14 +555,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
             const course = safeGetItem('user_course') || 'magistr';
-            const group = safeGetItem('user_group') || 'М';
+            const group = safeGetItem('user_group') || 'МА';
             const cleanUrl = window.location.href.split('#')[0].split('?')[0];
             const shareUrl = `${cleanUrl}?course=${course}&group=${group.toLowerCase()}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
                 const originalText = copyLinkBtn.innerHTML;
                 copyLinkBtn.innerHTML = "✅ Скопійовано!";
                 copyLinkBtn.style.background = "rgba(16, 185, 129, 0.2)";
-                setTimeout(() => { copyLinkBtn.innerHTML = originalText; copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
+                setTimeout(() => { copyLinkBtn.innerHTML = originalText;
+                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
             });
         });
     }
@@ -578,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (spinRouletteBtn) {
         spinRouletteBtn.addEventListener('click', () => {
-            playRouletteSound(); 
+            playRouletteSound();
             rouletteIcon.classList.remove('spin-anim');
             void rouletteIcon.offsetWidth;
             rouletteIcon.classList.add('spin-anim');

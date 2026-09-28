@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     }
 
-    // 🔥 ЛОГІКА ПОВІТРЯНОЇ ТРИВОГИ (Вінницька область)
     async function checkAirAlert() {
         try {
             const response = await fetch('https://ubilling.net.ua/aerialalerts/');
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const alertBanner = document.getElementById('airAlertBanner');
             const grid = document.getElementById('weekGrid');
 
-            // Перевіряємо Вінницьку область
             if (data.states && data.states["Вінницька область"]) {
                 if (alertBanner.style.display !== 'flex') {
                     alertBanner.style.display = 'flex';
@@ -61,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     checkAirAlert();
-    setInterval(checkAirAlert, 60000); // Оновлення кожну хвилину
+    setInterval(checkAirAlert, 60000);
 
     let defaultData = null;
     const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "МА": "ma", "МБ": "mb" };
@@ -380,7 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
             grid.appendChild(card);
         }
 
-        // Повторна перевірка тривоги після рендеру, щоб відразу застосувати стиль якщо тривога вже є
         const alertBanner = document.getElementById('airAlertBanner');
         if (alertBanner && alertBanner.style.display === 'flex') {
             grid.classList.add('alert-mode');

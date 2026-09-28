@@ -186,6 +186,83 @@ document.addEventListener('DOMContentLoaded', () => {
         forceUpdateBtn.addEventListener('click', () => { window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime(); });
     }
 
+    // 🔥 ЛОГІКА СИСТЕМНИХ СПОВІЩЕНЬ (Web Notifications)
+    let notifiedPairs = JSON.parse(safeGetItem('notified_pairs') || '{}');
+    const todayString = new Date().toLocaleDateString('uk-UA');
+    for (let key in notifiedPairs) {
+        if (!key.startsWith(todayString)) delete notifiedPairs[key]; // Очищуємо стару історію
+    }
+    safeSetItem('notified_pairs', JSON.stringify(notifiedPairs));
+
+    function checkUpcomingPairsForNotifications() {
+        if (!("Notification" in window) || Notification.permission !== 'granted') return;
+        if (!defaultData) return;
+
+        const now = new Date();
+        const todayKey = DAYS[(now.getDay() + 6) % 7];
+        if (!todayKey) return;
+
+        const pairs = getPairsForDay(todayKey, now);
+        pairs.forEach((p, idx) => {
+            if (!p) return;
+            const t = getTimeFor(todayKey, idx);
+            if (t.start) {
+                const st = parseHMToDate(t.start, now);
+                if (st) {
+                    const diffMs = st.getTime() - now.getTime();
+                    const diffMins = Math.floor(diffMs / 60000);
+
+                    // Якщо до пари рівно 5 хвилин
+                    if (diffMins === 5) {
+                        const notifyKey = `${todayString}_${idx}`;
+                        if (!notifiedPairs[notifyKey]) {
+                            new Notification("🚨 Скоро пара!", {
+                                body: `Через 5 хвилин: ${p.title}\nВикладач: ${p.teacher}`,
+                                icon: "icon.png",
+                                badge: "icon.png",
+                                vibrate: [200, 100, 200]
+                            });
+                            notifiedPairs[notifyKey] = true;
+                            safeSetItem('notified_pairs', JSON.stringify(notifiedPairs));
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    setInterval(checkUpcomingPairsForNotifications, 20000); // Перевіряємо кожні 20 секунд
+
+    // Кнопка дозволу сповіщень у Налаштуваннях
+    const notifyBtn = document.getElementById('enableNotificationsBtn');
+    if (notifyBtn) {
+        if ("Notification" in window && Notification.permission === 'granted') {
+            notifyBtn.innerHTML = "✅ Сповіщення увімкнено";
+            notifyBtn.style.opacity = "0.7";
+            notifyBtn.style.pointerEvents = "none";
+        }
+
+        notifyBtn.addEventListener('click', () => {
+            if (!("Notification" in window)) {
+                alert("Твій браузер (або пристрій) не підтримує системні сповіщення.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    notifyBtn.innerHTML = "✅ Сповіщення увімкнено";
+                    notifyBtn.style.opacity = "0.7";
+                    notifyBtn.style.pointerEvents = "none";
+                    new Notification("Успішно!", { 
+                        body: "Ти отримаєш сповіщення за 5 хвилин до початку наступної пари.",
+                        icon: "icon.png"
+                    });
+                } else {
+                    alert("Ти відхилив дозвіл на сповіщення. Щоб увімкнути, зміни налаштування браузера.");
+                }
+            });
+        });
+    }
+
     const slytherinThemeBtn = document.getElementById('slytherinThemeBtn');
     if (slytherinThemeBtn && (safeGetItem('slytherin_unlocked') === 'true' || savedTheme === 'slytherin')) {
         slytherinThemeBtn.style.display = 'block';

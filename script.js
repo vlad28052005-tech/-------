@@ -8,11 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return localStorage.getItem(key); } catch (e) { return null; }
     }
 
-    // Автоматична міграція старих магістрів на "Підгрупу А", щоб не було помилок 404
     let savedGroupMigrate = safeGetItem('user_group');
-    if (savedGroupMigrate === 'М') {
-        safeSetItem('user_group', 'МА');
-    }
+    if (savedGroupMigrate === 'М') { safeSetItem('user_group', 'МА'); }
 
     function playHaptic() {
         try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
@@ -37,17 +34,41 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     }
 
+    // 🔥 ЛОГІКА ПОВІТРЯНОЇ ТРИВОГИ (Вінницька область)
+    async function checkAirAlert() {
+        try {
+            const response = await fetch('https://ubilling.net.ua/aerialalerts/');
+            if (!response.ok) return;
+            const data = await response.json();
+            const alertBanner = document.getElementById('airAlertBanner');
+            const grid = document.getElementById('weekGrid');
+
+            // Перевіряємо Вінницьку область
+            if (data.states && data.states["Вінницька область"]) {
+                if (alertBanner.style.display !== 'flex') {
+                    alertBanner.style.display = 'flex';
+                    grid.classList.add('alert-mode');
+                    playHaptic(); 
+                }
+            } else {
+                if (alertBanner.style.display !== 'none') {
+                    alertBanner.style.display = 'none';
+                    grid.classList.remove('alert-mode');
+                }
+            }
+        } catch (error) {
+            console.error("Не вдалося перевірити статус тривоги:", error);
+        }
+    }
+    checkAirAlert();
+    setInterval(checkAirAlert, 60000); // Оновлення кожну хвилину
+
     let defaultData = null;
     const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "МА": "ma", "МБ": "mb" };
     const themeBgColors = {
-        'university': '#F2EBE1',
-        'dark': '#0f172a',
-        'light': '#f8fafc',
-        'oled': '#000000',
-        'rapunzel': '#F5EEFF',
-        'ferrari': '#111111',
-        'redbull': '#001021',
-        'slytherin': '#060a08'
+        'university': '#F2EBE1', 'dark': '#0f172a', 'light': '#f8fafc',
+        'oled': '#000000', 'rapunzel': '#F5EEFF', 'ferrari': '#111111',
+        'redbull': '#001021', 'slytherin': '#060a08'
     };
 
     function applyThemeColorToPhone(theme) {
@@ -146,14 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openSettingsBtn) {
         openSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) { settingsModal.style.display = 'flex';
-                setTimeout(() => settingsModal.classList.add('active'), 10); }
+            if (settingsModal) { settingsModal.style.display = 'flex'; setTimeout(() => settingsModal.classList.add('active'), 10); }
         });
     }
     if (closeSettingsBtn) {
         closeSettingsBtn.addEventListener('click', () => {
-            if (settingsModal) { settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300); }
+            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     }
     if (changeGroupBtn) {
@@ -161,8 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (settingsModal) settingsModal.classList.remove('active');
             setTimeout(() => {
                 if (settingsModal) settingsModal.style.display = 'none';
-                if (welcomeModal) { welcomeModal.style.display = 'flex';
-                    setTimeout(() => welcomeModal.classList.add('active'), 10); }
+                if (welcomeModal) { welcomeModal.style.display = 'flex'; setTimeout(() => welcomeModal.classList.add('active'), 10); }
             }, 300);
         });
     }
@@ -184,8 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             applyThemeColorToPhone(newTheme);
             if (newTheme === 'slytherin') setSlytherinTitle();
             else updateHeaderTitle(safeGetItem('user_course') || '4', safeGetItem('user_group') || 'В');
-            if (settingsModal) { settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300); }
+            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
         });
     });
 
@@ -240,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rng = document.getElementById('weekRange');
         if (lbl) lbl.textContent = isTopWeek(currentMonday) ? 'Верхній' : 'Нижній';
         const start = new Date(currentMonday);
-        const end = new Date(currentMonday.getTime() + 5 * 86400000);
+        const end = new Date(currentMonday.getTime() + 5 * 86400000); 
         if (rng) rng.textContent = `${formatDateShort(start)} — ${formatDateShort(end)}`;
     }
 
@@ -270,13 +287,11 @@ document.addEventListener('DOMContentLoaded', () => {
             head.innerHTML = `<div><div class="day">${DAY_NAMES[dKey]}</div><div class="dateSmall">${formatDateShort(dayDate)}</div></div>`;
             card.appendChild(head);
 
-            let currentIdx = -1,
-                nextIdx = -1;
+            let currentIdx = -1, nextIdx = -1;
             if (viewingCurrentWeek && sameDay(dayDate, today)) {
                 for (const v of pairs) {
                     const t = getTimeFor(dKey, v.idx);
-                    const st = parseHMToDate(t.start, now),
-                        en = parseHMToDate(t.end, now);
+                    const st = parseHMToDate(t.start, now), en = parseHMToDate(t.end, now);
                     if (st && en && now >= st && now <= en) { currentIdx = v.idx; break; }
                 }
                 if (currentIdx !== -1) {
@@ -295,8 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let prevEnd = null;
 
             for (const v of pairs) {
-                const p = v.p,
-                    idx = v.idx;
+                const p = v.p, idx = v.idx;
                 const t = getTimeFor(dKey, idx);
 
                 if (prevEnd && t.start) {
@@ -328,8 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (viewingCurrentWeek && sameDay(dayDate, today)) {
                     const en = parseHMToDate(t.end, now);
-                    if (en && now > en) { box.classList.add('past');
-                        rouletteBtnHtml = ''; }
+                    if (en && now > en) { box.classList.add('past'); rouletteBtnHtml = ''; }
                     if (idx === currentIdx) {
                         box.classList.add('current');
                         chipTimerHtml = `<span class="chip timer-chip" id="liveTimer" data-end="${t.end}">⏳ Рахую...</span>`;
@@ -339,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
-
+                
                 let placeHtml = '';
                 if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
 
@@ -365,6 +378,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (viewingCurrentWeek && sameDay(dayDate, today)) card.classList.add('now');
             grid.appendChild(card);
+        }
+
+        // Повторна перевірка тривоги після рендеру, щоб відразу застосувати стиль якщо тривога вже є
+        const alertBanner = document.getElementById('airAlertBanner');
+        if (alertBanner && alertBanner.style.display === 'flex') {
+            grid.classList.add('alert-mode');
         }
 
         if (mondayOf(new Date()).getTime() === currentMonday.getTime()) {
@@ -440,11 +459,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let startX = 0,
-        startY = 0;
+    let startX = 0, startY = 0;
     document.addEventListener('touchstart', e => {
-        if (e.changedTouches) { startX = e.changedTouches[0].screenX;
-            startY = e.changedTouches[0].screenY; }
+        if (e.changedTouches) { startX = e.changedTouches[0].screenX; startY = e.changedTouches[0].screenY; }
     }, { passive: true });
     document.addEventListener('touchend', e => {
         if (!e.changedTouches) return;
@@ -456,8 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     function scheduleNextPreciseUpdate() {
-        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer);
-            nextUpdateTimer = null; }
+        if (nextUpdateTimer) { clearTimeout(nextUpdateTimer); nextUpdateTimer = null; }
         const now = new Date();
         const todayKey = DAYS[(now.getDay() + 6) % 7];
         if (!todayKey) {
@@ -540,10 +556,8 @@ document.addEventListener('DOMContentLoaded', () => {
         qrBtn.addEventListener('click', () => {
             const currentUrl = window.location.href.split('#')[0].split('?')[0];
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-            if (settingsModal) { settingsModal.classList.remove('active');
-                setTimeout(() => settingsModal.style.display = 'none', 300); }
-            setTimeout(() => { qrModal.style.display = 'flex';
-                setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
+            if (settingsModal) { settingsModal.classList.remove('active'); setTimeout(() => settingsModal.style.display = 'none', 300); }
+            setTimeout(() => { qrModal.style.display = 'flex'; setTimeout(() => qrModal.classList.add('active'), 10); }, 300);
         });
         closeQr.addEventListener('click', () => {
             qrModal.classList.remove('active');
@@ -562,8 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalText = copyLinkBtn.innerHTML;
                 copyLinkBtn.innerHTML = "✅ Скопійовано!";
                 copyLinkBtn.style.background = "rgba(16, 185, 129, 0.2)";
-                setTimeout(() => { copyLinkBtn.innerHTML = originalText;
-                    copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
+                setTimeout(() => { copyLinkBtn.innerHTML = originalText; copyLinkBtn.style.background = "rgba(16, 185, 129, 0.1)"; }, 2000);
             });
         });
     }
@@ -602,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (spinRouletteBtn) {
         spinRouletteBtn.addEventListener('click', () => {
-            playRouletteSound();
+            playRouletteSound(); 
             rouletteIcon.classList.remove('spin-anim');
             void rouletteIcon.offsetWidth;
             rouletteIcon.classList.add('spin-anim');

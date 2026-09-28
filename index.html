@@ -59,20 +59,9 @@
         
         .wrap { max-width: 1400px; margin: 0 auto; padding: 16px; }
         
-        /* 🔥 ЛИПКИЙ КОНТЕЙНЕР (тримає разом шапку і банер) */
-        .sticky-wrapper {
-            position: sticky;
-            top: 16px;
-            z-index: 40;
-        }
+        .sticky-wrapper { position: sticky; top: 16px; z-index: 40; }
         
-        .topbar {
-            display: flex; gap: 12px; align-items: center; justify-content: space-between;
-            background: var(--glass-bg); padding: 16px 20px; margin-bottom: 16px;
-            border-radius: 20px; border: 1px solid var(--border);
-            backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); transition: background 0.4s ease, border-color 0.4s ease;
-        }
+        .topbar { display: flex; gap: 12px; align-items: center; justify-content: space-between; background: var(--glass-bg); padding: 16px 20px; margin-bottom: 16px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); transition: background 0.4s ease, border-color 0.4s ease; }
         
         .brand { font-weight: 800; font-size: 17px; cursor: pointer; user-select: none; letter-spacing: -0.3px; white-space: nowrap; }
         .muted { color: var(--muted); font-size: 13px; font-weight: 500; }
@@ -84,17 +73,9 @@
         .icon-btn { padding: 8px 12px; font-size: 18px; border-radius: 12px; background: transparent; border: 1px solid transparent; }
         .icon-btn:hover { background: var(--panel); border: 1px solid var(--border); }
         
-        /* 🔥 Банер повітряної тривоги */
-        .air-alert-banner { 
-            display: none; background: #dc2626; color: #ffffff; padding: 14px 20px; 
-            border-radius: 18px; margin-bottom: 24px; font-weight: 800; font-size: 15px; 
-            text-align: center; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3); 
-            align-items: center; justify-content: center; gap: 10px; 
-            animation: slideDownAlert 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; letter-spacing: -0.2px; 
-        }
+        .air-alert-banner { display: none; background: #dc2626; color: #ffffff; padding: 14px 20px; border-radius: 18px; margin-bottom: 24px; font-weight: 800; font-size: 15px; text-align: center; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3); align-items: center; justify-content: center; gap: 10px; animation: slideDownAlert 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; letter-spacing: -0.2px; }
         @keyframes slideDownAlert { 0% { transform: translateY(-30px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
         
-        /* Режим блокування карток під час тривоги */
         .alert-mode .card { opacity: 0.5; pointer-events: none; filter: grayscale(0.7); border-color: transparent; box-shadow: none; transition: all 0.4s ease; }
         .alert-mode .card.now { border-color: #dc2626; filter: grayscale(0.2); opacity: 0.8; box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
         .alert-mode .pair.current { border-color: #dc2626 !important; background: rgba(220, 38, 38, 0.05); }
@@ -156,37 +137,21 @@
         .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
         .theme-grid .full-width { grid-column: span 2; }
         
-        /* 🔥 ФІКС ДЛЯ ТЕЛЕФОНІВ: УРАХУВАННЯ ЧІЛКИ IOS ТА ЗЛИПАННЯ */
         @media (max-width: 680px) {
             .wrap { padding: 0 12px 12px 12px; }
-            .sticky-wrapper {
-                top: 0;
-                margin: 0 -12px; /* Розтягуємо контейнер на всю ширину екрана */
-            }
-            .topbar {
-                border-radius: 0 0 20px 20px;
-                padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 16px 16px;
-                flex-wrap: wrap; 
-                margin: 0 0 12px 0; /* Відступ під шапкою */
-            }
+            .sticky-wrapper { top: 0; margin: 0 -12px; }
+            .topbar { border-radius: 0 0 20px 20px; padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 16px 16px; flex-wrap: wrap; margin: 0 0 12px 0; }
             .brand-text-full { display: none; }
             .brand { font-size: 16px; }
-            .top-center {
-                position: static; transform: none; order: 3;
-                width: 100%; justify-content: center; margin-top: 12px;
-            }
+            .top-center { position: static; transform: none; order: 3; width: 100%; justify-content: center; margin-top: 12px; }
             .modal-content { padding: 18px; }
-            .air-alert-banner { 
-                border-radius: 14px; font-size: 14px; padding: 12px; 
-                margin: 0 12px 20px 12px; /* Враховуємо краї екрана, щоб банер не прилипав до боків */
-            }
+            .air-alert-banner { border-radius: 14px; font-size: 14px; padding: 12px; margin: 0 12px 20px 12px; }
         }
     </style>
 </head>
 
 <body>
     <div class="wrap">
-        <!-- 🔥 ЛИПКИЙ КОНТЕЙНЕР ДЛЯ ШАПКИ ТА БАНЕРА -->
         <div class="sticky-wrapper">
             <div class="topbar" role="banner">
                 <div style="flex: 1;">
@@ -210,7 +175,6 @@
                 </div>
             </div>
             
-            <!-- БЛОК ПОВІТРЯНОЇ ТРИВОГИ -->
             <div id="airAlertBanner" class="air-alert-banner">
                 🚨 Повітряна тривога! Заняття призупинено.
             </div>
@@ -247,6 +211,13 @@
                 <div class="menu-title">Твоє навчання</div>
                 <button class="btn haptic-btn" id="changeGroupBtn" style="width: 100%; text-align: left; padding: 14px; background: var(--bg);">🔄 Змінити курс або групу</button>
             </div>
+            
+            <!-- 🔥 НОВА КНОПКА ДЛЯ СПОВІЩЕНЬ -->
+            <div class="menu-section">
+                <div class="menu-title">Системні сповіщення</div>
+                <button class="btn haptic-btn" id="enableNotificationsBtn" style="width: 100%; text-align: left; padding: 14px; background: rgba(16, 185, 129, 0.1); color: var(--green); border-color: rgba(16, 185, 129, 0.3); margin-bottom: 8px;">🔔 Увімкнути нагадування (за 5 хв)</button>
+            </div>
+
             <div class="menu-section">
                 <div class="menu-title">Вигляд розкладу</div>
                 <div class="theme-grid">
@@ -301,7 +272,7 @@
     </div>
 
     <img src="pascal.png" id="pascal-pet" alt="Pascal">
-    <script src="script.js?v=57"></script>
+    <script src="script.js?v=58"></script>
 </body>
 
 </html>

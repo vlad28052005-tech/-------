@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(checkAirAlert, 60000);
 
     let defaultData = null;
-    const groupMap = { "А": "a", "A": "a", "Б": "b", "В": "v", "B": "v", "Г": "g", "Д": "d", "МА": "ma", "МБ": "mb" };
+    let currentMeta = null;
     const themeBgColors = {
         'university': '#F2EBE1', 'dark': '#0f172a', 'light': '#f8fafc',
         'oled': '#000000', 'rapunzel': '#F5EEFF', 'ferrari': '#111111',
@@ -76,63 +76,221 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function loadSchedule(course, group) {
-        const fileGroup = groupMap[group] || "v";
-        const url = `./Group/${course}/${course}-${fileGroup}.json`;
-        const cacheKey = `saved_schedule_${course}_${group}`;
+    // ===== Джерела даних: Supabase → збережена копія → вбудована копія (data/schedules.js) =====
+    const APP_CONFIG = window.APP_CONFIG || {};
+    const LOCAL_SCHEDULES = window.LOCAL_SCHEDULES || [];
+    const GROUPS_CACHE_KEY = 'groups_list';
+    const scheduleCacheKey = (course, group) => `saved_schedule_${course}_${group}`;
+
+    async function supabaseSelect(query) {
+        if (!APP_CONFIG.supabaseUrl || !APP_CONFIG.supabaseKey) throw new Error('NO_CONFIG');
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        try {
+            const res = await fetch(`${APP_CONFIG.supabaseUrl}/rest/v1/schedules?${query}`, {
+                headers: { apikey: APP_CONFIG.supabaseKey },
+                cache: 'no-store',
+                signal: controller.signal
+            });
+            if (!res.ok) throw new Error(`HTTP_${res.status}`);
+            return await res.json();
+        } finally {
+            clearTimeout(timeout);
+        }
+    }
+
+    function readJSON(key) {
+        try { return JSON.parse(safeGetItem(key)); } catch (e) { return null; }
+    }
+
+    // Старий формат кешу зберігав лише data; новий — увесь рядок з мітками.
+    function readCachedSchedule(course, group) {
+        const cached = readJSON(scheduleCacheKey(course, group));
+        if (!cached) return null;
+        return cached.data ? cached : { course, group_code: group, data: cached };
+    }
+
+    function findLocalSchedule(course, group) {
+        return LOCAL_SCHEDULES.find(s => s.course === course && s.group_code === group) || null;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    function showGridMessage(title, text) {
+        const grid = document.getElementById('weekGrid');
+        if (!grid) return;
+        grid.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);"><h3 style="margin-bottom: 8px;">${title}</h3><p>${text}</p></div>`;
+    }
+
+    function setSyncStatus(text) {
+        const el = document.getElementById('syncStatus');
+        if (el) el.textContent = text ? ` · ${text}` : '';
+    }
+
+    function applySchedule(row, animate) {
+        const changed = JSON.stringify(row.data) !== JSON.stringify(defaultData);
+        currentMeta = row;
+        defaultData = row.data;
+        if (safeGetItem('schedule_theme') !== 'slytherin') updateHeaderTitle(row.course, row.group_code);
+        if (changed) render(animate);
+    }
+
+    let loadToken = 0;
+
+    async function loadSchedule(course, group, { silent = false } = {}) {
+        const token = ++loadToken;
+        const fallback = readCachedSchedule(course, group) || findLocalSchedule(course, group);
+
+        // Одразу показуємо те, що є під рукою, щоб не чекати мережу.
+        if (!silent && fallback) applySchedule(fallback, true);
+        if (!silent && !fallback) {
+            defaultData = null;
+            showGridMessage('Завантажую розклад…', '');
+        }
 
         try {
-            const response = await fetch(`${url}?t=${new Date().getTime()}`);
-            if (!response.ok) throw new Error('NOT_FOUND');
-            defaultData = await response.json();
-            safeSetItem(cacheKey, JSON.stringify(defaultData));
-            render(true);
+            const rows = await supabaseSelect(
+                `select=course,group_code,course_label,group_label,data,updated_at` +
+                `&course=eq.${encodeURIComponent(course)}&group_code=eq.${encodeURIComponent(group)}&limit=1`
+            );
+            if (token !== loadToken) return;
+            if (rows[0]) {
+                safeSetItem(scheduleCacheKey(course, group), JSON.stringify(rows[0]));
+                setSyncStatus('');
+                applySchedule(rows[0], !silent && !fallback);
+                return;
+            }
+            if (!fallback) {
+                showGridMessage('Ой, розкладу ще немає 😢', `Розклад для цієї групи ще не додано в базу.`);
+                return;
+            }
+            setSyncStatus('локальна копія');
         } catch (error) {
-            console.error("Помилка мережі:", error);
-            const cachedData = safeGetItem(cacheKey);
-            if (cachedData) {
-                try {
-                    defaultData = JSON.parse(cachedData);
-                    render(true);
-                    return;
-                } catch (e) {}
+            if (token !== loadToken) return;
+            console.warn('Supabase недоступний, використовую локальну копію:', error);
+            if (fallback) {
+                setSyncStatus('офлайн-копія');
+                if (silent) applySchedule(fallback, false);
+                return;
             }
-            const grid = document.getElementById('weekGrid');
-            if (!grid) return;
-            if (!navigator.onLine || error.message !== 'NOT_FOUND') {
-                grid.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);"><h3 style="margin-bottom: 8px;">Немає зв'язку 📶</h3><p>Перевірте інтернет та оновіть сторінку.</p></div>`;
-            } else {
-                grid.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--muted); grid-column: 1 / -1; background: var(--card); border-radius: 20px; border: 1px solid var(--border);"><h3 style="margin-bottom: 8px;">Ой, розкладу ще немає 😢</h3><p>Розклад для ${course} курсу, групи ${group} ще не додано в базу.</p></div>`;
-            }
+            showGridMessage('Немає зв\'язку 📶', 'Не вдалося завантажити розклад. Перевірте інтернет та оновіть сторінку.');
         }
+    }
+
+    // Список курсів/груп для онбордингу: із бази, або зі збереженої/вбудованої копії.
+    function getKnownGroups() {
+        const cached = readJSON(GROUPS_CACHE_KEY);
+        if (Array.isArray(cached) && cached.length) return cached;
+        return LOCAL_SCHEDULES.map(({ course, group_code, course_label, group_label, sort_order }) => ({ course, group_code, course_label, group_label, sort_order }))
+            .sort((a, b) => a.sort_order - b.sort_order);
+    }
+
+    async function refreshGroupList() {
+        try {
+            const rows = await supabaseSelect('select=course,group_code,course_label,group_label,sort_order&is_published=eq.true&order=sort_order,course,group_code');
+            if (rows.length) {
+                safeSetItem(GROUPS_CACHE_KEY, JSON.stringify(rows));
+                populateOnboarding();
+            }
+        } catch (e) {}
+    }
+
+    function populateOnboarding() {
+        const courseSelect = document.getElementById('courseSelect');
+        const groupSelect = document.getElementById('groupSelect');
+        if (!courseSelect || !groupSelect) return;
+        const groups = getKnownGroups();
+        const selectedCourse = courseSelect.value || safeGetItem('user_course');
+        const selectedGroup = groupSelect.value || safeGetItem('user_group');
+
+        const courses = [];
+        groups.forEach(g => { if (!courses.some(c => c.course === g.course)) courses.push(g); });
+        courseSelect.innerHTML = courses.map(c => `<option value="${escapeHtml(c.course)}">${escapeHtml(c.course_label)}</option>`).join('');
+        if (courses.some(c => c.course === selectedCourse)) courseSelect.value = selectedCourse;
+
+        const fillGroups = (preferred) => {
+            const list = groups.filter(g => g.course === courseSelect.value);
+            groupSelect.innerHTML = list.map(g => `<option value="${escapeHtml(g.group_code)}">${escapeHtml(g.group_label)}</option>`).join('');
+            if (list.some(g => g.group_code === preferred)) groupSelect.value = preferred;
+        };
+        fillGroups(selectedGroup);
+        courseSelect.onchange = () => fillGroups(null);
     }
 
     const savedTheme = safeGetItem('schedule_theme') || 'university';
     document.documentElement.setAttribute('data-theme', savedTheme);
     applyThemeColorToPhone(savedTheme);
 
-    const savedCourse = safeGetItem('user_course');
-    const savedGroup = safeGetItem('user_group');
+    // ?course=…&group=… — перегляд групи з редактора. Показуємо її лише зараз,
+    // не перезаписуючи групу, яку людина обрала собі.
+    const urlParams = new URLSearchParams(window.location.search);
+    const previewCourse = urlParams.get('course');
+    const previewGroup = urlParams.get('group');
+    const isPreview = Boolean(previewCourse && previewGroup);
+
+    const savedCourse = isPreview ? previewCourse : safeGetItem('user_course');
+    const savedGroup = isPreview ? previewGroup : safeGetItem('user_group');
+    // Група, яка зараз на екрані (для тихого оновлення).
+    let viewCourse = savedCourse, viewGroup = savedGroup;
 
     function updateHeaderTitle(course, group) {
         const brandElement = document.getElementById('secretTitle');
-        if (brandElement && course && group) {
-            let courseText = course === 'magistr' ? 'Магістратура' : `${course} курс`;
-            let groupText = group === 'МА' ? 'Підгрупа А' : group === 'МБ' ? 'Підгрупа Б' : `Група ${group}`;
-            brandElement.innerHTML = `<span id="displayCourse">${courseText}</span>, <span id="displayGroup">${groupText}</span>`;
-        }
+        if (!brandElement || !course || !group) return;
+        const known = (currentMeta && currentMeta.course === course && currentMeta.group_code === group && currentMeta.course_label)
+            ? currentMeta
+            : getKnownGroups().find(g => g.course === course && g.group_code === group);
+        const courseText = known ? known.course_label : (course === 'magistr' ? 'Магістратура' : `${course} курс`);
+        const groupText = known ? known.group_label : `Група ${group}`;
+        brandElement.innerHTML = `<span id="displayCourse">${escapeHtml(courseText)}</span>, <span id="displayGroup">${escapeHtml(groupText)}</span>`;
     }
 
     const welcomeModal = document.getElementById('welcomeModal');
-    if (!savedCourse || !savedGroup) {
-        if (welcomeModal) {
-            welcomeModal.style.display = 'flex';
-            setTimeout(() => welcomeModal.classList.add('active'), 10);
+
+    // Викликається в кінці файлу, коли всі функції та константи рендеру вже оголошені.
+    function startApp() {
+        populateOnboarding();
+        refreshGroupList();
+        if (!savedCourse || !savedGroup) {
+            openGroupPicker();
+        } else {
+            updateHeaderTitle(savedCourse, savedGroup);
+            loadSchedule(savedCourse, savedGroup);
         }
-    } else {
-        updateHeaderTitle(savedCourse, savedGroup);
-        loadSchedule(savedCourse, savedGroup);
     }
+
+    // Коли повертаємось у вкладку/застосунок — тихо підтягуємо свіжу версію розкладу.
+    let lastRefresh = Date.now();
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible' || Date.now() - lastRefresh < 60000) return;
+        lastRefresh = Date.now();
+        if (viewCourse && viewGroup) loadSchedule(viewCourse, viewGroup, { silent: true });
+    });
+
+    const hasSavedGroup = () => Boolean(safeGetItem('user_course') && safeGetItem('user_group'));
+
+    // Вибір курсу/групи. Поки група не обрана, закрити вікно не можна — без неї нема що показувати.
+    function openGroupPicker() {
+        if (!welcomeModal) return;
+        populateOnboarding();
+        const cancelBtn = document.getElementById('cancelOnboardingBtn');
+        if (cancelBtn) cancelBtn.style.display = hasSavedGroup() ? 'block' : 'none';
+        welcomeModal.style.display = 'flex';
+        setTimeout(() => welcomeModal.classList.add('active'), 10);
+    }
+
+    function closeGroupPicker() {
+        if (!welcomeModal) return;
+        welcomeModal.classList.remove('active');
+        setTimeout(() => welcomeModal.style.display = 'none', 300);
+    }
+
+    const switchGroupBtn = document.getElementById('switchGroupBtn');
+    if (switchGroupBtn) switchGroupBtn.addEventListener('click', openGroupPicker);
+
+    const cancelOnboardingBtn = document.getElementById('cancelOnboardingBtn');
+    if (cancelOnboardingBtn) cancelOnboardingBtn.addEventListener('click', closeGroupPicker);
 
     const saveOnboardingBtn = document.getElementById('saveOnboardingBtn');
     if (saveOnboardingBtn) {
@@ -145,11 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (courseVal && groupVal) {
                 safeSetItem('user_course', courseVal);
                 safeSetItem('user_group', groupVal);
+                viewCourse = courseVal;
+                viewGroup = groupVal;
+                if (isPreview) history.replaceState(null, '', window.location.pathname);
                 updateHeaderTitle(courseVal, groupVal);
-                if (welcomeModal) {
-                    welcomeModal.classList.remove('active');
-                    setTimeout(() => welcomeModal.style.display = 'none', 300);
-                }
+                closeGroupPicker();
                 loadSchedule(courseVal, groupVal);
             } else {
                 alert("Будь ласка, оберіть курс та групу!");
@@ -161,7 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const closeSettingsBtn = document.getElementById('closeSettingsBtn');
     const changeGroupBtn = document.getElementById('changeGroupBtn');
-    const forceUpdateBtn = document.getElementById('forceUpdateBtn');
 
     if (openSettingsBtn) {
         openSettingsBtn.addEventListener('click', () => {
@@ -178,12 +335,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (settingsModal) settingsModal.classList.remove('active');
             setTimeout(() => {
                 if (settingsModal) settingsModal.style.display = 'none';
-                if (welcomeModal) { welcomeModal.style.display = 'flex'; setTimeout(() => welcomeModal.classList.add('active'), 10); }
+                openGroupPicker();
             }, 300);
         });
-    }
-    if (forceUpdateBtn) {
-        forceUpdateBtn.addEventListener('click', () => { window.location.href = window.location.href.split('?')[0] + '?v=' + new Date().getTime(); });
     }
 
     // 🔥 ЛОГІКА СИСТЕМНИХ СПОВІЩЕНЬ (Web Notifications)
@@ -429,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let chip = p.type === 'lec' ? '<span class="chip lec">Лекція</span>' : p.type === 'prac' ? '<span class="chip prac">Практика</span>' : '<span class="chip textpair">Інфо</span>';
                 
                 let placeHtml = '';
-                if (p.place) { placeHtml = ` • <span>${p.place}</span>`; }
+                if (p.place) { placeHtml = ` • <span>${escapeHtml(p.place)}</span>`; }
 
                 let timerBlockHtml = chipTimerHtml ? `<div style="margin-bottom: 10px;">${chipTimerHtml}</div>` : '';
 
@@ -439,8 +593,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="pair-time">${t.start||''} – ${t.end||''}${rouletteBtnHtml}</div>
                     </div>
                     ${timerBlockHtml}
-                    <h4>${p.title}</h4>
-                    <div class="muted">${p.teacher||''}${placeHtml}</div>
+                    <h4>${escapeHtml(p.title)}</h4>
+                    <div class="muted">${escapeHtml(p.teacher)}${placeHtml}</div>
                 `;
 
                 if (box.classList.contains('next')) {
@@ -642,10 +796,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
-            const course = safeGetItem('user_course') || 'magistr';
-            const group = safeGetItem('user_group') || 'МА';
-            const cleanUrl = window.location.href.split('#')[0].split('?')[0];
-            const shareUrl = `${cleanUrl}?course=${course}&group=${group.toLowerCase()}`;
+            // Ділимось стартовою сторінкою: кожен сам обере свій курс і групу.
+            const shareUrl = window.location.href.split('#')[0].split('?')[0].replace(/index\.html$/, '');
             navigator.clipboard.writeText(shareUrl).then(() => {
                 const originalText = copyLinkBtn.innerHTML;
                 copyLinkBtn.innerHTML = "✅ Скопійовано!";
@@ -707,11 +859,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal-overlay')) {
+            if (e.target === welcomeModal && !hasSavedGroup()) return;
             e.target.classList.remove('active');
             setTimeout(() => e.target.style.display = 'none', 300);
         }
     });
 
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(() => {}); }
+    startApp();
+
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') { navigator.serviceWorker.register('./sw.js').catch(() => {}); }
 
 });

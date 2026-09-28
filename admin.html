@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="uk">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Редактор розкладу</title>
+    <meta name="theme-color" content="#F2EBE1" />
+    <link rel="icon" href="icon.png" />
+    <style>
+        :root {
+            --bg: #F2EBE1; --panel: #FFFFFF; --text: #3D101C; --muted: #8A646E; --border: #D8C397;
+            --accent: #89122F; --lec: #89122F; --prac: #C5A059; --danger: #b91c1c; --ok: #047857;
+            --field: #FBF8F3;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--text); font: 14px/1.4 system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+        .wrap { max-width: 1100px; margin: 0 auto; padding: 16px 16px 120px; }
+        h1 { font-size: 20px; margin: 0; letter-spacing: -0.3px; }
+        h2 { font-size: 16px; margin: 0 0 12px; letter-spacing: -0.2px; }
+        a { color: var(--accent); }
+        .muted { color: var(--muted); font-size: 13px; }
+        .hidden { display: none !important; }
+
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .topbar .right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 18px; margin-bottom: 16px; }
+
+        .btn { border: 1px solid var(--border); background: var(--panel); color: var(--text); padding: 9px 14px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600; white-space: nowrap; }
+        .btn:hover { border-color: var(--accent); }
+        .btn:disabled { opacity: 0.5; cursor: default; }
+        .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn.danger { color: var(--danger); }
+        .btn.small { padding: 6px 10px; font-size: 13px; }
+
+        label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+        input, select, textarea { width: 100%; font: inherit; color: var(--text); background: var(--field); border: 1px solid var(--border); border-radius: 10px; padding: 9px 10px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        input[type="checkbox"] { width: auto; }
+        textarea { min-height: 220px; font-family: ui-monospace, monospace; font-size: 12px; }
+
+        .fields { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+        .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+        .login { max-width: 380px; margin: 10vh auto 0; }
+        .login .card > * + * { margin-top: 12px; }
+        .error { color: var(--danger); font-size: 13px; }
+
+        .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .toolbar select { width: auto; min-width: 220px; flex: 1; }
+
+        .times { display: grid; gap: 8px; }
+        .time-row { display: grid; grid-template-columns: 32px 1fr 1fr 40px; gap: 8px; align-items: center; max-width: 420px; }
+        .time-row .num { font-weight: 800; color: var(--muted); text-align: center; }
+
+        .tabs { display: inline-flex; background: var(--field); border: 1px solid var(--border); border-radius: 12px; padding: 3px; }
+        .tab { border: 0; background: transparent; padding: 7px 14px; border-radius: 9px; font: inherit; font-weight: 700; color: var(--muted); cursor: pointer; }
+        .tab.active { background: var(--accent); color: #fff; }
+
+        .day { border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-top: 12px; }
+        .day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap; }
+        .day-head strong { font-size: 15px; }
+        .slot { display: grid; grid-template-columns: 92px 130px 2fr 1.3fr 1fr; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px dashed var(--border); }
+        .slot:first-of-type { border-top: 0; }
+        .slot .when { font-size: 12px; color: var(--muted); font-weight: 600; line-height: 1.2; }
+        .slot .when b { color: var(--text); font-size: 13px; }
+        .slot.empty input { visibility: hidden; }
+        .slot select[data-type="lec"] { color: var(--lec); font-weight: 700; }
+        .slot select[data-type="prac"] { color: #9a7527; font-weight: 700; }
+
+        .savebar { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(242, 235, 225, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+        .savebar .inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        #status.ok { color: var(--ok); }
+        #status.err { color: var(--danger); }
+
+        details summary { cursor: pointer; font-weight: 700; }
+        .hint { color: var(--muted); font-size: 12.5px; margin-top: 4px; line-height: 1.35; }
+        .setting { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0 0; margin-top: 14px; border-top: 1px solid var(--border); text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--text); cursor: default; }
+        label.setting { cursor: pointer; }
+        .setting-title { font-weight: 700; }
+        .setting .hint { font-weight: 400; }
+        .switch { appearance: none; -webkit-appearance: none; flex-shrink: 0; width: 44px !important; height: 26px; padding: 0; border-radius: 999px; background: var(--border); position: relative; cursor: pointer; transition: background 0.2s; }
+        .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .switch:checked { background: var(--accent); }
+        .switch:checked::after { transform: translateX(18px); }
+        .advanced { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+        .advanced summary { color: var(--muted); font-size: 13px; }
+        .advanced .fields { margin-top: 10px; }
+
+        @media (max-width: 760px) {
+            .slot { grid-template-columns: 1fr 1fr; }
+            .slot .when { grid-column: 1 / -1; }
+            .slot .f-title { grid-column: 1 / -1; order: 3; }
+            .slot.empty .f-title, .slot.empty .f-teacher, .slot.empty .f-place { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="topbar">
+            <div>
+                <h1>✏️ Редактор розкладу</h1>
+                <div class="muted"><a href="index.html">← До розкладу</a></div>
+            </div>
+            <div class="right hidden" id="userBox">
+                <span class="muted" id="userEmail"></span>
+                <button class="btn small" id="logoutBtn">Вийти</button>
+            </div>
+        </div>
+
+        <!-- Вхід -->
+        <div id="loginView" class="login hidden">
+            <form class="card" id="loginForm">
+                <h2>Вхід для редакторів</h2>
+                <div><label for="login">Логін</label><input id="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+                <div><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required></div>
+                <button class="btn primary" type="submit" style="width:100%">Увійти</button>
+                <div class="error" id="loginError"></div>
+            </form>
+        </div>
+
+        <div id="loadingView" class="muted" style="text-align:center; padding:40px;">Завантаження…</div>
+
+        <!-- Редактор -->
+        <div id="editorView" class="hidden">
+            <div class="card">
+                <div class="toolbar">
+                    <select id="groupPicker" aria-label="Група"></select>
+                    <button class="btn" id="newGroupBtn">＋ Нова група</button>
+                    <button class="btn" id="duplicateBtn" title="Створити нову групу на основі поточної">⧉ Дублювати</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Група</h2>
+                <div class="fields">
+                    <div>
+                        <label for="f-course-label">Курс</label>
+                        <input id="f-course-label" list="courseOptions" placeholder="Напр. 4 курс" autocomplete="off">
+                        <datalist id="courseOptions"></datalist>
+                        <div class="hint">Оберіть наявний курс зі списку або введіть новий.</div>
+                    </div>
+                    <div>
+                        <label for="f-group-label">Група</label>
+                        <input id="f-group-label" placeholder="Напр. Група В" autocomplete="off">
+                        <div class="hint">Так групу бачать студенти в списку вибору та в шапці.</div>
+                    </div>
+                </div>
+
+                <div class="setting">
+                    <div>
+                        <div class="setting-title">Який зараз тиждень?</div>
+                        <div class="hint" id="weekHint"></div>
+                    </div>
+                    <div class="tabs" id="parityTabs">
+                        <button class="tab" data-parity="top">Верхній</button>
+                        <button class="tab" data-parity="bottom">Нижній</button>
+                    </div>
+                </div>
+
+                <label class="setting" for="f-published">
+                    <div>
+                        <div class="setting-title">Показувати студентам</div>
+                        <div class="hint">Вимкніть, поки розклад не готовий: група зникне зі списку вибору.</div>
+                    </div>
+                    <input type="checkbox" id="f-published" class="switch">
+                </label>
+
+                <details class="advanced">
+                    <summary>Технічні поля</summary>
+                    <p class="hint">Коди — внутрішній ідентифікатор групи: саме їх запам'ятовує телефон студента, коли він обирає групу. Для нової групи вони заповнюються самі. У наявної групи краще не змінювати, бо студентам доведеться обрати групу заново.</p>
+                    <div class="fields">
+                        <div><label for="f-course">Код курсу</label><input id="f-course" placeholder="4"></div>
+                        <div><label for="f-group">Код групи</label><input id="f-group" placeholder="В"></div>
+                        <div>
+                            <label for="f-sort">Порядок у списку</label><input id="f-sort" type="number">
+                            <div class="hint">Менше число — вище у списку.</div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="card">
+                <div class="row" style="justify-content: space-between; margin-bottom: 4px;">
+                    <h2 style="margin:0">Час пар</h2>
+                    <button class="btn small" id="addTimeBtn">＋ Додати пару</button>
+                </div>
+                <p class="hint" style="margin: 0 0 12px;">Дзвінки однакові для всіх днів. Прибрати можна лише останню пару.</p>
+                <div class="times" id="timesList"></div>
+            </div>
+
+            <div class="card">
+                <div class="row" style="justify-content: space-between;">
+                    <div class="tabs" role="tablist" id="weekTabs">
+                        <button class="tab active" data-week="top" role="tab">Верхній тиждень</button>
+                        <button class="tab" data-week="bottom" role="tab">Нижній тиждень</button>
+                    </div>
+                    <button class="btn small" id="copyWeekBtn"></button>
+                </div>
+                <div id="daysList"></div>
+            </div>
+
+            <div class="card">
+                <details id="jsonDetails">
+                    <summary>JSON (імпорт / експорт)</summary>
+                    <p class="muted">Повний розклад групи у форматі { settings, times, template }. Можна вставити сюди JSON і натиснути «Застосувати».</p>
+                    <textarea id="jsonBox" spellcheck="false"></textarea>
+                    <div class="row" style="margin-top:8px;">
+                        <button class="btn small" id="jsonRefreshBtn">Оновити з форми</button>
+                        <button class="btn small" id="jsonApplyBtn">Застосувати JSON</button>
+                    </div>
+                </details>
+            </div>
+
+            <div class="card" style="border-color: rgba(185, 28, 28, 0.3);">
+                <div class="row" style="justify-content: space-between;">
+                    <div class="muted">Видалення групи прибере її розклад у всіх студентів.</div>
+                    <button class="btn danger" id="deleteBtn">Видалити групу</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="savebar hidden" id="saveBar">
+        <div class="inner">
+            <span id="status" class="muted"></span>
+            <div class="row">
+                <a class="btn" id="previewLink" href="index.html" target="_blank">Переглянути</a>
+                <button class="btn primary" id="saveBtn">Зберегти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Звичайні (не module) скрипти, щоб редактор працював і при відкритті файлом (file://) -->
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="admin.js"></script>
+    <script>
+        // Якщо редактор не стартував (CDN недоступний, помилка в скрипті) — кажемо про це, а не крутимо «Завантаження…».
+        setTimeout(function () {
+            var loading = document.getElementById('loadingView');
+            if (loading && !loading.classList.contains('hidden')) {
+                loading.innerHTML = 'Не вдалося запустити редактор. Перевірте інтернет і оновіть сторінку.';
+            }
+        }, 10000);
+    </script>
+</body>
+
+</html>

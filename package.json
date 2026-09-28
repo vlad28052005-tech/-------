@@ -1,0 +1,10 @@
+{
+  "name": "rozklad",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve . -l 3000",
+    "seed": "node scripts/seed.mjs",
+    "create-editor": "node scripts/create-editor.mjs"
+  }
+}
